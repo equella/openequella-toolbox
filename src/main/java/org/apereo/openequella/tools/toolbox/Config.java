@@ -36,7 +36,8 @@ public class Config {
 	public static final String TOOLBOX_FUNCTION = "toolbox.function";
 	public static enum ToolboxFunction {
 		MigrateToKaltura,
-		ExportItems
+		ExportItems,
+		Email
 	}
 	
 	//Example 2013-01-18T17:38:47.986-07:00
@@ -62,8 +63,14 @@ public class Config {
 	public static final String EXPORT_ITEMS_COLUMN_FORMAT = "export.items.columnFormat";
 	public static final String EXPORT_ITEMS_FILTER_DATE_CREATED = "export.items.filter.dateCreated";
 	public static final String EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE = "export.items.attachment.path.template";
-	
-		
+
+	// Email
+	public static final String EMAIL_SERVER = "email.server";
+	public static final String EMAIL_USERNAME = "email.username";
+	public static final String EMAIL_PASSWORD = "email.password";
+	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
+	public static final String EMAIL_SENDER_NAME = "email.sender.name";
+
 	// general
 	public static final String OEQ_URL = "oeq.url";
 	public static final String OEQ_OAUTH_CLIENT_ID = "oeq.oauth.client.id";
@@ -90,7 +97,7 @@ public class Config {
 	public Config(String path) {
 		filepath = path;
 		try (InputStream input = new FileInputStream(path)) {
-			LOGGER.info("Using [{}] as the configuration file.", path);
+			LOGGER.debug("Using [{}] as the configuration file.", path);
 			store = new Properties();
 			store.load(input);
 
@@ -105,6 +112,10 @@ public class Config {
 				case ExportItems: {
 					checkConfigsGeneral();
 					checkConfigsExportItems();
+					break;
+				}
+				case Email: {
+					checkConfigsEmail();
 					break;
 				}
 				default: {
@@ -146,7 +157,7 @@ public class Config {
 			}
 		}
 	}
-	
+
 	private void checkConfigsMigrateToKaltura() {
 		checkConfig(KAL_PARTNER_ID, false, true);
 		if(validConfig) checkInt(KAL_PARTNER_ID, false);
@@ -171,6 +182,14 @@ public class Config {
 		}
 	}
 
+	private void checkConfigsEmail() {
+		checkConfig(EMAIL_SERVER, true, true);
+		checkConfig(EMAIL_USERNAME, true, true);
+		checkConfig(EMAIL_PASSWORD, false, true);
+		checkConfig(EMAIL_SENDER_ADDRESS, true, true);
+		checkConfig(EMAIL_SENDER_NAME, true, true);
+	}
+
 	private void checkConfigsExportItems() {
 		checkConfig(EXPORT_ITEMS_OUTPUT_FILE, true, true);
 		if(validConfig) {
@@ -187,10 +206,10 @@ public class Config {
 	private void checkConfig(String key, boolean displayValue, boolean required) {
 		if(store.containsKey(key)) {
 			String value = displayValue ? store.getProperty(key) : "****";
-			LOGGER.info("Found property [{}]=[{}].", key, value);
+			LOGGER.debug("Found property [{}]=[{}].", key, value);
 		} else {
 			String state = required ? "required" : "optional";
-			LOGGER.info("Unable to find {} property [{}] in {}.", state, key, filepath);
+			LOGGER.debug("Unable to find {} property [{}] in {}.", state, key, filepath);
 			if(required) {
 				validConfig = false;
 			}

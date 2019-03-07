@@ -8,6 +8,9 @@ Search openEQUELLA for items with a given criteria.  For each item found, downlo
 ### Export Items
 Search openEQUELLA for items with a given criteria.  For each item found, export the metadata in a given format.
 
+### Email
+Takes a CSV of 'to addresses', a subject, and a body and sends an email.  If 'html' is specified, it will set the email mime type to HTML.
+
 # License
 Apache v2
 
