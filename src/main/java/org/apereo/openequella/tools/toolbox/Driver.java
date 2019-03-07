@@ -22,7 +22,7 @@ import org.apereo.openequella.tools.toolbox.Config.ToolboxFunction;
 
 public class Driver {
 	private static Logger LOGGER = LogManager.getLogger(Driver.class);
-	
+
 	
 	/** 
 	 * @param args
@@ -47,6 +47,9 @@ public class Driver {
 			break;
 		} case ExportItems: {
 			(new ExportItemsDriver()).execute(config);
+			break;
+		} case Email: {
+			(new EmailDriver()).execute(config, args);
 			break;
 		} default: {
 			LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
