@@ -37,7 +37,8 @@ public class Config {
 	public static enum ToolboxFunction {
 		MigrateToKaltura,
 		ExportItems,
-		Email
+		Email,
+		FileLister
 	}
 	
 	//Example 2013-01-18T17:38:47.986-07:00
@@ -116,6 +117,10 @@ public class Config {
 				}
 				case Email: {
 					checkConfigsEmail();
+					break;
+				}
+				case FileLister: {
+					// No special configs needed
 					break;
 				}
 				default: {

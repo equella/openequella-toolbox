@@ -11,6 +11,17 @@ Search openEQUELLA for items with a given criteria.  For each item found, export
 ### Email
 Takes a CSV of 'to addresses', a subject, and a body and sends an email.  If 'html' is specified, it will set the email mime type to HTML.
 
+### FileLister
+Lists in JSON format all files / directories of a given directory.
+
+When used in an openEQUELLA save script, it's helpful to change the log4j console appender to `%msg%n` so only the JSON is returned.
+
+Invocation arguments:
+* [req] config file
+* [req] directory (or file) to list
+* [req] OS specific slash
+* [opt] -useParent flag
+
 # License
 Apache v2
 
@@ -36,7 +47,7 @@ Uncomment everything to do with Kaltura (this needs to be fixed).
 # Running
 
 ```
-java -Dlog4j.configurationFile=log4j2.xml -jar openequella-toolbox-<<version>>.jar
+java -Dlog4j.configurationFile=log4j2.xml -jar openequella-toolbox-<<version>>.jar <<properties file>> <<invocation specific arguments>>
 ```
 
 
