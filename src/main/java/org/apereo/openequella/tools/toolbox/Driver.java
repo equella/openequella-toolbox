@@ -51,6 +51,9 @@ public class Driver {
 		} case Email: {
 			(new EmailDriver()).execute(config, args);
 			break;
+		} case FileLister: {
+			(new FileListerDriver()).execute(config, args);
+			break;
 		} default: {
 			LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
 			return;
