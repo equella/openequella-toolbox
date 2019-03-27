@@ -27,12 +27,12 @@ public class FileListerDriver {
     private static Logger LOGGER = LogManager.getLogger(FileListerDriver.class);
 
     public void execute(Config config, String[] args) {
-        if(args.length < 3) {
-            LOGGER.error("No parameters found!  FileLister parameters - [req] config file, [req] directory(or file) to list, [req] os-slash, [opt] -useParent flag");
+        if(args.length < 2) {
+            LOGGER.error("No parameters found!  FileLister parameters - [req] config file, [req] directory(or file) to list, [opt] -useParent flag");
             return;
         }
 
-        boolean checkParentFolder = (args.length > 3) && args[3].equals("-useParent");
+        boolean checkParentFolder = (args.length > 2) && args[2].equals("-useParent");
 
         File base = new File(args[1]);
         if(base.exists() && checkParentFolder) {
@@ -45,7 +45,7 @@ public class FileListerDriver {
             System.exit(2);
         } else if(base.exists()) {
             JSONArray files = new JSONArray();
-            list(base, "", args[2], files);
+            list(base, "", config.getConfig(Config.GENERAL_OS_SLASH), files);
             JSONObject res = new JSONObject();
             res.put("files", files);
             LOGGER.info(res);

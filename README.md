@@ -19,7 +19,6 @@ When used in an openEQUELLA save script, it's helpful to change the log4j consol
 Invocation arguments:
 * [req] config file
 * [req] directory (or file) to list
-* [req] OS specific slash
 * [opt] -useParent flag
 
 # License
