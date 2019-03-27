@@ -120,7 +120,7 @@ public class Config {
 					break;
 				}
 				case FileLister: {
-					// No special configs needed
+					checkConfigsFileLister();
 					break;
 				}
 				default: {
@@ -207,7 +207,11 @@ public class Config {
 		checkConfig(EXPORT_ITEMS_FILTER_DATE_CREATED, true, false);
 		checkConfig(EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE, true, true);
 	}
-	
+
+	private void checkConfigsFileLister() {
+		checkConfig(GENERAL_OS_SLASH, true, true);
+	}
+
 	private void checkConfig(String key, boolean displayValue, boolean required) {
 		if(store.containsKey(key)) {
 			String value = displayValue ? store.getProperty(key) : "****";
