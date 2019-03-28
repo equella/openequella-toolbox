@@ -21,6 +21,13 @@ Invocation arguments:
 * [req] directory (or file) to list
 * [opt] -useParent flag
 
+### Thumbnail
+Using similar techniques as openEQUELLA, thumbnails a file and provides diagnostics about the thumbnail process.
+
+Invocation arguments:
+* [req] config file
+* [req] file to thumbnail
+
 # License
 Apache v2
 

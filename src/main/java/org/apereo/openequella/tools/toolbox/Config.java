@@ -38,7 +38,8 @@ public class Config {
 		MigrateToKaltura,
 		ExportItems,
 		Email,
-		FileLister
+		FileLister,
+		ThumbnailV1
 	}
 	
 	//Example 2013-01-18T17:38:47.986-07:00
@@ -71,6 +72,9 @@ public class Config {
 	public static final String EMAIL_PASSWORD = "email.password";
 	public static final String EMAIL_SENDER_ADDRESS = "email.sender.address";
 	public static final String EMAIL_SENDER_NAME = "email.sender.name";
+
+	//Thumbnail
+	public static final String THUMBNAIL_V1_IM_LOCATION = "thumbnail.v1.im.location";
 
 	// general
 	public static final String OEQ_URL = "oeq.url";
@@ -121,6 +125,10 @@ public class Config {
 				}
 				case FileLister: {
 					checkConfigsFileLister();
+					break;
+				}
+				case ThumbnailV1: {
+					checkConfigsThumbnailV1();
 					break;
 				}
 				default: {
@@ -193,6 +201,10 @@ public class Config {
 		checkConfig(EMAIL_PASSWORD, false, true);
 		checkConfig(EMAIL_SENDER_ADDRESS, true, true);
 		checkConfig(EMAIL_SENDER_NAME, true, true);
+	}
+
+	private void checkConfigsThumbnailV1() {
+		checkConfig(THUMBNAIL_V1_IM_LOCATION, true, true);
 	}
 
 	private void checkConfigsExportItems() {
