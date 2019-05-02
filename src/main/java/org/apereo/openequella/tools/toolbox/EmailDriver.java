@@ -66,18 +66,20 @@ public class EmailDriver {
             final String senderEmail = config.getConfig(Config.EMAIL_SENDER_ADDRESS);
             senderAddr = new InternetAddress(senderEmail, config.getConfig(Config.EMAIL_SENDER_NAME), UTF8);
             final Properties props = System.getProperties();
+
             int ind = server.indexOf(':');
             if (ind != -1) {
                 props.put("mail.smtp.port", server.substring(ind + 1));
                 server = server.substring(0, ind);
             }
+
             props.put("mail.host", server);
             props.put("mail.from", senderEmail);
-            props.put("mail.transport.protocol", "smtp");
-            props.put("mail.smtp.starttls.enable", "true");
+            GeneralUtils.setDefaultIfNotPresent(props, "mail.transport.protocol", "smtp");
+            GeneralUtils.setDefaultIfNotPresent(props, "mail.smtp.starttls.enable", "true");
+            GeneralUtils.setDefaultIfNotPresent(props, "mail.smtp.auth", "true");
             props.put("mail.smtp.user", config.getConfig(Config.EMAIL_USERNAME));
             props.put("mail.smtp.password", config.getConfig(Config.EMAIL_PASSWORD));
-            props.put("mail.smtp.auth", "true");
 
             Session mailSession = Session.getInstance(props, new Authenticator() {
                 // Set the account information session，transport will send mail
