@@ -9,7 +9,12 @@ Search openEQUELLA for items with a given criteria.  For each item found, downlo
 Search openEQUELLA for items with a given criteria.  For each item found, export the metadata in a given format.
 
 ### Email
-Takes a CSV of 'to addresses', a subject, and a body and sends an email.  If 'html' is specified, it will set the email mime type to HTML.
+Invocation arguments:
+* [req] config file
+* [req] html or nohtml // If 'html' is specified, it will set the email mime type to HTML.
+* [req] CSV of 'to addresses'
+* [req] email subject
+* [req] email body
 
 ### FileLister
 Lists in JSON format all files / directories of a given directory.
