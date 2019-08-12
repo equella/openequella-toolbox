@@ -18,13 +18,20 @@ package org.apereo.openequella.tools.toolbox.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -150,5 +157,46 @@ public class FileUtils {
 			}
 		}	
 		return null;
+	}
+
+	public static JsonElement parseAsJson(Config config, String filename_key) throws java.io.IOException {
+		JsonParser jp = new JsonParser();
+
+		File file = new File(config.getConfig(filename_key));
+		config.setConfig(Config.REPORT_CONFIG_TEMP_FILENAME, file.getName());
+		try ( BufferedReader br = new BufferedReader(new FileReader(file)) ){
+			JsonElement root = jp.parse(br);
+			return root;
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Unable to parse JSON file: " + e.getMessage(), e);
+		}
+		return null;
+	}
+
+	public static String exposeKeys(JsonElement e, String keys) {
+		JsonObject jObj = e.getAsJsonObject();
+		String[] keyArr = keys.split(",");
+		StringBuilder sb = new StringBuilder();
+
+		for(String key : keyArr) {
+			String cleanedKey = key.trim();
+			if((cleanedKey.length() > 0) && jObj.has(cleanedKey)) {
+				JsonElement entry = jObj.get(cleanedKey);
+				LOGGER.debug("Checking key ({}) in json ({})", cleanedKey,  jObj);
+				if(entry.isJsonArray()) {
+					JsonArray arr = entry.getAsJsonArray();
+					for(int i = 0; i < arr.size(); i++) {
+						sb.append(arr.get(i).getAsString());
+						if(i < arr.size()-1) {
+							sb.append("|");
+						}
+					}
+				} else {
+					sb.append(entry.getAsString());
+				}
+			}
+			sb.append(",");
+		}
+		return sb.toString();
 	}
 }
