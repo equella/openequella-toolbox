@@ -1,0 +1,16 @@
+{
+  "animals": [
+    {
+      "name": "Tommy",
+      "type": "cat",
+      "noise-level": "Loud",
+      "birth-year": 2017
+    },
+    {
+      "name": "Fido",
+      "type": "dog",
+      "noise-level": "Very Loud",
+      "birth-year": 2014
+    }
+  ]
+}

@@ -39,7 +39,8 @@ public class Config {
 		ExportItems,
 		Email,
 		FileLister,
-		ThumbnailV1
+		ThumbnailV1,
+		JsonReport
 	}
 	
 	//Example 2013-01-18T17:38:47.986-07:00
@@ -86,6 +87,13 @@ public class Config {
 	public static final String GENERAL_DOWNLOAD_CHATTER = "general.download.chatter";
 	public static final String OEQ_SEARCH_API_REQUESTED_LENGTH = "oeq.search.api.requested.length";
 
+	// JSON report
+	public static final String REPORT_JSON_KEYWORDS = "report.json.keywords";
+	public static final String REPORT_JSON_RAW_DATA_FILENAME = "report.json.raw.data.filename";
+	public static final String REPORT_JSON_ROOT_ARRAY_KEY = "report.json.root.array.key";
+	public static final String REPORT_CONFIG_TEMP_FILENAME = "report.json.TEMP.filename";
+
+
 	private static Logger LOGGER = LogManager.getLogger(Config.class);
 	
 	private Properties store;
@@ -129,6 +137,10 @@ public class Config {
 				}
 				case ThumbnailV1: {
 					checkConfigsThumbnailV1();
+					break;
+				}
+				case JsonReport: {
+					checkConfigsJsonReport();
 					break;
 				}
 				default: {
@@ -203,6 +215,12 @@ public class Config {
 		checkConfig(EMAIL_SENDER_NAME, true, true);
 	}
 
+	public void checkConfigsJsonReport() {
+		checkConfig(REPORT_JSON_KEYWORDS, true, true);
+		checkConfig(REPORT_JSON_RAW_DATA_FILENAME, true, true);
+		checkConfig(REPORT_JSON_ROOT_ARRAY_KEY, true, true);
+	}
+
 	private void checkConfigsThumbnailV1() {
 		checkConfig(THUMBNAIL_V1_IM_LOCATION, true, true);
 	}
@@ -273,28 +291,28 @@ public class Config {
 	public void checkMigrateToKalturaAttachmentSuffixes() {
 		checkConfig(OEQ_SEARCH_ATT_SUFFIXES_AUDIO, true, true);
 		checkConfig(OEQ_SEARCH_ATT_SUFFIXES_VIDEO, true, true);
-		
-		if(validConfig) {
+
+		if (validConfig) {
 			// The script needs to know what type of media the attachment to upload is.  
 			// To ensure an unambiguous decision, the audio suffixes and video suffixes must be unique.
-			
+
 			List<String> audios = Arrays.asList(getConfig(OEQ_SEARCH_ATT_SUFFIXES_AUDIO).toUpperCase().split(","));
 			List<String> videos = Arrays.asList(getConfig(OEQ_SEARCH_ATT_SUFFIXES_VIDEO).toUpperCase().split(","));
-			
-			if(audios.size() != 0 && videos.size() != 0) {
-				for(String a : audios) {
-					if(a.trim().length() != 0) {
-						if(videos.contains(a.trim())) {
+
+			if (audios.size() != 0 && videos.size() != 0) {
+				for (String a : audios) {
+					if (a.trim().length() != 0) {
+						if (videos.contains(a.trim())) {
 							LOGGER.info("{} and {} must have distinct (case insensitive) sets.  Found [{}] in [{}].", OEQ_SEARCH_ATT_SUFFIXES_AUDIO, OEQ_SEARCH_ATT_SUFFIXES_VIDEO, a, getConfig(OEQ_SEARCH_ATT_SUFFIXES_VIDEO));
 							validConfig = false;
 							return;
 						}
 					}
 				}
-				
-				for(String v : videos) {
-					if(v.trim().length() != 0) {
-						if(audios.contains(v.trim())) {
+
+				for (String v : videos) {
+					if (v.trim().length() != 0) {
+						if (audios.contains(v.trim())) {
 							LOGGER.info("{} and {} must have distinct (case insensitive) sets.  Found [{}] in [{}].", OEQ_SEARCH_ATT_SUFFIXES_AUDIO, OEQ_SEARCH_ATT_SUFFIXES_VIDEO, v, getConfig(OEQ_SEARCH_ATT_SUFFIXES_AUDIO));
 							validConfig = false;
 							return;
@@ -302,9 +320,13 @@ public class Config {
 					}
 				}
 			}
-			
+
 			convertedCsvToLists.put(OEQ_SEARCH_ATT_SUFFIXES_AUDIO, audios);
 			convertedCsvToLists.put(OEQ_SEARCH_ATT_SUFFIXES_VIDEO, videos);
 		}
+	}
+
+	public void setConfig(String key, String val) {
+		this.store.setProperty(key, val);
 	}
 }

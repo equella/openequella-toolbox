@@ -55,7 +55,10 @@ public class Driver {
 			(new FileListerDriver()).execute(config, args);
 			break;
 		} case ThumbnailV1: {
-			(new ThumbnailDriver()).execute(config, args);
+				(new ThumbnailDriver()).execute(config, args);
+				break;
+		} case JsonReport: {
+			(new JsonReportDriver()).execute(config, args);
 			break;
 		} default: {
 			LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
