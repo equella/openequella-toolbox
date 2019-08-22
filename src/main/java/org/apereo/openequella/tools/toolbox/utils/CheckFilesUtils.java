@@ -162,26 +162,6 @@ private static final Logger logger = LogManager.getLogger(CheckFilesUtils.class)
 	 *
 	 * @param row
 	 * @returnt
-	public void testFindOnlyInFirst() {
-		Set<String> s1 = new HashSet<String>();
-		s1.add("a");
-		s1.add("b");
-		s1.add("c");
-		s1.add("f");
-		Set<String> s2 = new HashSet<String>();
-		s2.add("c");
-		s2.add("d");
-		s2.add("e");
-		s2.add("f");
-		Collection<String> onlyInS1 = CheckFilesUtils.findOnlyInFirst(s1, s2);
-		assertTrue(onlyInS1.size() == 2);
-		assertTrue(onlyInS1.contains("a"));
-		assertTrue(onlyInS1.contains("b"));
-		Collection<String> onlyInS2 = PingUtils.findOnlyInFirst(s2, s1);
-		assertTrue(onlyInS2.size() == 2);
-		assertTrue(onlyInS2.contains("d"));
-		assertTrue(onlyInS2.contains("e"));
-	}
 	 * @throws Exception
 	 */
 	private static ResultsRow slurpAndNormalizeCsvRow(String row)

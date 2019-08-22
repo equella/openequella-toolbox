@@ -96,19 +96,4 @@ public class TestUtils {
 			LOGGER.debug("End Result Dump");
 		}
 	}
-
-//	public static void resetTestOutputDirectory() {
-//		File dir = new File(Config.get(Config.CF_OUTPUT_FOLDER));
-//		String[] errorStats = dir.list(new FilenameFilter() {
-//			@Override
-//			public boolean accept(File file, String filename) {
-//				return !filename.equals("placeholder");
-//			}
-//		});
-//
-//		for(String f : errorStats) {
-//			LOGGER.debug("Cleaning up {}", f);
-//			(new File(Config.get(Config.CF_OUTPUT_FOLDER) + f)).delete();
-//		}
-//	}
 }
