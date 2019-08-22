@@ -1,5 +1,5 @@
 # openEQUELLA Toolbox
-A Java-based suite of scripts geared to worked with openEQUELLA.
+A Java-based suite of scripts geared to work with openEQUELLA.
 
 ## Main functions
 
