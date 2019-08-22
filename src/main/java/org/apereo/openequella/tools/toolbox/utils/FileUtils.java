@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -142,15 +144,15 @@ public class FileUtils {
 	 * @return the suffix in uppercase, null if not a known suffix.
 	 * @throws Exception
 	 */
-	public static String extractSuffix(Config config, String filename) {
-		List<String> audioSuffixes = config.getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO);
+	public static String extractSuffix(String filename) {
+		List<String> audioSuffixes = Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO);
 		for(String validSuffix : audioSuffixes) {
 			if(filename.toUpperCase().endsWith(validSuffix.trim())) {
 				return validSuffix.trim();
 			}
 		}
 		
-		List<String> videoSuffixes = config.getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO);
+		List<String> videoSuffixes = Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO);
 		for(String validSuffix : videoSuffixes) {
 			if(filename.toUpperCase().endsWith(validSuffix.trim())) {
 				return validSuffix.trim();
@@ -159,11 +161,11 @@ public class FileUtils {
 		return null;
 	}
 
-	public static JsonElement parseAsJson(Config config, String filename_key) throws java.io.IOException {
+	public static JsonElement parseAsJson(String filename_key) throws java.io.IOException {
 		JsonParser jp = new JsonParser();
 
-		File file = new File(config.getConfig(filename_key));
-		config.setConfig(Config.REPORT_CONFIG_TEMP_FILENAME, file.getName());
+		File file = new File(Config.get(filename_key));
+		Config.getInstance().setConfig(Config.REPORT_CONFIG_TEMP_FILENAME, file.getName());
 		try ( BufferedReader br = new BufferedReader(new FileReader(file)) ){
 			JsonElement root = jp.parse(br);
 			return root;

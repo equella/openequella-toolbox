@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -69,8 +71,6 @@ public class OpenEquellaRestUtils {
 	
 	private static SimpleDateFormat folderTimestamp = new SimpleDateFormat("yyyyMMdd-HHmmss-sss");
 	
-	private Config config;
-	
 	private String currentDownloadFolder = "";
 	
 	private String currentDownloadFile = "";
@@ -83,13 +83,12 @@ public class OpenEquellaRestUtils {
 	private int cacheStatStart = 0;
 
 	
-	public OpenEquellaRestUtils(Config config) {
-		this.config = config;
-		slash = config.getConfig(Config.GENERAL_OS_SLASH);
-		if(config.hasConfig(Config.OEQ_SEARCH_API_REQUESTED_LENGTH)) {
-			cacheStatRequestedLength = config.getConfigAsInt(Config.OEQ_SEARCH_API_REQUESTED_LENGTH);
+	public OpenEquellaRestUtils() {
+		slash = Config.get(Config.GENERAL_OS_SLASH);
+		if(Config.getInstance().hasConfig(Config.OEQ_SEARCH_API_REQUESTED_LENGTH)) {
+			cacheStatRequestedLength = Config.getInstance().getConfigAsInt(Config.OEQ_SEARCH_API_REQUESTED_LENGTH);
 		}
-		File f = new File(config.getConfig(Config.GENERAL_DOWNLOAD_FOLDER));
+		File f = new File(Config.get(Config.GENERAL_DOWNLOAD_FOLDER));
 		f.mkdirs();
 		downloadFolder = f.getAbsolutePath();
 	}
@@ -99,7 +98,7 @@ public class OpenEquellaRestUtils {
 		try {
 			String url = String.format(
 					"%s/oauth/access_token?grant_type=client_credentials&client_id=%s&client_secret=%s&redirect_uri=default",
-					config.getConfig(Config.OEQ_URL), config.getConfig(Config.OEQ_OAUTH_CLIENT_ID), config.getConfig(Config.OEQ_OAUTH_CLIENT_SECRET));
+							Config.get(Config.OEQ_URL), Config.get(Config.OEQ_OAUTH_CLIENT_ID), Config.get(Config.OEQ_OAUTH_CLIENT_SECRET));
 			HttpGet httpget = new HttpGet(url);
 
 			LOGGER.trace("Finding the openEQUELLA access token using [{}]", url);
@@ -151,8 +150,8 @@ public class OpenEquellaRestUtils {
 	// Ideally merge this with gatherItemsGeneral()
 	public List<EquellaItem> gatherItems() throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		String url = config.getConfig(Config.OEQ_URL) + 
-				config.getConfig(Config.OEQ_SEARCH_API) + 
+		String url = Config.get(Config.OEQ_URL) +
+						Config.get(Config.OEQ_SEARCH_API) +
 				"&start=" + cacheStatStart +
 				"&length=" + cacheStatRequestedLength;
 		HttpGet http = new HttpGet(url);
@@ -193,10 +192,10 @@ public class OpenEquellaRestUtils {
 				ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
 				ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
 				try {
-					String tags = MigrationUtils.findFirstOccurrenceInXml(ei.getMetadata(), config.getConfig(Config.OEQ_SEARCH_KAL_TAGS_XPATH));
+					String tags = MigrationUtils.findFirstOccurrenceInXml(ei.getMetadata(), Config.get(Config.OEQ_SEARCH_KAL_TAGS_XPATH));
 					ei.setKalturaTags(tags);
 				} catch (Exception e) {
-					String msg = String.format("FAILURE parsing / running the xpath query [%s] to find 'Kaltura Tags' in the openEQUELLA resource: %s", config.getConfig(Config.OEQ_SEARCH_KAL_TAGS_XPATH), ei);
+					String msg = String.format("FAILURE parsing / running the xpath query [%s] to find 'Kaltura Tags' in the openEQUELLA resource: %s", Config.get(Config.OEQ_SEARCH_KAL_TAGS_XPATH), ei);
 					LOGGER.error(msg);
 					throw new Exception(msg);
 				}
@@ -220,8 +219,8 @@ public class OpenEquellaRestUtils {
 	
 	public List<EquellaItem> gatherItemsGeneral() throws Exception {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		String url = config.getConfig(Config.OEQ_URL) + 
-				config.getConfig(Config.OEQ_SEARCH_API) + 
+		String url = Config.get(Config.OEQ_URL) +
+						Config.get(Config.OEQ_SEARCH_API) +
 				"&start=" + cacheStatStart +
 				"&length=" + cacheStatRequestedLength;
 		HttpGet http = new HttpGet(url);
@@ -353,20 +352,20 @@ public class OpenEquellaRestUtils {
 						continue;
 					}
 
-					if (!confirmAndGatherString(att, KEY_ATT_DESC).contains(config.getConfig(Config.OEQ_SEARCH_ATT_DESC))) {
+					if (!confirmAndGatherString(att, KEY_ATT_DESC).contains(Config.get(Config.OEQ_SEARCH_ATT_DESC))) {
 						LOGGER.info("{} - Not an attachment to migrate - description did not contain [{}]: {}",
-								ei.getSignature(), config.getConfig(Config.OEQ_SEARCH_ATT_DESC), att);
+								ei.getSignature(), Config.get(Config.OEQ_SEARCH_ATT_DESC), att);
 						continue;
 					}
 					String filename = confirmAndGatherString(att, KEY_ATT_FILENAME);
-					String validSuffix = FileUtils.extractSuffix(config, filename);
+					String validSuffix = FileUtils.extractSuffix(filename);
 					
 					if (validSuffix == null) {
 						LOGGER.info(
 								"{} - Not an attachment to migrate - filename doesn't end with one of the following suffixes [{}] OR [{}]: {}", 
-								ei.getSignature(), 
-								config.getConfig(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO), 
-								config.getConfig(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO), 
+								ei.getSignature(),
+										Config.get(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO),
+										Config.get(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO),
 								att);
 						continue;
 					}
@@ -402,7 +401,7 @@ public class OpenEquellaRestUtils {
 			
 			File targetFile = new File(targetDir.getAbsolutePath() + slash + bestFitAttFilename);
 			currentDownloadFile = targetFile.getAbsolutePath();
-			if (FileUtils.downloadWithProgress(targetFile, bestFitAttLink, accessToken, Integer.parseInt(config.getConfig(Config.GENERAL_DOWNLOAD_CHATTER)),
+			if (FileUtils.downloadWithProgress(targetFile, bestFitAttLink, accessToken, Integer.parseInt(Config.get(Config.GENERAL_DOWNLOAD_CHATTER)),
 					bestFitAttFilesize)) {
 				ei.setFilepath(targetFile.getAbsolutePath());
 				ei.setPrimaryFileType(bestFitFileSuffix);

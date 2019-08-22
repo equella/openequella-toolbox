@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -31,7 +33,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Config {
-	
+
+	private static Config config;
+
+  public static final String VERSION = "1.4-SNAPSHOT";
 	// toolbox function
 	public static final String TOOLBOX_FUNCTION = "toolbox.function";
 	public static enum ToolboxFunction {
@@ -40,14 +45,16 @@ public class Config {
 		Email,
 		FileLister,
 		ThumbnailV1,
-		JsonReport
+		JsonReport,
+		CheckFiles,
+		AttachmentHash
 	}
-	
+
 	//Example 2013-01-18T17:38:47.986-07:00
 	public static final SimpleDateFormat DATE_FORMAT_OEQ_API = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	//Example 2013-01-18
 	public static final SimpleDateFormat DATE_FORMAT_CONFIG_FILE = new SimpleDateFormat("yyyy-MM-dd");
-		
+
 	// MigrateToKaltura
 	public static final String KAL_PARTNER_ID = "migrate-to-kaltura.kal.partner.id";
 	public static final String KAL_USER_ID = "migrate-to-kaltura.kal.user.id";
@@ -60,7 +67,7 @@ public class Config {
 	public static final String OEQ_SEARCH_KAL_TAGS_XPATH = "migrate-to-kaltura.oeq.search.kal.tags.xpath";
 	public static final String OEQ_KAL_ID = "migrate-to-kaltura.oeq.kal.id";
 	public static final String GENERAL_MAX_ITEMS_TO_MIGRATE = "migrate-to-kaltura.general.max.items.to.migrate";
-		
+
 	// ExportItems
 	public static final String EXPORT_ITEMS_OUTPUT_FILE = "export.items.output";
 	public static final String EXPORT_ITEMS_COLUMN_FORMAT = "export.items.columnFormat";
@@ -93,82 +100,144 @@ public class Config {
 	public static final String REPORT_JSON_ROOT_ARRAY_KEY = "report.json.root.array.key";
 	public static final String REPORT_CONFIG_TEMP_FILENAME = "report.json.TEMP.filename";
 
+	// Check Files (CF)
+  public static final String CF_OUTPUT_FOLDER = "cf.output.folder";
+  public static final String CF_ADOPTER_NAME = "cf.adopter.name";
+  public static final String CF_MODE = "cf.mode";
+  public static final String CF_EMAIL_MODE = "cf.email.mode";
+  public static final String CF_EMAIL_RECIPIENTS = "cf.email.recipients";
+  public static final String CF_INSTITUTION_SHORTNAME = "cf.institution.shortname";
+  public static final String CF_MAX_TRIES = "cf.max.tries";
+  public static final String CF_TESTING_TIMEOUT = "cf.testing.timeout";
+  public static final String CF_DB_URL = "cf.db.url";
+  public static final String CF_DB_USERNAME = "cf.db.username";
+  public static final String CF_DB_PASSWORD = "cf.db.password";
+  public static final String CF_DB_TYPE = "cf.db.type";
+  public static final String CF_FILESTORE_DIR = "cf.filestore.directory";
+  public static final String CF_NUM_OF_ITEMS_PER_QUERY = "cf.num.items.per.query";
+  // See note in conf/blank.properties
+  public static final String CF_FILESTORE_DIR_ADV = "cf.filestore.advanced.";
+  public static final String CF_FILTER_BY_COLLECTION = "cf.filter.by.collection";
+	public static final String CF_FILTER_BY_INSTITUTION = "cf.filter.by.institution";
+	public static final String CF_COMPARE_MISSING_ATTS_AFTER_RUN = "cf.compare.missing.atts.after.run";
 
-	private static Logger LOGGER = LogManager.getLogger(Config.class);
-	
+
+	public enum CheckFilesType {
+    REST,  // Implemented, but needs testing after the open source effort
+    DB_ALL_ITEMS_ALL_ATTS, // Currently the only supported method
+    DB_BATCH_ITEMS_PER_ITEM_ATTS // Implemented, but needs testing after the open source effort
+  }
+
+  public enum CheckFilesSupportedDB {
+    POSTGRE
+  }
+
+  public enum CheckFilesEmailMode {
+    NONE, NORMAL, ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS
+  }
+
+  private static Logger LOGGER = LogManager.getLogger(Config.class);
+
 	private Properties store;
 	private boolean validConfig = true;
 	private String filepath;
-	
+
 	private Map<String, List<String>> convertedCsvToLists = new HashMap<>();
-	
+
+	public static Config getInstance() {
+		if(config == null) {
+      config = new Config();
+    }
+    return config;
+	}
+
+	public static void reset() {
+		LOGGER.info("resetting the Config!");
+	  config = null;
+  }
+
 	// Meant for testing purposes
-	public Config(Properties props) {
+	public void init(Properties props) {
 		store = props;
 	}
-	
-	public Config(String path) {
+
+
+	public void init(String path) {
 		filepath = path;
 		try (InputStream input = new FileInputStream(path)) {
 			LOGGER.debug("Using [{}] as the configuration file.", path);
 			store = new Properties();
 			store.load(input);
 
-			checkConfig(TOOLBOX_FUNCTION, true, true);
-			if(validConfig) {
-				switch  (ToolboxFunction.valueOf(getConfig(TOOLBOX_FUNCTION))) {
-				case MigrateToKaltura: {
-					checkConfigsGeneral();
-					checkConfigsMigrateToKaltura();
-					break;
-				}
-				case ExportItems: {
-					checkConfigsGeneral();
-					checkConfigsExportItems();
-					break;
-				}
-				case Email: {
-					checkConfigsEmail();
-					break;
-				}
-				case FileLister: {
-					checkConfigsFileLister();
-					break;
-				}
-				case ThumbnailV1: {
-					checkConfigsThumbnailV1();
-					break;
-				}
-				case JsonReport: {
-					checkConfigsJsonReport();
-					break;
-				}
-				default: {
-					// Should never will happen.  The exception will be thrown first
-					LOGGER.warn("Toolbox function not implemented: {}", getConfig(TOOLBOX_FUNCTION));
-					validConfig = false;
-				}
-				}
-			}
+			checkConfigs();
 		} catch (FileNotFoundException e) {
 			LOGGER.warn("Unable to find the config file: {}", e.getMessage());
 			validConfig = false;
 		} catch (IOException e) {
 			LOGGER.warn("Unable to use the config file: [{}] due to - [{}].", path, e.getMessage());
 			validConfig = false;
-		} catch (IllegalArgumentException e) {
-			LOGGER.warn("Unknown value for {}: {}", TOOLBOX_FUNCTION, getConfig(TOOLBOX_FUNCTION));
-			validConfig = false;
-		} 
+		}
 	}
-	
+
+	private void checkConfigs() {
+    try {
+      checkConfig(TOOLBOX_FUNCTION, true, true);
+      if(validConfig) {
+        switch  (ToolboxFunction.valueOf(getConfig(TOOLBOX_FUNCTION))) {
+          case MigrateToKaltura: {
+            checkConfigsGeneral();
+            checkConfigsMigrateToKaltura();
+            break;
+          }
+          case ExportItems: {
+            checkConfigsGeneral();
+            checkConfigsExportItems();
+            break;
+          }
+          case Email: {
+            checkConfigsEmail();
+            break;
+          }
+          case FileLister: {
+            checkConfigsFileLister();
+            break;
+          }
+          case ThumbnailV1: {
+            checkConfigsThumbnailV1();
+            break;
+          }
+          case JsonReport: {
+            checkConfigsJsonReport();
+            break;
+          }
+					case CheckFiles: {
+						checkConfigsCheckFiles();
+						break;
+					}
+					case AttachmentHash: {
+						// There is no extra configuration needed to review
+						break;
+					}
+          default: {
+            // Should never will happen.  The exception will be thrown first
+            LOGGER.warn("Toolbox function not implemented: {}", getConfig(TOOLBOX_FUNCTION));
+            validConfig = false;
+          }
+        }
+      }
+    } catch (IllegalArgumentException e) {
+      LOGGER.warn("Unknown value for {}: {}", TOOLBOX_FUNCTION, getConfig(TOOLBOX_FUNCTION));
+      validConfig = false;
+    }
+  }
+
 	private void checkConfigsGeneral() {
 		checkConfig(OEQ_OAUTH_CLIENT_ID, true, true);
 		checkConfig(OEQ_OAUTH_CLIENT_SECRET, false, true);
 		checkConfig(OEQ_SEARCH_API, true, true);
 		checkConfig(GENERAL_OS_SLASH, true, true);
 		checkConfig(GENERAL_DOWNLOAD_FOLDER, true, true);
-		checkConfig(GENERAL_DOWNLOAD_CHATTER, true, true);		
+		checkConfig(GENERAL_DOWNLOAD_CHATTER, true, true);
 		if(validConfig) checkInt(GENERAL_DOWNLOAD_CHATTER, true);
 		checkConfig(OEQ_SEARCH_API_REQUESTED_LENGTH, true, false);
 		if(hasConfig(OEQ_SEARCH_API_REQUESTED_LENGTH)) {
@@ -221,7 +290,56 @@ public class Config {
 		checkConfig(REPORT_JSON_ROOT_ARRAY_KEY, true, true);
 	}
 
-	private void checkConfigsThumbnailV1() {
+  public void checkConfigsCheckFiles() {
+    checkConfig(CF_OUTPUT_FOLDER, true, true);
+    checkConfig(CF_ADOPTER_NAME, true, true);
+    checkConfig(CF_MODE, true, true);
+    checkConfig(CF_EMAIL_MODE, true, true);
+		checkConfig(CF_COMPARE_MISSING_ATTS_AFTER_RUN, true, false);
+
+    if(validConfig) {
+    	checkEnum(CF_EMAIL_MODE, CheckFilesEmailMode.class, true);
+		}
+    if(validConfig && CheckFilesEmailMode.valueOf(getConfig(CF_EMAIL_MODE)) != CheckFilesEmailMode.NONE) {
+      checkConfigsEmail();
+      checkConfig(CF_EMAIL_RECIPIENTS, true, true);
+    }
+    if(validConfig) {
+      switch(CheckFilesType.valueOf(getConfig(CF_MODE))) {
+      case REST: {
+        LOGGER.warn("WARNING:  This mode needs more testing...");
+
+        checkConfig(OEQ_URL, true, true);
+        checkConfig(OEQ_OAUTH_CLIENT_ID, true, true);
+        checkConfig(OEQ_OAUTH_CLIENT_SECRET, false, true);
+        checkConfig(CF_INSTITUTION_SHORTNAME, true, true);
+        checkConfig(CF_MAX_TRIES, true, true);
+        if(validConfig) checkInt(CF_MAX_TRIES, true);
+        checkConfig(CF_TESTING_TIMEOUT, true, true);
+        if(validConfig) checkInt(CF_TESTING_TIMEOUT, true);
+        break;
+      } case DB_BATCH_ITEMS_PER_ITEM_ATTS: {
+        LOGGER.warn("WARNING:  This mode needs more testing...");
+      } case DB_ALL_ITEMS_ALL_ATTS: {
+        checkConfig(CF_DB_URL, true, true);
+        checkConfig(CF_DB_USERNAME, true, true);
+        checkConfig(CF_DB_PASSWORD, false, true);
+        checkConfig(CF_DB_TYPE, true, true);
+        if(validConfig) checkEnum(CF_DB_TYPE, CheckFilesSupportedDB.class, true);
+        checkConfig(CF_FILESTORE_DIR, true, true);
+        checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
+        checkConfig(CF_FILTER_BY_COLLECTION, true, false);
+        checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
+        break;
+      } default: {
+        LOGGER.warn("Property {} must be a known value  Instead was [{}].", CF_MODE, getConfig(CF_MODE));
+        validConfig = false;
+      }
+      }
+    }
+  }
+
+  private void checkConfigsThumbnailV1() {
 		checkConfig(THUMBNAIL_V1_IM_LOCATION, true, true);
 	}
 
@@ -254,16 +372,34 @@ public class Config {
 			}
 		}
 	}
-	
-	public void checkInt(String key, boolean displayValue) {
-		try{
-			Integer.parseInt(store.getProperty(key));
-		} catch (NumberFormatException e) {
-			String value = displayValue ? store.getProperty(key) : "****";
-			LOGGER.info("Unable to parse property [{}]=[{}] as an integer.", key, value);
-			validConfig = false;
-		}
-	}
+
+  public void checkInt(String key, boolean displayValue) {
+    try{
+      Integer.parseInt(store.getProperty(key));
+    } catch (NumberFormatException e) {
+      String value = displayValue ? store.getProperty(key) : "****";
+      LOGGER.info("Unable to parse property [{}]=[{}] as an integer.", key, value);
+      validConfig = false;
+    }
+  }
+
+  public void checkNotNull(String key, Object obj, boolean displayValue) {
+    if(obj == null) {
+      String value = displayValue ? store.getProperty(key) : "****";
+      LOGGER.info("Unable to parse property [{}]=[{}] as an integer.", key, value);
+      validConfig = false;
+    }
+  }
+
+  public void checkEnum(String key, Class enumClass, boolean displayValue) {
+    try {
+      Enum.valueOf(enumClass, store.getProperty(key));
+    } catch(IllegalArgumentException e) {
+      String value = displayValue ? store.getProperty(key) : "****";
+      LOGGER.warn("Property {} must be a known value  Instead was [{}].", key, getConfig(key));
+      validConfig = false;
+    }
+  }
 	
 	public boolean isValidConfig() {
 		return validConfig;
@@ -272,6 +408,24 @@ public class Config {
 	public String getConfig(String key) {
 		return store.getProperty(key);
 	}
+
+	public static CheckFilesEmailMode getCheckFilesEmailModeConfig() {
+    return CheckFilesEmailMode.valueOf(getInstance().getConfig(CF_EMAIL_MODE));
+  }
+
+  public static CheckFilesType getCheckFilesTypeConfig() {
+    return CheckFilesType.valueOf(getInstance().getConfig(CF_MODE));
+  }
+
+  /**
+   * Probably would be good to generalize this.
+   * @param shortname
+   * @return
+   */
+  public String getFilestoreHandle(String shortname) {
+    return store.getProperty(String.format(
+            "cf.db.filestore.institution.handle.%s", shortname));
+  }
 	
 	public List<String> getConfigAsList(String key) {
 		return convertedCsvToLists.get(key);
@@ -327,6 +481,14 @@ public class Config {
 	}
 
 	public void setConfig(String key, String val) {
+	  if(this.store == null) {
+      this.store = new Properties();
+    }
 		this.store.setProperty(key, val);
 	}
+
+	// convenience method
+	public static String get(String key) {
+	  return Config.getInstance().getConfig(key);
+  }
 }

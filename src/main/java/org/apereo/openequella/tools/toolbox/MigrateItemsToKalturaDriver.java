@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -40,7 +42,8 @@ private static List<EquellaItem> itemsToProcess;
 	private static boolean kalturaUploadInProgress = false;
 	
 	
-	public void execute(Config config) throws Exception {
+	public void execute() throws Exception {
+		//TODO - need to rewire the config as a singleton.
 		//TODO need better process to handle Kaltura code
 //		capItemsToMigrate = config.hasConfig(Config.GENERAL_MAX_ITEMS_TO_MIGRATE);
 //

@@ -1,0 +1,41 @@
+CheckFiles type,DB_ALL_ITEMS_ALL_ATTS
+Database URL,jdbc:postgresql://localhost:5432/oeq_2019.1_20190731
+Database Type,POSTGRE
+Filestore attachments directory,/home/cbeach/tools/equella-installs/oeq_2019.1_20190731/filestore/Institutions
+Filter By Institution Shortname,[[NONE SPECIFIED]]
+Filter By Collection ID,[[NONE SPECIFIED]]
+Report Timestamp,2019-08-21.17.28.06
+Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,8428e745-4cdb-4427-8b63-570c81401b2a,1,LIVE,[[Attachment type not set]],[[Attachment UUID not set]],No Att,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,44ac1c1a-dd0c-462f-b717-53324c0dd6f9,fa6b69a3-4524-4797-93ed-5f9c4cbcb28f,1,LIVE,file,ebf79de1-a336-4886-bec7-3a060666f700,Present,[[Attachment resp code not set]],"[[Item name not set]]","plus and spaces+.pdf",
+checkFilesTesting,44ac1c1a-dd0c-462f-b717-53324c0dd6f9,fa6b69a3-4524-4797-93ed-5f9c4cbcb28f,1,LIVE,file,1d961dd4-2e03-42f2-b028-7c59600c4241,Present,[[Attachment resp code not set]],"[[Item name not set]]","test-filename.log",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cceab569-d101-445f-a59d-5cd5500a2b0c,1,LIVE,file,22b26083-6f4f-42fe-abca-befee0eb92a9,Present,[[Attachment resp code not set]],"[[Item name not set]]","oùdéjàn.html.zip",
+checkFilesTesting,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,bd554963-2c55-4da9-9a9f-940ae41b6be1,1,LIVE,file,9d98468c-a040-4dfb-aa94-5500a6ccf467,Present,[[Attachment resp code not set]],"[[Item name not set]]","test.rtf",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,file,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],"[[Item name not set]]","test.html",
+checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,file,dfe3782d-54b6-4aa2-873d-23c2ef6bf2a8,Present,[[Attachment resp code not set]],"[[Item name not set]]","keyword.txt",
+checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,file,a78040c6-4bd6-48ff-be8a-ce90bcf8f81e,Missing,[[Attachment resp code not set]],"[[Item name not set]]","test.html",
+checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,file,726cb654-3f24-4f6b-8c50-02cc5ddbdfeb,Present,[[Attachment resp code not set]],"[[Item name not set]]","oùdéjàn.html",
+checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,custom,9827302b-9012-4314-8f1b-053897eadd00,Ignored,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,395d0c73-dfad-4f01-bb6b-cbcef11ed4db,1,LIVE,file,a4920601-3e3d-4c11-9560-8b9bd9c1baf3,Present,[[Attachment resp code not set]],"[[Item name not set]]","test.txt",
+checkFilesTesting2,44ac1c1a-dd0c-462f-b717-53324c0dd6f9,4d410ae3-072a-445c-a2e3-04a0bea8aceb,1,LIVE,file,d95a8e4d-f5b3-4280-a2fc-3bdd68acc26d,Missing,[[Attachment resp code not set]],"[[Item name not set]]","test-filename-with++.log",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,bdb56fa6-00a9-4c2f-89b0-b0de01382b3c,1,LIVE,attachment,2ed14dab-9103-4073-b8ce-1f134c40e7c5,Ignored,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,bdb56fa6-00a9-4c2f-89b0-b0de01382b3c,1,LIVE,attachment,7bf92ca9-84c3-4d9c-8917-d8f806443e10,Ignored,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,bdb56fa6-00a9-4c2f-89b0-b0de01382b3c,1,LIVE,attachment,369f980e-b3ae-4b47-9d2f-461a96230828,Ignored,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cb0461fb-1d0a-4942-ba75-49ed630f0e28,1,LIVE,file,12780b70-31e4-4a93-9e1b-13ab7d09eb78,Missing,[[Attachment resp code not set]],"[[Item name not set]]","syllabus.html",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cb0461fb-1d0a-4942-ba75-49ed630f0e28,1,LIVE,file,f5f61878-c139-42e1-8ccf-fd985f7c5667,Present,[[Attachment resp code not set]],"[[Item name not set]]","keyword.txt",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cbd87c8a-c291-4b9f-861d-6d4478f21685,1,LIVE,attachment,8169c3d4-f6ed-4255-b17c-9f3136f1b85f,Ignored,[[Attachment resp code not set]],"[[Item name not set]]","[[Attachment file path not set]]",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cbd87c8a-c291-4b9f-861d-6d4478f21685,1,LIVE,file,9964d765-6ead-4fb1-9752-166e7dbf206c,Present,[[Attachment resp code not set]],"[[Item name not set]]","oùdéjàn.html",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cbd87c8a-c291-4b9f-861d-6d4478f21685,1,LIVE,file,2d4fe299-4eaf-499d-956e-571c30f13fa0,Present,[[Attachment resp code not set]],"[[Item name not set]]","الأَبْجَدِيَّة.pdf",
+checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,cbd87c8a-c291-4b9f-861d-6d4478f21685,1,LIVE,file,a0954d15-9e55-449a-9f04-a1c065e92440,Present,[[Attachment resp code not set]],"[[Item name not set]]","传傳败敗见見.pdf",
+Stats
+# Of Items,11
+# Of Items affected,3
+# Of ALL Attachments,20
+# Of MISSING Attachments,3
+# Of IGNORED Attachments,5
+Report Start,2019-08-21.17.28.06
+Report End,2019-08-21.17.28.07
+Report Duration (seconds),0
+# Of queries ran,15
+Total duration of queries (ms),44
+Average duration of queries (ms),2

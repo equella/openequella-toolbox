@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -57,7 +59,10 @@ public class ExportItemsDriverTest {
 		ExportItemsDriver eid = new ExportItemsDriver();
 		Properties props = new Properties();
 		props.put(Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE, "/Attachments/@HASH/@UUID/@VERSION/@FILENAME");
-		assertEquals("/Attachments/40/ec48a0e1-9643-4d50-840a-db26fd9fa15a/1/myfile.pdf", eid.parseAttachmentFilenames(ei, new Config(props)));
+		Config.reset();
+		Config.getInstance().init(props);
+
+		assertEquals("/Attachments/40/ec48a0e1-9643-4d50-840a-db26fd9fa15a/1/myfile.pdf", eid.parseAttachmentFilenames(ei));
 		
 	}
 	
@@ -98,7 +103,7 @@ public class ExportItemsDriverTest {
 		
 		ExportItemsDriver eid = new ExportItemsDriver();
 		try {
-			List<String> result = eid.buildRecord(headers, ei, null);
+			List<String> result = eid.buildRecord(headers, ei);
 			assertEquals(1, result.size());
 			assertEquals("k1,k2", result.get(0));
 		} catch (Exception e) {
@@ -117,7 +122,7 @@ public class ExportItemsDriverTest {
 		
 		ExportItemsDriver eid = new ExportItemsDriver();
 		try {
-			List<String> result = eid.buildRecord(headers, ei, null);
+			List<String> result = eid.buildRecord(headers, ei);
 			assertEquals(1, result.size());
 			assertEquals("k1,k2,k3", result.get(0));
 		} catch (Exception e) {

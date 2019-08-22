@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -45,11 +47,12 @@ public class JsonReportTest {
 		props.put(Config.REPORT_JSON_ROOT_ARRAY_KEY, "animals");
 		props.put(Config.REPORT_JSON_RAW_DATA_FILENAME, "src/test/resources/JsonReportTest-general1.json");
 		try {
-			Config c = new Config(props);
-			c.checkConfigsJsonReport();
-			assertTrue("Config is expected to be valid, but is not.", c.isValidConfig());
+			Config.reset();
+			Config.getInstance().init(props);
+			Config.getInstance().checkConfigsJsonReport();
+			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
 
-			JsonElement root = FileUtils.parseAsJson(c, Config.REPORT_JSON_RAW_DATA_FILENAME);
+			JsonElement root = FileUtils.parseAsJson(Config.REPORT_JSON_RAW_DATA_FILENAME);
 			JsonElement animalsArray = root.getAsJsonObject().getAsJsonArray("animals");
 			assertNotNull(animalsArray);
 			assertEquals(((JsonArray) animalsArray).size(), 2);
@@ -67,12 +70,13 @@ public class JsonReportTest {
 		props.put(Config.REPORT_JSON_RAW_DATA_FILENAME, "src/test/resources/JsonReportTest-general2.json");
 
 		try {
-			Config c = new Config(props);
-			c.checkConfigsJsonReport();
-			assertTrue("Config is expected to be valid, but is not.", c.isValidConfig());
+			Config.reset();
+			Config.getInstance().init(props);
+			Config.getInstance().checkConfigsJsonReport();
+			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
 
 			JsonReportDriver jrd = new JsonReportDriver();
-			List<String> results = jrd.execute(c, null);
+			List<String> results = jrd.execute(null);
 
 			assertEquals(results.size(), 5);
 			assertEquals(results.get(0), "Location,name, type");

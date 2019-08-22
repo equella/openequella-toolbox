@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -34,10 +36,11 @@ public class FileUtilsTest {
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3 , .wma, .wav");
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
 		try {
-			Config c = new Config(props);
-			c.checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", c.isValidConfig());
-			assertEquals(".MP3", FileUtils.extractSuffix(c, "myfilename.mP3"));
+			Config.reset();
+			Config.getInstance().init(props);
+			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+			assertEquals(".MP3", FileUtils.extractSuffix("myfilename.mP3"));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -50,10 +53,11 @@ public class FileUtilsTest {
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3, .wma, .wav");
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
 		try {
-			Config c = new Config(props);
-			c.checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", c.isValidConfig());
-			assertEquals(".MOV", FileUtils.extractSuffix(c, "myfilename.moV"));
+			Config.reset();
+			Config.getInstance().init(props);
+			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+			assertEquals(".MOV", FileUtils.extractSuffix("myfilename.moV"));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -66,10 +70,11 @@ public class FileUtilsTest {
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".mp3, .wma, .wav");
 		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
 		try {
-			Config c = new Config(props);
-			c.checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", c.isValidConfig());
-			assertNull(FileUtils.extractSuffix(c, "myfilename"));
+			Config.reset();
+			Config.getInstance().init(props);
+			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+			assertNull(FileUtils.extractSuffix("myfilename"));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
