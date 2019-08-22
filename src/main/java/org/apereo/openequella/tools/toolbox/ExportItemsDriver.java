@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -53,36 +55,36 @@ public class ExportItemsDriver {
 	private static Logger LOGGER = LogManager.getLogger(ExportItemsDriver.class);
 	
 	private Map<String, EquellaItem> cache = new HashMap<>();
-	public void execute(Config config) {
+	public void execute() {
 		Long start = System.currentTimeMillis();
 		// Ensure openEQUELLA is accessible
-		OpenEquellaRestUtils oeru = new OpenEquellaRestUtils(config);
+		OpenEquellaRestUtils oeru = new OpenEquellaRestUtils();
 		if(!oeru.gatherAccessToken()) {
-			LOGGER.error("Ending openEQUELLA run - unable to access {}", config.getConfig(Config.OEQ_URL));
+			LOGGER.error("Ending openEQUELLA run - unable to access {}", Config.get(Config.OEQ_URL));
 			return;
 		}
 		
 		LOGGER.info("Duration to obtain access token: {}ms",  (System.currentTimeMillis()-start));
 		
 		// Create output file
-		File output = new File(config.getConfig(Config.EXPORT_ITEMS_OUTPUT_FILE));
+		File output = new File(Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE));
 		if(output.exists()) {
 			LOGGER.error("Ending openEQUELLA run - output file already exists: {}", output.getAbsolutePath());
 			return;
 		}
 		CSVPrinter csvPrinter = null;
-		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(config.getConfig(Config.EXPORT_ITEMS_OUTPUT_FILE)))) {
+		try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE)))) {
 			LOGGER.info("Using output file {} for export", output.getAbsolutePath());
 			
 			//Setup CSV writer and 'heading'
 			csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
-			List<String> headers = parseCSV(config.getConfig(Config.EXPORT_ITEMS_COLUMN_FORMAT));
+			List<String> headers = parseCSV(Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT));
 			csvPrinter.printRecord(headers);
 			
 			// Setup filter by date created (optional)
 			Date filterByDateCreated = null;
-			if(config.hasConfig(Config.EXPORT_ITEMS_FILTER_DATE_CREATED)) {
-				filterByDateCreated = Config.DATE_FORMAT_CONFIG_FILE.parse(config.getConfig(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
+			if(Config.getInstance().hasConfig(Config.EXPORT_ITEMS_FILTER_DATE_CREATED)) {
+				filterByDateCreated = Config.DATE_FORMAT_CONFIG_FILE.parse(Config.get(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
 			}
 			
 			// Loop through search results and save to the output file
@@ -107,7 +109,7 @@ public class ExportItemsDriver {
 								cache.put(ei.getUuid(), ei);
 							}
 						} else {
-							LOGGER.debug("{} - Filtering out since it's dateCreated ({}) is before the specified date {}", ei.getSignature(), Config.DATE_FORMAT_OEQ_API.format(ei.getCreatedDate()), config.getConfig(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
+							LOGGER.debug("{} - Filtering out since it's dateCreated ({}) is before the specified date {}", ei.getSignature(), Config.DATE_FORMAT_OEQ_API.format(ei.getCreatedDate()), Config.get(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
 						}
 					}
 					LOGGER.info("Duration to cache batch of items: {}ms",  (System.currentTimeMillis()-start));
@@ -116,7 +118,7 @@ public class ExportItemsDriver {
 					return;
 				}		
 			}
-			LOGGER.info("All items gathered.  Printing out to CSV file [{}].", config.getConfig(Config.EXPORT_ITEMS_OUTPUT_FILE));
+			LOGGER.info("All items gathered.  Printing out to CSV file [{}].", Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE));
 			
 			start = System.currentTimeMillis();
 			
@@ -127,7 +129,7 @@ public class ExportItemsDriver {
 			
 			int counter = 1;
 			for(EquellaItem ei : records) {
-				List<String> record = buildRecord(headers, ei, config);
+				List<String> record = buildRecord(headers, ei);
 				LOGGER.debug("Duration to build csv record: {}ms - {}",  (System.currentTimeMillis()-start), ei.getSignature());
 				start = System.currentTimeMillis();
 				
@@ -168,7 +170,7 @@ public class ExportItemsDriver {
 	
 	// While MigrationUtils.findFirstOccurrenceInXml() is similar, this combines the 'reserved
 	// keywords' with a single invocation of parsing the XML.
-	public List<String> buildRecord(List<String> headers, EquellaItem ei, Config config) throws Exception {
+	public List<String> buildRecord(List<String> headers, EquellaItem ei) throws Exception {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 		Document doc = dBuilder.parse(new InputSource(new StringReader(ei.getMetadata())));
@@ -182,7 +184,7 @@ public class ExportItemsDriver {
 			} else if(header.equalsIgnoreCase("version")) {
 				record.add(ei.getVersion()+"");
 			} else if(header.equalsIgnoreCase("attachment_names")) {
-				record.add(parseAttachmentFilenames(ei, config));
+				record.add(parseAttachmentFilenames(ei));
 			} else if(header.equalsIgnoreCase("name")) {
 				record.add(ei.getName());
 			} else if(header.equalsIgnoreCase("description")) {
@@ -209,7 +211,7 @@ public class ExportItemsDriver {
 		return record;
 	}
 
-	public String parseAttachmentFilenames(EquellaItem ei, Config config) {
+	public String parseAttachmentFilenames(EquellaItem ei) {
 		JSONObject json = ei.getJson();
 		if(json.has(OpenEquellaRestUtils.KEY_ATTS)) {
 			StringBuilder sb = new StringBuilder();
@@ -222,7 +224,7 @@ public class ExportItemsDriver {
 					if(sb.length() != 0) {
 						sb.append(",");
 					}
-					sb.append(constructAttachmentPath(ei, att.getString(OpenEquellaRestUtils.KEY_ATT_FILENAME), config));
+					sb.append(constructAttachmentPath(ei, att.getString(OpenEquellaRestUtils.KEY_ATT_FILENAME)));
 					break;
 				}
 				default: {
@@ -262,8 +264,8 @@ public class ExportItemsDriver {
 		return tokens;
 	}
 	
-	public String constructAttachmentPath(EquellaItem ei, String attName, Config config) {
-		String template = config.getConfig(Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE);
+	public String constructAttachmentPath(EquellaItem ei, String attName) {
+		String template = Config.get(Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE);
 		if(template.contains("@HASH")) {
 			template = template.replaceFirst("@HASH", (ei.getUuid().hashCode() & 127)+"");
 		}

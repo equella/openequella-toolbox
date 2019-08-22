@@ -1,9 +1,11 @@
 /*
- * Copyright 2018 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -30,22 +32,22 @@ import java.util.List;
 public class JsonReportDriver {
     private static Logger LOGGER = LogManager.getLogger(JsonReportDriver.class);
 
-    public List<String> execute(Config config, String[] args) {
+    public List<String> execute(String[] args) {
         List<String> results = new ArrayList<>();
         try {
 
-            JsonElement root = FileUtils.parseAsJson(config, Config.REPORT_JSON_RAW_DATA_FILENAME);
-            JsonArray rootArray = root.getAsJsonObject().getAsJsonArray(config.getConfig(Config.REPORT_JSON_ROOT_ARRAY_KEY));
+            JsonElement root = FileUtils.parseAsJson(Config.REPORT_JSON_RAW_DATA_FILENAME);
+            JsonArray rootArray = root.getAsJsonObject().getAsJsonArray(Config.get(Config.REPORT_JSON_ROOT_ARRAY_KEY));
 
             // Build the header
-            results.add("Location," + config.getConfig(Config.REPORT_JSON_KEYWORDS));
+            results.add("Location," + Config.get(Config.REPORT_JSON_KEYWORDS));
 
             // Expose the data
             for(int i = 0; i < rootArray.size(); i++) {
                 JsonObject currentObject = rootArray.get(i).getAsJsonObject();
                 LOGGER.debug("Working with JSON Object: {}", currentObject);
-                String row = FileUtils.exposeKeys(currentObject, config.getConfig(Config.REPORT_JSON_KEYWORDS));
-                String wrapper = config.getConfig(Config.REPORT_CONFIG_TEMP_FILENAME) + "," + row;
+                String row = FileUtils.exposeKeys(currentObject, Config.get(Config.REPORT_JSON_KEYWORDS));
+                String wrapper = Config.get(Config.REPORT_CONFIG_TEMP_FILENAME) + "," + row;
                 if(!results.contains(wrapper)) {
                     results.add(wrapper);
                 }

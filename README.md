@@ -1,7 +1,8 @@
 # openEQUELLA Toolbox
-Proof-of-concept for a suite of scripts to interface with openEQUELLA in Java.
+A Java-based suite of scripts geared to worked with openEQUELLA.
 
 ## Main functions
+
 ### Migrate to Kaltura
 Search openEQUELLA for items with a given criteria.  For each item found, download the appropriate video, upload into Kaltura, and then re-version the openEQUELLA item, replacing the video file and other attachments with the single Kaltura attachment.
 
@@ -33,12 +34,44 @@ Invocation arguments:
 * [req] config file
 * [req] file to thumbnail
 
+### CheckFiles
+Crawls through an openEQUELLA installation and confirms if attachments that are in the DB attachments table exist in the filestore.
+
+Note:  This *cannot* check files that are in an item's persistent folder, but not in the DB as an attachment.
+
+For full details on configuration, please see `blank.properties`.
+
+Invocation arguments
+*Standard CheckFiles run:*
+* [req] config file
+
+*Ad-hoc comparison of two reports:*
+* [req] config file
+* [req] -compare
+* [req] csv-report1.csv
+* [req] csv-report2.csv
+
+
 # License
 Apache v2
 
 # Building
 
-```
+1. Inflate `src/test/resources/junit_env.zip`
+2. Restore the DB from the zip
+3. Copy the primary and secondary filestores into your test install
+4. Fill in the properties in `conf/junit.properties`.
+5. Ensure the following setup is in place in `optional-config.properties`
+```properties
+filestore.advanced = true
+filestore.additional.ids = 2,3
+filestore.additional.2.path = {your-path}/adv-filestores/beta/
+filestore.additional.2.name = Filestore Beta
+filestore.additional.3.path = {your-path}/adv-filestores/charlie/
+filestore.additional.3.name = Filestore Charlie
+``` 
+6. Run the build
+```sh
 ./gradlew clean build
 ```
 

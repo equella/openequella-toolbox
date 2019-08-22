@@ -1,9 +1,8 @@
 apply plugin: 'eclipse'
 apply plugin: 'java'
-//apply plugin: 'java-library-distribution'
 
-group = 'org.apereo.equella'
-version = '1.4.0-SNAPSHOT'
+group = 'org.apereo.openequella'
+version = '1.5.0'
 sourceCompatibility = 1.8
 
 repositories {
@@ -33,12 +32,12 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	// https://mvnrepository.com/artifact/com.google.guava/guava
 	compile group: 'com.google.guava', name: 'guava', version: '19.0'
+	// https://mvnrepository.com/artifact/org.postgresql/postgresql
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
 
 	// Use JUnit test framework
 	testImplementation 'junit:junit:4.12'
 }
-
-//distZip.shouldRunAfter(build)
 
 jar {
 	manifest {
@@ -49,10 +48,3 @@ jar {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	}
 }
-
-//distZip {
-//	into(project.name+"-"+getVersion()) {
-//		from '.'
-//		include 'conf/*'
-//	}
-//}

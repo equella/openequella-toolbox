@@ -1,11 +1,11 @@
-package org.apereo.openequella.tools.toolbox;
-
 /*
- * Copyright 2019 Apereo
+ * Licensed to The Apereo Foundation under one or more contributor license
+ * agreements. See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The Apereo Foundation licenses this file to you under the Apache License,
+ * Version 2.0, (the "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at:
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,6 +15,8 @@ package org.apereo.openequella.tools.toolbox;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package org.apereo.openequella.tools.toolbox;
 
 import java.io.File;
 
@@ -26,7 +28,7 @@ import org.json.JSONObject;
 public class FileListerDriver {
     private static Logger LOGGER = LogManager.getLogger(FileListerDriver.class);
 
-    public void execute(Config config, String[] args) {
+    public void execute(String[] args) {
         if(args.length < 2) {
             LOGGER.error("No parameters found!  FileLister parameters - [req] config file, [req] directory(or file) to list, [opt] -useParent flag");
             return;
@@ -45,7 +47,7 @@ public class FileListerDriver {
             System.exit(2);
         } else if(base.exists()) {
             JSONArray files = new JSONArray();
-            list(base, "", config.getConfig(Config.GENERAL_OS_SLASH), files);
+            list(base, "", Config.get(Config.GENERAL_OS_SLASH), files);
             JSONObject res = new JSONObject();
             res.put("files", files);
             LOGGER.info(res);
