@@ -65,6 +65,9 @@ public class Driver {
 		} case CheckFiles: {
 				(new CheckFilesDriver()).execute(args);
 				break;
+		} case AttachmentHash: {
+			(new AttachmentHashDriver()).execute(args);
+			break;
 		} default: {
 			LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
 			return;

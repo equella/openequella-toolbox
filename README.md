@@ -51,6 +51,13 @@ Invocation arguments
 * [req] csv-report1.csv
 * [req] csv-report2.csv
 
+### AttachmentHash
+Creates the parent directory of a given attachment hash in the openEQUELLA filestore.
+
+Invocation arguments
+*Standard CheckFiles run:*
+* [req] config file
+* [req] attachment uuid hash
 
 # License
 Apache v2

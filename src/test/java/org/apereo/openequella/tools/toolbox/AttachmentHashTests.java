@@ -16,23 +16,16 @@
  * limitations under the License.
  */
 
-package org.apereo.openequella.tools.toolbox.utils;
+package org.apereo.openequella.tools.toolbox;
 
-import java.util.Properties;
+import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-public class GeneralUtils {
+public class AttachmentHashTests {
 
-    public static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
-    public static void setDefaultIfNotPresent(Properties p, String key, String val) {
-        if(!p.containsKey(key)) {
-            p.setProperty(key, val);
-        }
-    }
-
-    public static int findHash(String uuid) {
-        return uuid.hashCode() & 127;
-    }
+  @Test
+  public void testHash() {
+    assertEquals(87, GeneralUtils.findHash("dc939fcc-e00b-4d89-9b5e-f80d99c5c59e"));
+  }
 }

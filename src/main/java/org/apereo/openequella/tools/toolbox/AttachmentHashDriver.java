@@ -16,23 +16,22 @@
  * limitations under the License.
  */
 
-package org.apereo.openequella.tools.toolbox.utils;
+package org.apereo.openequella.tools.toolbox;
 
-import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 
-public class GeneralUtils {
+public class AttachmentHashDriver {
+    private static Logger LOGGER = LogManager.getLogger(AttachmentHashDriver.class);
 
-    public static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
-
-    public static void setDefaultIfNotPresent(Properties p, String key, String val) {
-        if(!p.containsKey(key)) {
-            p.setProperty(key, val);
+    public void execute(String[] args) {
+        if (args.length < 2) {
+            LOGGER.error("No parameters found!  AttachmentHash parameters - [req] config file, [req] att-uuid");
+            return;
         }
-    }
 
-    public static int findHash(String uuid) {
-        return uuid.hashCode() & 127;
+        final int res = GeneralUtils.findHash(args[1]);
+        LOGGER.info("Hash is [{}]", res);
     }
 }

@@ -46,7 +46,8 @@ public class Config {
 		FileLister,
 		ThumbnailV1,
 		JsonReport,
-		CheckFiles
+		CheckFiles,
+		AttachmentHash
 	}
 
 	//Example 2013-01-18T17:38:47.986-07:00
@@ -209,10 +210,14 @@ public class Config {
             checkConfigsJsonReport();
             break;
           }
-          case CheckFiles: {
-            checkConfigsCheckFiles();
-            break;
-          }
+					case CheckFiles: {
+						checkConfigsCheckFiles();
+						break;
+					}
+					case AttachmentHash: {
+						// There is no extra configuration needed to review
+						break;
+					}
           default: {
             // Should never will happen.  The exception will be thrown first
             LOGGER.warn("Toolbox function not implemented: {}", getConfig(TOOLBOX_FUNCTION));
