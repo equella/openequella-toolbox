@@ -380,9 +380,7 @@ public class ReportManager {
 					append(sb,
 							"<div>Attachments that are no longer missing:</div><ul>");
 					for (ResultsRow fixed : comparison.getOnlyInFirst()) {
-						append(sb, String.format(
-								"<li><span style='color:blue'>%s</span></li>",
-								fixed.toString()));
+						append(sb, "<li><span style='color:blue'>" + fixed + "</span></li>");
 					}
 					append(sb, "</ul>");
 				}
@@ -391,9 +389,7 @@ public class ReportManager {
 					append(sb,
 							"<div>Attachments that are now missing:</div><ul>");
 					for (ResultsRow broken : comparison.getOnlyInSecond()) {
-						append(sb, String.format(
-								"<li><span style='color:red'>%s</span></li>",
-								broken.toString()));
+						append(sb, "<li><span style='color:red'>" + broken + "</span></li>");
 					}
 					append(sb, "</ul>");
 				}
