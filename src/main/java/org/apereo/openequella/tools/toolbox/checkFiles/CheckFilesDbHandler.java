@@ -243,8 +243,27 @@ public class CheckFilesDbHandler {
 						attRow.getItemVersion());
 
 		// Prevent odd encoding issues by not taking part in the format operation
-		// above.  Account for oEQ percent encoding various characters
-		String attName = attRow.getAttFilePath().replaceAll("\\+", "%2b").replaceAll("\"", "%22").replaceAll(":", "%3a");
+		// above.  Allow for a configured set of percent encoded values
+		String attName = attRow.getAttFilePath();
+		logger.debug("Original attachment name: [{}]", attName);
+		if(Config.getInstance().hasConfig(Config.CF_FILENAME_ENCODING_LIST)) {
+			for(String key : Config.getInstance().getConfigAsStringArray(Config.CF_FILENAME_ENCODING_LIST)) {
+				String original = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_ORIGINAL);
+				// Special replacement values
+				if(original.equals("PLUS")) {
+					original = "\\+";
+				} else if(original.equals("BLANK")) {
+					original = " ";
+				} else if(original.equals("QUESTION_MARK")) {
+					original = "\\?";
+				}
+				final String result = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_RESULT);
+				logger.debug("Attachment replacement [{}]->[{}]", original, result);
+				attName = attName.replaceAll(original, result);
+				logger.debug("Attachment name after a replacement of [{}]->[{}]: [{}]", original, result, attName);
+
+			}
+		}
 
 		String basePath = Config.get(Config.CF_FILESTORE_DIR)+"/"+institutionsById.get(attRow.getInstitutionId())
 						.getFilestoreHandle()+"/Attachments";

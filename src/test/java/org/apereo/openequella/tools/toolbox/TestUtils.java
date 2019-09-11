@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -39,16 +40,36 @@ public class TestUtils {
 
 	public static void buildCheckFilesGeneralDbProps() {
 		Properties envSpecific = loadEnvSpecificDefaults();
+
+		List<String> passthroughs = new ArrayList<>();
+		passthroughs.add(Config.CF_DB_URL);
+		passthroughs.add(Config.CF_DB_USERNAME);
+		passthroughs.add(Config.CF_DB_PASSWORD);
+		passthroughs.add(Config.CF_FILESTORE_DIR);
+		passthroughs.add(Config.CF_EMAIL_RECIPIENTS);
+		passthroughs.add(Config.CF_FILENAME_ENCODING_LIST);
+		passthroughs.add("cf.filename.encoding.doubleQuote.original");
+		passthroughs.add("cf.filename.encoding.doubleQuote.result");
+		passthroughs.add("cf.filename.encoding.colon.original");
+		passthroughs.add("cf.filename.encoding.colon.result");
+		passthroughs.add("cf.filename.encoding.plus.original");
+		passthroughs.add("cf.filename.encoding.plus.result");
+		passthroughs.add("cf.filename.encoding.questionMark.original");
+		passthroughs.add("cf.filename.encoding.questionMark.result");
+		passthroughs.add("cf.filename.encoding.percent.original");
+		passthroughs.add("cf.filename.encoding.percent.result");
+
 		Config.getInstance().setConfig(Config.TOOLBOX_FUNCTION, Config.ToolboxFunction.CheckFiles.name());
 		Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, "test-check-files-output/"+ UUID.randomUUID().toString()+"/");
 		Config.getInstance().setConfig(Config.CF_ADOPTER_NAME, "acme");
 		Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 		Config.getInstance().setConfig(Config.CF_DB_TYPE, Config.CheckFilesSupportedDB.POSTGRE.name());
-		Config.getInstance().setConfig(Config.CF_DB_URL, envSpecific.getProperty(Config.CF_DB_URL));
-		Config.getInstance().setConfig(Config.CF_DB_USERNAME, envSpecific.getProperty(Config.CF_DB_USERNAME));
-		Config.getInstance().setConfig(Config.CF_DB_PASSWORD, envSpecific.getProperty(Config.CF_DB_PASSWORD));
-		Config.getInstance().setConfig(Config.CF_FILESTORE_DIR, envSpecific.getProperty(Config.CF_FILESTORE_DIR));
-		Config.getInstance().setConfig(Config.CF_EMAIL_RECIPIENTS, envSpecific.getProperty(Config.CF_EMAIL_RECIPIENTS));
+
+		for(String key : passthroughs) {
+			LOGGER.debug("Loading passthrough key [{}] as [{}]", key, envSpecific.getProperty(key));
+			Config.getInstance().setConfig(key, envSpecific.getProperty(key));
+		}
+
 		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "20");
 		final String advFsKeyBeta = "cf.filestore.advanced.812.44ac1c1a-dd0c-462f-b717-53324c0dd6f9";
 		Config.getInstance().setConfig(advFsKeyBeta, envSpecific.getProperty(advFsKeyBeta));

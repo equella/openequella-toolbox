@@ -2,7 +2,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group = 'org.apereo.openequella'
-version = '1.4.1-SNAPSHOT'
+version = '1.4.1-SNAPSHOT-B'
 sourceCompatibility = 1.8
 
 repositories {

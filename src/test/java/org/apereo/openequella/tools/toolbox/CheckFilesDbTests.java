@@ -62,7 +62,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsAllInstitutionsAllItems(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(44), "# Of queries ran,16");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(47), "# Of queries ran,16");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -111,7 +111,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsAllInstitutionsAllItems(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(44), "# Of queries ran,28");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(47), "# Of queries ran,28");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -137,7 +137,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsAllInstitutionsAllItems(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(44), "# Of queries ran,18");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(47), "# Of queries ran,18");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -187,7 +187,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsFilterByCollection845(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(36), "# Of queries ran,14");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(39), "# Of queries ran,14");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -195,7 +195,7 @@ public class CheckFilesDbTests {
 	}
 
 	private void confirmResultsAllInstitutionsAllItems(List<String> all, List<String> err) {
-		assertEquals(47, all.size());
+		assertEquals(50, all.size());
 
 		int idx = 7;
 		assertEquals(all.get(idx++), "Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath");
@@ -209,6 +209,9 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,3e796f00-731c-4eb2-a483-d93796650099,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char : test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,be8d38ca-4216-444a-b388-fc8de5d782b6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char & test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,9495760a-f8d1-4219-bbe7-0d6518d4bedf,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char control test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,3749c0c3-fcf8-427e-98a2-61fd3184f03a,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char % test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,bb8f1968-eff2-41b2-9a68-705c4d7f1f2d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ? test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,e92dfc79-1a30-4682-ab01-b231b70004a1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ' test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,bd554963-2c55-4da9-9a9f-940ae41b6be1,1,LIVE,file,9d98468c-a040-4dfb-aa94-5500a6ccf467,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.rtf\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,file,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.html\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,file,dfe3782d-54b6-4aa2-873d-23c2ef6bf2a8,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"keyword.txt\",");
@@ -229,7 +232,7 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "Stats");
 		assertEquals(all.get(idx++), "# Of Items,12");
 		assertEquals(all.get(idx++), "# Of Items affected,2");
-		assertEquals(all.get(idx++), "# Of ALL Attachments,26");
+		assertEquals(all.get(idx++), "# Of ALL Attachments,29");
 		assertEquals(all.get(idx++), "# Of MISSING Attachments,2");
 		assertEquals(all.get(idx++), "# Of IGNORED Attachments,5");
 
@@ -242,13 +245,13 @@ public class CheckFilesDbTests {
 		assertEquals(err.get(idx++), "Stats");
 		assertEquals(err.get(idx++), "# Of Items,12");
 		assertEquals(err.get(idx++), "# Of Items affected,2");
-		assertEquals(err.get(idx++), "# Of ALL Attachments,26");
+		assertEquals(err.get(idx++), "# Of ALL Attachments,29");
 		assertEquals(err.get(idx++), "# Of MISSING Attachments,2");
 		assertEquals(err.get(idx++), "# Of IGNORED Attachments,5");
 	}
 
 	private void confirmResultsFilterByCollection845(List<String> all, List<String> err) {
-		assertEquals(39, all.size());
+		assertEquals(42, all.size());
 
 		int idx = 7;
 		assertEquals(all.get(idx++), "Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath");
@@ -260,6 +263,9 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,3e796f00-731c-4eb2-a483-d93796650099,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char : test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,be8d38ca-4216-444a-b388-fc8de5d782b6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char & test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,9495760a-f8d1-4219-bbe7-0d6518d4bedf,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char control test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,3749c0c3-fcf8-427e-98a2-61fd3184f03a,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char % test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,bb8f1968-eff2-41b2-9a68-705c4d7f1f2d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ? test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,e92dfc79-1a30-4682-ab01-b231b70004a1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ' test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,file,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.html\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,395d0c73-dfad-4f01-bb6b-cbcef11ed4db,1,LIVE,file,a4920601-3e3d-4c11-9560-8b9bd9c1baf3,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,bdb56fa6-00a9-4c2f-89b0-b0de01382b3c,1,LIVE,attachment,2ed14dab-9103-4073-b8ce-1f134c40e7c5,Ignored,[[Attachment resp code not set]],\"[[Item name not set]]\",\"[[Attachment file path not set]]\",");
@@ -274,7 +280,7 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "Stats");
 		assertEquals(all.get(idx++), "# Of Items,8");
 		assertEquals(all.get(idx++), "# Of Items affected,1");
-		assertEquals(all.get(idx++), "# Of ALL Attachments,18");
+		assertEquals(all.get(idx++), "# Of ALL Attachments,21");
 		assertEquals(all.get(idx++), "# Of MISSING Attachments,1");
 		assertEquals(all.get(idx++), "# Of IGNORED Attachments,4");
 
@@ -286,7 +292,7 @@ public class CheckFilesDbTests {
 		assertEquals(err.get(idx++), "Stats");
 		assertEquals(err.get(idx++), "# Of Items,8");
 		assertEquals(err.get(idx++), "# Of Items affected,1");
-		assertEquals(err.get(idx++), "# Of ALL Attachments,18");
+		assertEquals(err.get(idx++), "# Of ALL Attachments,21");
 		assertEquals(err.get(idx++), "# Of MISSING Attachments,1");
 		assertEquals(err.get(idx++), "# Of IGNORED Attachments,4");
 	}
@@ -309,7 +315,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsFilterByCollection845(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(36), "# Of queries ran,13");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(39), "# Of queries ran,13");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -335,7 +341,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsFilterByCollection845(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(36), "# Of queries ran,16");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(39), "# Of queries ran,16");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -361,7 +367,7 @@ public class CheckFilesDbTests {
 			TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
 			confirmResultsFilterByCollection845(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
-			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(36), "# Of queries ran,12");
+			assertEquals(ReportManager.getInstance().getAllStatsWriterList().get(39), "# Of queries ran,12");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
