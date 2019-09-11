@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.apereo.openequella.tools.toolbox.Config;
 import org.apereo.openequella.tools.toolbox.utils.Check;
+import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.apereo.openequella.tools.toolbox.utils.WhereClauseExpression;
 
 /**
@@ -239,23 +240,25 @@ public class CheckFilesDbHandler {
 
 		String attPath = String.format("/%d/%s/%s/",
 						hash, attRow.getItemUuid(),
-						attRow.getItemVersion())
-						// Prevent odd encoding issues by not taking part in the format operation
-						// Account for oEQ encoding plus signs (+) as %2b
-						+ attRow.getAttFilePath().replaceAll("\\+", "%2b");
+						attRow.getItemVersion());
+
+		// Prevent odd encoding issues by not taking part in the format operation
+		// above.  Account for oEQ percent encoding various characters
+		String attName = attRow.getAttFilePath().replaceAll("\\+", "%2b").replaceAll("\"", "%22").replaceAll(":", "%3a");
 
 		String basePath = Config.get(Config.CF_FILESTORE_DIR)+"/"+institutionsById.get(attRow.getInstitutionId())
 						.getFilestoreHandle()+"/Attachments";
 
 		// See if this attachment is in an 'advanced filestore'.
 		final String key = Config.CF_FILESTORE_DIR_ADV+attRow.getInstitutionId()+"."+attRow.getCollectionUuid();
-		logger.debug("Checking if the attachment [{}] has an associated adv filestore via the property [{}].", attPath, key);
+		logger.debug("Checking if the attachment [{}][{}] has an associated adv filestore via the property [{}].", attPath, attName, key);
 		if(Config.getInstance().hasConfig(key)) {
 			basePath = Config.get(key);
 		}
 
-		final String path = basePath + attPath;
+		final String path = basePath + attPath + attName;
 		logger.info("Using path [{}] to check attachment.", path);
+		FileUtils.findFile(basePath + attPath, attName);
 		return (new File(path)).exists();
 	}
 
