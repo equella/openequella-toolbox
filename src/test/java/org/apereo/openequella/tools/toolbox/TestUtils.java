@@ -58,6 +58,24 @@ public class TestUtils {
 		passthroughs.add("cf.filename.encoding.questionMark.result");
 		passthroughs.add("cf.filename.encoding.percent.original");
 		passthroughs.add("cf.filename.encoding.percent.result");
+		passthroughs.add("cf.filename.encoding.spaceBackslash.original");
+		passthroughs.add("cf.filename.encoding.spaceBackslash.result");
+		passthroughs.add("cf.filename.encoding.backslash.original");
+		passthroughs.add("cf.filename.encoding.backslash.result");
+		passthroughs.add("cf.filename.encoding.forwardslash.original");
+		passthroughs.add("cf.filename.encoding.forwardslash.result");
+		passthroughs.add("cf.filename.encoding.openParen.original");
+		passthroughs.add("cf.filename.encoding.openParen.result");
+		passthroughs.add("cf.filename.encoding.closeParen.original");
+		passthroughs.add("cf.filename.encoding.closeParen.result");
+		passthroughs.add("cf.filename.encoding.openBracket.original");
+		passthroughs.add("cf.filename.encoding.openBracket.result");
+		passthroughs.add("cf.filename.encoding.closeBracket.original");
+		passthroughs.add("cf.filename.encoding.closeBracket.result");
+		passthroughs.add("cf.filename.encoding.openCurly.original");
+		passthroughs.add("cf.filename.encoding.openCurly.result");
+		passthroughs.add("cf.filename.encoding.closeCurly.original");
+		passthroughs.add("cf.filename.encoding.closeCurly.result");
 
 		Config.getInstance().setConfig(Config.TOOLBOX_FUNCTION, Config.ToolboxFunction.CheckFiles.name());
 		Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, "test-check-files-output/"+ UUID.randomUUID().toString()+"/");

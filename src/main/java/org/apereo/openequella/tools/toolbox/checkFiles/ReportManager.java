@@ -376,22 +376,22 @@ public class ReportManager {
 				
 				append(sb,
 						"<br/><div><i><b>Placement legend: </b> %s</i></div><br/>", ResultsRow.getHeader());
+				// Do not use the String.format on filenames.  Special characters cause it to fail.
 				if (comparison.getOnlyInFirst().size() > 0) {
-					append(sb,
-							"<div>Attachments that are no longer missing:</div><ul>");
+					sb.append("<div>Attachments that are no longer missing:</div><ul>");
 					for (ResultsRow fixed : comparison.getOnlyInFirst()) {
-						append(sb, "<li><span style='color:blue'>" + fixed + "</span></li>");
+						sb.append("<li><span style='color:blue'>" + fixed + "</span></li>");
 					}
-					append(sb, "</ul>");
+					sb.append("</ul>");
 				}
 
+				// Do not use the String.format on filenames.  Special characters cause it to fail.
 				if (comparison.getOnlyInSecond().size() > 0) {
-					append(sb,
-							"<div>Attachments that are now missing:</div><ul>");
+					sb.append("<div>Attachments that are now missing:</div><ul>");
 					for (ResultsRow broken : comparison.getOnlyInSecond()) {
-						append(sb, "<li><span style='color:red'>" + broken + "</span></li>");
+						sb.append("<li><span style='color:red'>" + broken + "</span></li>");
 					}
-					append(sb, "</ul>");
+					sb.append("</ul>");
 				}
 			} else {
 				append(sb,

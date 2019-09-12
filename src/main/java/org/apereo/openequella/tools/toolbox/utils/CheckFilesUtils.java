@@ -203,4 +203,22 @@ private static final Logger logger = LogManager.getLogger(CheckFilesUtils.class)
 	public static String str(String msg, Object... args) {
 		return String.format(msg, args);
 	}
+
+	public static String specialCharReplace(String val) {
+		switch(val) {
+			case "PLUS": { return "\\+";	}
+			case "BLANK": { return " "; }
+			case "QUESTION_MARK": { return "\\?"; }
+			case "SPACE_BACKSLASH": { return " \\\\"; }
+			case "BACKSLASH": { return "\\\\"; }
+			case "FORWARDSLASH": { return "/"; }
+			case "OPEN_PAREN": { return "\\("; }
+			case "CLOSE_PAREN": { return "\\)"; }
+			case "OPEN_BRACKET": { return "\\["; }
+			case "CLOSE_BRACKET": { return "]"; }
+			case "OPEN_CURLY": { return "\\{"; }
+			case "CLOSE_CURLY": { return "}"; }
+			default: { return val; }
+		}
+	}
 }

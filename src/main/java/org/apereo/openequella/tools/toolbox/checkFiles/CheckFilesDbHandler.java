@@ -36,6 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 import org.apereo.openequella.tools.toolbox.Config;
 import org.apereo.openequella.tools.toolbox.utils.Check;
+import org.apereo.openequella.tools.toolbox.utils.CheckFilesUtils;
 import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.apereo.openequella.tools.toolbox.utils.WhereClauseExpression;
 
@@ -248,20 +249,11 @@ public class CheckFilesDbHandler {
 		logger.debug("Original attachment name: [{}]", attName);
 		if(Config.getInstance().hasConfig(Config.CF_FILENAME_ENCODING_LIST)) {
 			for(String key : Config.getInstance().getConfigAsStringArray(Config.CF_FILENAME_ENCODING_LIST)) {
-				String original = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_ORIGINAL);
-				// Special replacement values
-				if(original.equals("PLUS")) {
-					original = "\\+";
-				} else if(original.equals("BLANK")) {
-					original = " ";
-				} else if(original.equals("QUESTION_MARK")) {
-					original = "\\?";
-				}
+				final String original = CheckFilesUtils.specialCharReplace(Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_ORIGINAL));
 				final String result = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_RESULT);
 				logger.debug("Attachment replacement [{}]->[{}]", original, result);
 				attName = attName.replaceAll(original, result);
 				logger.debug("Attachment name after a replacement of [{}]->[{}]: [{}]", original, result, attName);
-
 			}
 		}
 

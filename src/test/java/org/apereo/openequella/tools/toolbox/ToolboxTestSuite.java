@@ -34,6 +34,7 @@ import org.junit.runners.Suite.SuiteClasses;
                 CheckFilesRestTests.class,
                 CheckFilesDbTests.class,
                 CheckFilesRestTests.class,
+                CheckFilesUtilsTests.class,
                 AttachmentHashTests.class
         })
 public class ToolboxTestSuite {
