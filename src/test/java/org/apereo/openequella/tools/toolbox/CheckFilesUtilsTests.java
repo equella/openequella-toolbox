@@ -52,6 +52,7 @@ public class CheckFilesUtilsTests {
 		assertEquals("]", CheckFilesUtils.specialCharReplace("CLOSE_BRACKET"));
 		assertEquals("\\{", CheckFilesUtils.specialCharReplace("OPEN_CURLY"));
 		assertEquals("}", CheckFilesUtils.specialCharReplace("CLOSE_CURLY"));
+		assertEquals("^\\.", CheckFilesUtils.specialCharReplace("LEADING_PERIOD"));
 		assertEquals("", CheckFilesUtils.specialCharReplace(""));
 	}
 
@@ -167,6 +168,64 @@ public class CheckFilesUtilsTests {
 	public void testReplaceAllCloseCurly() {
 		try {
 			assertEquals("as%XYdf", "as}df".replaceAll(CheckFilesUtils.specialCharReplace("CLOSE_CURLY"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReplaceAllLeadingPeriod() {
+		try {
+			assertEquals("%XYasd.f", ".asd.f".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_PERIOD"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+
+	@Test
+	public void testReplaceAllSlashAndPeriod() {
+		try {
+			assertEquals("%XYasd.f", ".asd.f".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_PERIOD"), "%XY"));
+			assertEquals("as\\d.f", "as\\d.f".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_PERIOD"), "%XY"));
+			assertEquals(".asd%XY.f", ".asd\\.f".replaceAll(CheckFilesUtils.specialCharReplace("BACKSLASH"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+
+	@Test
+	public void testReplaceAllPipes() {
+		try {
+			assertEquals("as%XYdf", "as|df".replaceAll(CheckFilesUtils.specialCharReplace("PIPE"), "%XY"));
+			assertEquals("%XYasdf", "|asdf".replaceAll(CheckFilesUtils.specialCharReplace("PIPE"), "%XY"));
+			assertEquals("asdf%XY", "asdf|".replaceAll(CheckFilesUtils.specialCharReplace("PIPE"), "%XY"));
+			assertEquals("asdf", "asdf".replaceAll(CheckFilesUtils.specialCharReplace("PIPE"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReplaceAllAsterisks() {
+		try {
+			assertEquals("as%XYdf", "as*df".replaceAll(CheckFilesUtils.specialCharReplace("ASTERISK"), "%XY"));
+			assertEquals("%XYasdf", "*asdf".replaceAll(CheckFilesUtils.specialCharReplace("ASTERISK"), "%XY"));
+			assertEquals("asdf%XY", "asdf*".replaceAll(CheckFilesUtils.specialCharReplace("ASTERISK"), "%XY"));
+			assertEquals("asdf", "asdf".replaceAll(CheckFilesUtils.specialCharReplace("ASTERISK"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReplaceAllCarots() {
+		try {
+			assertEquals("as%XYdf", "as^df".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
+			assertEquals("%XYasdf", "^asdf".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
+			assertEquals("asdf%XY", "asdf^".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
+			assertEquals("asdf", "asdf".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

@@ -218,6 +218,10 @@ private static final Logger logger = LogManager.getLogger(CheckFilesUtils.class)
 			case "CLOSE_BRACKET": { return "]"; }
 			case "OPEN_CURLY": { return "\\{"; }
 			case "CLOSE_CURLY": { return "}"; }
+			case "LEADING_PERIOD": { return "^\\."; }
+			case "PIPE": { return "\\|"; }
+			case "ASTERISK": { return "\\*"; }
+			case "CARET": { return "\\^"; }
 			default: { return val; }
 		}
 	}
