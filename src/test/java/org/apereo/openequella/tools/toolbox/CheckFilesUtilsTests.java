@@ -53,6 +53,7 @@ public class CheckFilesUtilsTests {
 		assertEquals("\\{", CheckFilesUtils.specialCharReplace("OPEN_CURLY"));
 		assertEquals("}", CheckFilesUtils.specialCharReplace("CLOSE_CURLY"));
 		assertEquals("^\\.", CheckFilesUtils.specialCharReplace("LEADING_PERIOD"));
+		assertEquals("^\\\\", CheckFilesUtils.specialCharReplace("LEADING_BACKSLASH"));
 		assertEquals("", CheckFilesUtils.specialCharReplace(""));
 	}
 
@@ -226,6 +227,18 @@ public class CheckFilesUtilsTests {
 			assertEquals("%XYasdf", "^asdf".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
 			assertEquals("asdf%XY", "asdf^".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
 			assertEquals("asdf", "asdf".replaceAll(CheckFilesUtils.specialCharReplace("CARET"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReplaceAllLeadingBackslash() {
+		try {
+			assertEquals("as\\df", "as\\df".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_BACKSLASH"), ""));
+			assertEquals("asdf", "\\asdf".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_BACKSLASH"), ""));
+			assertEquals("asdf\\", "asdf\\".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_BACKSLASH"), ""));
+			assertEquals("asdf", "asdf".replaceAll(CheckFilesUtils.specialCharReplace("LEADING_BACKSLASH"), ""));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

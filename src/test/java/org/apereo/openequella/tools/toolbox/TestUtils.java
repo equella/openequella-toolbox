@@ -76,8 +76,10 @@ public class TestUtils {
 		passthroughs.add("cf.filename.encoding.openCurly.result");
 		passthroughs.add("cf.filename.encoding.closeCurly.original");
 		passthroughs.add("cf.filename.encoding.closeCurly.result");
-		passthroughs.add("cf.filename.encoding.period.original");
-		passthroughs.add("cf.filename.encoding.period.result");
+		passthroughs.add("cf.filename.encoding.leadingPeriod.original");
+		passthroughs.add("cf.filename.encoding.leadingPeriod.result");
+		passthroughs.add("cf.filename.encoding.leadingBackslash.original");
+		passthroughs.add("cf.filename.encoding.leadingBackslash.result");
 		passthroughs.add("cf.filename.encoding.pipe.original");
 		passthroughs.add("cf.filename.encoding.pipe.result");
 		passthroughs.add("cf.filename.encoding.asterisk.original");

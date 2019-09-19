@@ -36,7 +36,7 @@ public class Config {
 
 	private static Config config;
 
-  public static final String VERSION = "1.4.1-SNAPSHOT-D";
+  public static final String VERSION = "1.4.1-SNAPSHOT-E";
 	// toolbox function
 	public static final String TOOLBOX_FUNCTION = "toolbox.function";
 	public static enum ToolboxFunction {

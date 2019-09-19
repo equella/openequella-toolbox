@@ -210,6 +210,7 @@ private static final Logger logger = LogManager.getLogger(CheckFilesUtils.class)
 			case "BLANK": { return " "; }
 			case "QUESTION_MARK": { return "\\?"; }
 			case "SPACE_BACKSLASH": { return " \\\\"; }
+			case "LEADING_BACKSLASH": { return "^\\\\"; }
 			case "BACKSLASH": { return "\\\\"; }
 			case "FORWARDSLASH": { return "/"; }
 			case "OPEN_PAREN": { return "\\("; }
