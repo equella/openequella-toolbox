@@ -459,6 +459,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		logger.info("Cached {} attachments (query per item).  Duration {} ms.",
 				counter, dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
 		return true;
 	}
 
@@ -493,6 +494,7 @@ public class CheckFilesDbHandler {
 		ReportManager.getInstance().getStats().queryRan(dur);
 		logger.info("Cached {} attachments (single query).  Duration {} ms.",
 				counter, dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
 		return true;
 	}
 
@@ -673,6 +675,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		ReportManager.getInstance().getStats().queryRan(dur);
 		logger.info("Cached items (single query).  Duration {} ms.", dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalItems(attachmentsCache.size());
 		return true;
 	}
 
@@ -689,7 +692,6 @@ public class CheckFilesDbHandler {
 							WhereClauseExpression
 									.makeWhereClause(whereClauseExpressions));
 			logger.debug("SQL:  [{}]", sql);
-
 			int offsetCounter = 0;
 			boolean hasMore = false;
 			do {
@@ -755,6 +757,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		logger.info("Cached items (batched queries).  Total duration {} ms.",
 				dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalItems(attachmentsCache.size());
 		return true;
 	}
 }

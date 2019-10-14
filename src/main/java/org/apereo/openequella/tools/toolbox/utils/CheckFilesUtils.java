@@ -223,6 +223,8 @@ private static final Logger logger = LogManager.getLogger(CheckFilesUtils.class)
 			case "PIPE": { return "\\|"; }
 			case "ASTERISK": { return "\\*"; }
 			case "CARET": { return "\\^"; }
+			case "PERIOD_AFTER_BACKSLASH": { return "\\\\\\."; }
+			case "PERIOD_AFTER_FORWARDSLASH": { return "/\\."; }
 			default: { return val; }
 		}
 	}

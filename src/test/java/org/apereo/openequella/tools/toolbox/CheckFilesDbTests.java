@@ -87,6 +87,14 @@ public class CheckFilesDbTests {
 			confirmResultsAllInstitutionsAllItems(ReportManager.getInstance().getAllStatsWriterList(),
 							ReportManager.getInstance().getErrorStatsWriterList());
 
+
+			assertEquals(12, ReportManager.getInstance().getStats().getNumGrandTotalItems());
+			assertEquals(12, ReportManager.getInstance().getStats().getNumTotalItems());
+			assertEquals(36, ReportManager.getInstance().getStats().getNumGrandTotalAttachments());
+			assertEquals(36, ReportManager.getInstance().getStats().getNumTotalAttachments());
+			assertEquals(2, ReportManager.getInstance().getStats().getNumTotalItemsAffected());
+			assertEquals(2, ReportManager.getInstance().getStats().getNumTotalAttachmentsMissing());
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -195,7 +203,7 @@ public class CheckFilesDbTests {
 	}
 
 	private void confirmResultsAllInstitutionsAllItems(List<String> all, List<String> err) {
-		assertEquals(56, all.size());
+		assertEquals(57, all.size());
 
 		int idx = 7;
 		assertEquals(all.get(idx++), "Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath");
@@ -216,6 +224,7 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,de9a3fcf-dd07-4e53-99df-ebde4b11c493,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"..txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,a700d38d-bbd4-4b9a-a1fd-4438607bfec8,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\\.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,3749c0c3-fcf8-427e-98a2-61fd3184f03a,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char % [ ] { } ( ) asdf\\ asdf  \\ asdf = 123 \\ test.txt\",");
+		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,8672147b-3d81-4ca4-84df-41829107e11b,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"fileWithPeriodAfterNonleadingBackslashesRoot\\fileWithPeriodAfterNonleadingBackslashesSubName\\.fileWithPeriodAfterNonleadingBackslashesLeaf\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,bb8f1968-eff2-41b2-9a68-705c4d7f1f2d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ? test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,9da6c4f4-e4f9-431a-93a4-0438a7762747,1,LIVE,file,e92dfc79-1a30-4682-ab01-b231b70004a1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"char ' test.txt\",");
 		assertEquals(all.get(idx++), "checkFilesTesting,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,bd554963-2c55-4da9-9a9f-940ae41b6be1,1,LIVE,file,9d98468c-a040-4dfb-aa94-5500a6ccf467,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.rtf\",");
@@ -238,7 +247,7 @@ public class CheckFilesDbTests {
 		assertEquals(all.get(idx++), "Stats");
 		assertEquals(all.get(idx++), "# Of Items,12");
 		assertEquals(all.get(idx++), "# Of Items affected,2");
-		assertEquals(all.get(idx++), "# Of ALL Attachments,35");
+		assertEquals(all.get(idx++), "# Of ALL Attachments,36");
 		assertEquals(all.get(idx++), "# Of MISSING Attachments,2");
 		assertEquals(all.get(idx++), "# Of IGNORED Attachments,5");
 
@@ -251,7 +260,7 @@ public class CheckFilesDbTests {
 		assertEquals(err.get(idx++), "Stats");
 		assertEquals(err.get(idx++), "# Of Items,12");
 		assertEquals(err.get(idx++), "# Of Items affected,2");
-		assertEquals(err.get(idx++), "# Of ALL Attachments,35");
+		assertEquals(err.get(idx++), "# Of ALL Attachments,36");
 		assertEquals(err.get(idx++), "# Of MISSING Attachments,2");
 		assertEquals(err.get(idx++), "# Of IGNORED Attachments,5");
 	}

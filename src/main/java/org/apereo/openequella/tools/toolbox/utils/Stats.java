@@ -18,40 +18,63 @@
 
 package org.apereo.openequella.tools.toolbox.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
 public class Stats {
+	private static final Logger logger = LogManager
+					.getLogger(Stats.class);
+
 	private SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd.HH.mm.ss");
 
 	private long numTotalItems = 0;
+	private long numGrandTotalItems = 0;
 	private long numTotalItemsAffected = 0;
 	private long numTotalAttachments = 0;
+	private long numGrandTotalAttachments = 0;
 	private long numTotalAttachmentsIgnored = 0;
 	private long numTotalAttachmentsMissing = 0;
 	private long startTime;
 	private long endTime;
 	private int numOfQueriesRan = 0;
 	private long totalQueriesDur = 0;
-	
+
 	public long getNumTotalItems() {
 		return numTotalItems;
 	}
 	public void incNumTotalItems() {
 		this.numTotalItems++;
+		logger.info(getStatSnapshot());
+	}
+	public long getNumGrandTotalItems() {
+		return numGrandTotalItems;
+	}
+	public void incNumGrandTotalItems(int num) {
+		this.numGrandTotalItems += num;
 	}
 	public long getNumTotalItemsAffected() {
 		return numTotalItemsAffected;
 	}
 	public void incNumTotalItemsAffected() {
 		this.numTotalItemsAffected++;
+		logger.info(getStatSnapshot());
 	}
 	public long getNumTotalAttachments() {
 		return numTotalAttachments;
 	}
 	public void incNumTotalAttachments() {
 		this.numTotalAttachments++;
+		logger.info(getStatSnapshot());
+	}
+	public long getNumGrandTotalAttachments() {
+		return numGrandTotalAttachments;
+	}
+	public void incNumGrandTotalAttachments(int num) {
+		this.numGrandTotalAttachments += num;
 	}
 	public long getNumTotalAttachmentsIgnored() {
 		return numTotalAttachmentsIgnored;
@@ -64,6 +87,7 @@ public class Stats {
 	}
 	public void incNumTotalAttachmentsMissing() {
 		this.numTotalAttachmentsMissing++;
+		logger.info(getStatSnapshot());
 	}
 	public long getStartTime() {
 		return startTime;
@@ -104,5 +128,14 @@ public class Stats {
 	
 	public long getAverageDurationOfQueriesRan() {
 		return totalQueriesDur / numOfQueriesRan;
+	}
+
+	private String getStatSnapshot() {
+		return "Current Stats: It=[" + numGrandTotalItems +
+						"],Ip=[" + numTotalItems +
+						"],Ix=[" + numTotalItemsAffected +
+						"],At=[" + numGrandTotalAttachments +
+						"],Ap=[" + numTotalAttachments +
+						"],Ax=[" + numTotalAttachmentsMissing + "]";
 	}
 }

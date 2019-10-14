@@ -195,6 +195,27 @@ public class CheckFilesUtilsTests {
 		}
 	}
 
+	@Test
+	public void testReplaceAllPeriodsAfterBackslashes() {
+		try {
+			// This is correct, but actual usage should keep the backslash in the replacement
+			assertEquals(".asd%XYf.", ".asd\\.f.".replaceAll(CheckFilesUtils.specialCharReplace("PERIOD_AFTER_BACKSLASH"), "%XY"));
+			assertEquals(".asd.f", ".asd.f".replaceAll(CheckFilesUtils.specialCharReplace("PERIOD_AFTER_BACKSLASH"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testReplaceAllPeriodsAfterForwardslashes() {
+		try {
+			// This is correct, but actual usage should keep the backslash in the replacement
+			assertEquals(".asd%XYf.", ".asd/.f.".replaceAll(CheckFilesUtils.specialCharReplace("PERIOD_AFTER_FORWARDSLASH"), "%XY"));
+			assertEquals(".a/sd.f", ".a/sd.f".replaceAll(CheckFilesUtils.specialCharReplace("PERIOD_AFTER_FORWARDSLASH"), "%XY"));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 
 	@Test
 	public void testReplaceAllPipes() {
