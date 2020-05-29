@@ -229,6 +229,7 @@ public class CheckFilesDbHandler {
 				}
 			}
 		} catch (IOException e) {
+			// TODO - add to 'fatal errors' since returning false to stop the run
 			logger.fatal("Unrecoverable error while processing item - {}",
 					e.getMessage(), e);
 			return false;
@@ -251,9 +252,9 @@ public class CheckFilesDbHandler {
 			for(String key : Config.getInstance().getConfigAsStringArray(Config.CF_FILENAME_ENCODING_LIST)) {
 				final String original = CheckFilesUtils.specialCharReplace(Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_ORIGINAL));
 				final String result = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_RESULT);
-				logger.debug("Attachment replacement [{}]->[{}]", original, result);
+				logger.trace("Attachment replacement [{}]->[{}]", original, result);
 				attName = attName.replaceAll(original, result);
-				logger.debug("Attachment name after a replacement of [{}]->[{}]: [{}]", original, result, attName);
+				logger.trace("Attachment name after a replacement of [{}]->[{}]: [{}]", original, result, attName);
 			}
 		}
 
@@ -447,7 +448,7 @@ public class CheckFilesDbHandler {
 				rs.close();
 				long batchDur = System.currentTimeMillis() - batchStart;
 				ReportManager.getInstance().getStats().queryRan(batchDur);
-				logger.info("Cached a batch of attachments.  Duration {} ms.",
+				logger.debug("Cached a batch of attachments.  Duration {} ms.",
 						batchDur);
 
 			}

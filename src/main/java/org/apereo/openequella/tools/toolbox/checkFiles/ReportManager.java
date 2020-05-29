@@ -426,7 +426,10 @@ public class ReportManager {
 				append(sb, String.format("<li>%s</li>", err));
 			}
 			append(sb, "</ul></div>");
+		} else {
+			// TODO - note no fatal errors.
 		}
+		// TODO - Either way, give some more details
 		append(sb,
 				"<div>Please check the Toolbox logs for more details...</div>");
 		append(sb,
