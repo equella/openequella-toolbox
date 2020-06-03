@@ -36,6 +36,8 @@ import static org.junit.Assert.fail;
 
 public class CheckFilesCompareTests {
 	private static final Logger LOGGER = LogManager.getLogger(CheckFilesUtils.class);
+	private static final String BASE = "src/test/resources/junit_env/checkfiles-reports/resultFiles/";
+	private static final String BASE_TO_SORT = "src/test/resources/junit_env/checkfiles-reports/resultFilesToSort/";
 
 	@Test
 	public void testFindOnlyInFirst() {
@@ -62,9 +64,9 @@ public class CheckFilesCompareTests {
 	@Test
 	public void testLooseCompareSameFile() {
 		try {
-			File report1 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_A.csv");
+			File report1 = new File(BASE + "oEQ_checkFiles_all_stats_A.csv");
 			LOGGER.debug("report1 - {}", report1.getAbsolutePath());
-			File report2 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_A.csv");
+			File report2 = new File(BASE + "oEQ_checkFiles_all_stats_A.csv");
 			LOGGER.debug("report2 - {}", report2.getAbsolutePath());
 			assertTrue(report1.exists());
 			assertTrue(report2.exists());
@@ -85,9 +87,9 @@ public class CheckFilesCompareTests {
 	@Test
 	public void testLooseCompareNewRowInFirst() {
 		try {
-			File report1 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_A.csv");
+			File report1 = new File(BASE + "oEQ_checkFiles_all_stats_A.csv");
 			LOGGER.debug("report1 - {}", report1.getAbsolutePath());
-			File report2 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_B_row1_absent.csv");
+			File report2 = new File(BASE + "oEQ_checkFiles_all_stats_B_row1_absent.csv");
 			LOGGER.debug("report2 - {}", report2.getAbsolutePath());
 			assertTrue(report1.exists());
 			assertTrue(report2.exists());
@@ -111,9 +113,9 @@ public class CheckFilesCompareTests {
 	@Test
 	public void testLooseCompareNewRowInSecond() {
 		try {
-			File report1 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_B_row1_absent.csv");
+			File report1 = new File(BASE + "oEQ_checkFiles_all_stats_B_row1_absent.csv");
 			LOGGER.debug("report1 - {}", report1.getAbsolutePath());
-			File report2 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_A.csv");
+			File report2 = new File(BASE + "oEQ_checkFiles_all_stats_A.csv");
 			LOGGER.debug("report2 - {}", report2.getAbsolutePath());
 			assertTrue(report1.exists());
 			assertTrue(report2.exists());
@@ -136,9 +138,9 @@ public class CheckFilesCompareTests {
 	@Test
 	public void testLooseCompareNewDifferentRowsInBoth() {
 		try {
-			File report1 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_B_row1_absent.csv");
+			File report1 = new File(BASE + "oEQ_checkFiles_all_stats_B_row1_absent.csv");
 			LOGGER.debug("report1 - {}", report1.getAbsolutePath());
-			File report2 = new File("src/test/resources/checkFiles/resultFiles/oEQ_checkFiles_all_stats_C_row5_absent.csv");
+			File report2 = new File(BASE + "oEQ_checkFiles_all_stats_C_row5_absent.csv");
 			LOGGER.debug("report2 - {}", report2.getAbsolutePath());
 			assertTrue(report1.exists());
 			assertTrue(report2.exists());
@@ -163,7 +165,7 @@ public class CheckFilesCompareTests {
 	public void testFindPreviousErrorStats() {
 		try {
 			Config.reset();
-			Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, "src/test/resources/checkFiles/resultFilesToSort");
+			Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, BASE_TO_SORT);
 			Config.getInstance().setConfig(Config.CF_ADOPTER_NAME, "Apereo");
 
 			File latestFile = CheckFilesUtils.findPreviousErrorStats();

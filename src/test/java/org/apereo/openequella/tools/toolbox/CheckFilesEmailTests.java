@@ -21,45 +21,54 @@ package org.apereo.openequella.tools.toolbox;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.checkFiles.ReportManager;
+import org.apereo.openequella.tools.toolbox.utils.Check;
 import org.apereo.openequella.tools.toolbox.utils.EmailUtils;
 import org.junit.Test;
 
-import java.util.Date;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class CheckFilesEmailTests {
 
 	private static Logger LOGGER = LogManager.getLogger(CheckFilesEmailTests.class);
+	private static final String COLL_ID_1_MISSING_ATTS = "3615";
+	private static final String COLL_ID_2_MISSING_ATTS = "3123";
+	private static final String COLL_ID_3_NO_MISSING_ATTS = "3626";
+	private static final String INST_SHORTNAME = "instXe";
 
-	@Test
-	public void testEmailSettingsSmokeTest() {
-		EmailUtils.resetState();
-		Properties envSpecific = TestUtils.loadEnvSpecificDefaults();
-		TestUtils.buildCheckFilesGeneralDbProps();
-		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
-		TestUtils.buildEmailProps();
-		Config.getInstance().checkConfigsCheckFiles();
-
-		assertTrue(CheckFilesDriver.setup(true));
-		final String body = "Resultant testEmailSettingsE2E email - " + (new Date());
-		EmailUtils.execute("TEXT",
-			Config.get(Config.CF_EMAIL_RECIPIENTS),
-		"This is a test message for the JUnit test testEmailSettingsE2E",
-			body);
-		if (ReportManager.getInstance().hasFatalErrors()) {
-			fail(ReportManager.getInstance().getLastFatalError());
-		}
-		assertEquals("TEXT", EmailUtils.getState().getLastRawType());
-		assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
-		assertEquals("This is a test message for the JUnit test testEmailSettingsE2E", EmailUtils.getState().getLastSubject());
-		assertEquals(body, EmailUtils.getState().getLastBody());
-		assertEquals(true, EmailUtils.getState().isLastSuccess());
-	}
+// Unused - consider removing
+//	@Test
+//	public void testEmailSettingsSmokeTest() {
+//		EmailUtils.resetState();
+//		Properties envSpecific = TestUtils.loadEnvSpecificDefaults();
+//		TestUtils.buildCheckFilesGeneralDbProps();
+//		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
+//		TestUtils.buildEmailProps();
+//		Config.getInstance().checkConfigsCheckFiles();
+//
+//		assertTrue(CheckFilesDriver.setup(true));
+//		final String body = "Resultant testEmailSettingsE2E email - " + (new Date());
+//		EmailUtils.execute("TEXT",
+//			Config.get(Config.CF_EMAIL_RECIPIENTS),
+//		"This is a test message for the JUnit test testEmailSettingsE2E",
+//			body);
+//		if (ReportManager.getInstance().hasFatalErrors()) {
+//			fail(ReportManager.getInstance().getLastFatalError());
+//		}
+//		assertEquals("TEXT", EmailUtils.getState().getLastRawType());
+//		assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
+//		assertEquals("This is a test message for the JUnit test testEmailSettingsE2E", EmailUtils.getState().getLastSubject());
+//		assertEquals(body, EmailUtils.getState().getLastBody());
+//		assertEquals(true, EmailUtils.getState().isLastSuccess());
+//	}
 
 	/**
 	 * Should result in a 'Critical Failure' email about the DB connection.
@@ -69,8 +78,7 @@ public class CheckFilesEmailTests {
 		Config.reset();
 		TestUtils.buildCheckFilesGeneralDbProps();
 		Config.getInstance().setConfig(Config.CF_DB_URL, "asdf");
-		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
-		TestUtils.buildEmailProps();
+		TestUtils.setDefaultEmailProps();
 
 		assertTrue(CheckFilesDriver.setup(true));
 		assertFalse(CheckFilesDriver.run());
@@ -78,10 +86,10 @@ public class CheckFilesEmailTests {
 		assertTrue(ReportManager.getInstance().failFast());
 		assertEquals("HTML", EmailUtils.getState().getLastRawType());
 		assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
-		assertTrue(EmailUtils.getState().getLastSubject().startsWith("CRITICAL FAILURE: oEQ-Toolbox:CheckFiles v"));
-		assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-		assertTrue(EmailUtils.getState().getLastBody().startsWith("<html><body><h2>oEQ-Toolbox:CheckFiles v"));
-		assertTrue(EmailUtils.getState().getLastBody().endsWith("Report</h2><div><span style='color:red'><b>Report run failed due to an unrecoverable error.</b></span></div><div>Critical errors gathered:</div><div><ul><li>Unable to connect to the DB [asdf] with username [equellauser] and a password of length [9]</li></ul></div><div>Please check the Toolbox logs for more details...</div><br/><br/><div><i>Note:  This report is provided as a guide to the results of the CheckFiles utility.  While efforts have been taken to provide a quality utility to report on the attachment status of openEQUELLA items, this utility is provided AS-IS, with no warranty or promise of support.</i></div></body></html>"));
+		assertThat(EmailUtils.getState().getLastSubject(), startsWith("CRITICAL FAILURE: oEQ-Toolbox:CheckFiles v"));
+		assertThat(EmailUtils.getState().getLastSubject(), endsWith("Report"));
+		assertThat(EmailUtils.getState().getLastBody(), startsWith("<html><body><h2>oEQ-Toolbox:CheckFiles v"));
+		assertThat(EmailUtils.getState().getLastBody(), endsWith("Report</h2><div><span style='color:red'><b>Report run failed due to an unrecoverable error.</b></span></div><div>Critical errors gathered:</div><div><ul><li>Unable to connect to the DB [asdf] with username [equellauser] and a password of length [9]</li></ul></div><div>Please check the Toolbox logs for more details...</div><br/><br/><div><i>Note:  This report is provided as a guide to the results of the CheckFiles utility.  While efforts have been taken to provide a quality utility to report on the attachment status of openEQUELLA items, this utility is provided AS-IS, with no warranty or promise of support.</i></div></body></html>"));
 		assertEquals(true, EmailUtils.getState().isLastSuccess());
 	}
 
@@ -92,15 +100,17 @@ public class CheckFilesEmailTests {
 	public void testFailFastNoEmailWithBadEmailServerSpecified() {
 		Config.reset();
 		TestUtils.buildCheckFilesGeneralDbProps();
-		TestUtils.buildEmailProps();
-		Config.getInstance().setConfig(Config.EMAIL_SERVER, "asdf");
-		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
+		TestUtils.setDefaultEmailProps();
+		Config.getInstance().setConfig(Config.DEV_MODE, "");
 
 		assertTrue(CheckFilesDriver.setup(true));
 		assertTrue(CheckFilesDriver.run());
 		assertTrue(ReportManager.getInstance().finalizeReporting());
 		assertTrue(ReportManager.getInstance().hasFatalErrors());
-		assertTrue(ReportManager.getInstance().getLastFatalError().startsWith("ERROR - An exception occurred in trying to send the email:  Couldn't connect to host, port: asdf"));
+		for(String msg : ReportManager.getInstance().getFatalErrors()) {
+			LOGGER.info(msg);
+		}
+		assertTrue(ReportManager.getInstance().getLastFatalError().startsWith("ERROR - An exception occurred in trying to send the email:  Couldn't connect to host, port: not.exists.apereo.org"));
 		if(EmailUtils.getState() != null) {
 			LOGGER.debug(EmailUtils.getState());
 		}
@@ -110,17 +120,17 @@ public class CheckFilesEmailTests {
 
 
 	@Test
-	public void testNormalEmailNoNewMissingAttachments() {
-		try {
+	public void testNormalEmailNoNewMissingAttachments() throws InterruptedException {
 			Config.reset();
 			TestUtils.buildCheckFilesGeneralDbProps();
 			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, INST_SHORTNAME);
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
 			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
 			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
+			TestUtils.setDefaultEmailProps();
 			Config.getInstance().checkConfigsCheckFiles();
 
 			assertTrue(CheckFilesDriver.setup());
@@ -137,30 +147,24 @@ public class CheckFilesEmailTests {
 			assertEquals("HTML", EmailUtils.getState().getLastRawType());
 			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
 			LOGGER.debug(EmailUtils.getState().toString());
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			final int numOfMissing = 27;
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 8</li><li><b># Of Attachments Checked</b> - " + numOfMissing + "</li><li><b># Of Attachments Missing</b> - 1</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:blue'><b>NO CHANGE</b></span></div>"));
+			assertThat(EmailUtils.getState().getLastSubject(), startsWith("oEQ-Toolbox:CheckFiles v"));
+			assertThat(EmailUtils.getState().getLastSubject(), endsWith("Report"));
+			assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(2, 2, 1, false, null, null)));
 			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 
-
 	@Test
-	public void testNormalEmailNewMissingAttachments() {
-		try {
+	public void testNormalEmailNewMissingAttachments() throws InterruptedException {
 			Config.reset();
 			TestUtils.buildCheckFilesGeneralDbProps();
 			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, INST_SHORTNAME);
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
 			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
 			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
+			TestUtils.setDefaultEmailProps();
 			Config.getInstance().checkConfigsCheckFiles();
 
 			assertTrue(CheckFilesDriver.setup());
@@ -179,64 +183,102 @@ public class CheckFilesEmailTests {
 			assertEquals("HTML", EmailUtils.getState().getLastRawType());
 			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
 			LOGGER.debug(EmailUtils.getState().toString());
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			final int numOfMissing = 35;
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 12</li><li><b># Of Attachments Checked</b> - " + numOfMissing + "</li><li><b># Of Attachments Missing</b> - 2</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are now missing:</div><ul><li><span style='color:red'>checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,FILE,a78040c6-4bd6-48ff-be8a-ce90bcf8f81e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
+			assertThat(EmailUtils.getState().getLastSubject(), startsWith("oEQ-Toolbox:CheckFiles v"));
+			assertThat(EmailUtils.getState().getLastSubject(), endsWith("Report"));
+			List<String> newMissing = new ArrayList<>();
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,d8d002f7-63db-4c0c-bf9e-38d6334af37e,1,LIVE,FILE,3b24bdd0-f4d7-4bb3-a1cc-383faea4f981,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.txt\"\",");
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8f5254e0-5b0f-4cfe-9af0-9ce2c5d784c5,1,LIVE,FILE,0578860d-65d7-44bf-8614-08469f268721,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"syllabus.html\"\",");
+			assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(7, 7, 3, true, newMissing, null)));
 			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 
-	@Test
-	public void testOnlyMissingAttachmentsEmailNoNewMissingAttachments() {
-		try {
-			Config.reset();
-			EmailUtils.resetState();
-			TestUtils.buildCheckFilesGeneralDbProps();
-			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
-			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
-			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
+	private String buildExpectedBody(int numOfItems, int numOfAtts, int numOfMissingAtts, boolean changed, List<String> newMissing, List<String> newResolved) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li>");
+		sb.append("<li><b>Adopter Name</b> - acme</li>");
+		sb.append("<li><b># Of Items Checked</b> - " + numOfItems + "</li>");
+		sb.append("<li><b># Of Attachments Checked</b> - " + numOfAtts + "</li>");
+		sb.append("<li><b># Of Attachments Missing</b> - " + numOfMissingAtts + "</li></ul>");
+		// enhance to build errors
+		sb.append("<div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div>");
+		sb.append("<ul><div>No fatal errors occurred.</div></ul>");
+		sb.append("<div style='color:blue'><b>Details of comparison report:</b></div>");
+		sb.append("<div>Comparison of <i>missing</i> attachments from previous run to current run: ");
+		if(changed) {
+			sb.append("<span style='color:red'><b>CHANGED</b></span></div>");
+			sb.append("<br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/>");
 
-			TestUtils.buildEmailProps();
-			Config.getInstance().checkConfigsCheckFiles();
-
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
-
-			Thread.sleep(2000); // avoid name collision on the reports.
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS.name());
-
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
-			if(EmailUtils.getState() != null) {
-				LOGGER.debug(EmailUtils.getState());
+			if(!Check.isEmpty(newResolved)) {
+				sb.append("<div>Attachments that are no longer missing:</div>");
+				sb.append("<ul>");
+				for(String s : newResolved) {
+					sb.append("<li><span style='color:blue'>");
+					sb.append(s);
+					sb.append("</span></li>");
+				}
+				sb.append("</ul>");
 			}
-			assertTrue(EmailUtils.getState() == null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+
+			if(!Check.isEmpty(newMissing)) {
+				sb.append("<div>Attachments that are now missing:</div>");
+				sb.append("<ul>");
+				for(String s : newMissing) {
+					sb.append("<li><span style='color:red'>");
+					sb.append(s);
+					sb.append("</span></li>");
+				}
+				sb.append("</ul>");
+			}
+		} else {
+			sb.append("<span style='color:blue'><b>NO CHANGE</b></span></div>");
 		}
+		sb.append("<div><b>Comparison file for previous run");
+		return sb.toString();
 	}
 
 	@Test
-	public void testOnlyMissingAttachmentsEmailNewMissingAttachments() {
-		try {
+	public void testOnlyMissingAttachmentsEmailNoNewMissingAttachments() throws InterruptedException {
+		Config.reset();
+		EmailUtils.resetState();
+		TestUtils.buildCheckFilesGeneralDbProps();
+		TestUtils.setDefaultEmailProps();
+		Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, INST_SHORTNAME);
+		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
+		Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
+
+		Config.getInstance().checkConfigsCheckFiles();
+
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
+
+		Thread.sleep(2000); // avoid name collision on the reports.
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS.name());
+
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
+		if(EmailUtils.getState() != null) {
+			LOGGER.debug(EmailUtils.getState());
+		}
+		assertTrue(EmailUtils.getState() == null);
+	}
+
+	@Test
+	public void testOnlyMissingAttachmentsEmailNewMissingAttachments() throws InterruptedException {
 			Config.reset();
 			TestUtils.buildCheckFilesGeneralDbProps();
+			TestUtils.setDefaultEmailProps();
 			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, INST_SHORTNAME);
 			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
 			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
 			Config.getInstance().checkConfigsCheckFiles();
 
 			assertTrue(CheckFilesDriver.setup());
@@ -259,67 +301,61 @@ public class CheckFilesEmailTests {
 			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
 			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
 			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			final int numOfMissing = 35;
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 12</li><li><b># Of Attachments Checked</b> - " + numOfMissing + "</li><li><b># Of Attachments Missing</b> - 2</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are now missing:</div><ul><li><span style='color:red'>checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,FILE,a78040c6-4bd6-48ff-be8a-ce90bcf8f81e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
+			List<String> newMissing = new ArrayList<>();
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,d8d002f7-63db-4c0c-bf9e-38d6334af37e,1,LIVE,FILE,3b24bdd0-f4d7-4bb3-a1cc-383faea4f981,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.txt\"\",");
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8f5254e0-5b0f-4cfe-9af0-9ce2c5d784c5,1,LIVE,FILE,0578860d-65d7-44bf-8614-08469f268721,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"syllabus.html\"\",");
+		assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(7, 7, 3, true, newMissing, null)));
 			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 
 	@Test
-	public void testNormalEmailOldMissingResolved() {
-		try {
-			Config.reset();
-			TestUtils.buildCheckFilesGeneralDbProps();
-			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
-			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
-			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
+	public void testNormalEmailOldMissingResolved() throws InterruptedException {
+		Config.reset();
+		TestUtils.buildCheckFilesGeneralDbProps();
+		Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
+		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
+		Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
-			Config.getInstance().checkConfigsCheckFiles();
+		TestUtils.setDefaultEmailProps();
+		Config.getInstance().checkConfigsCheckFiles();
 
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
 
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "1542");
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_3_NO_MISSING_ATTS);
 
-			Thread.sleep(2000); // avoid name collision on the reports.
+		Thread.sleep(2000); // avoid name collision on the reports.
 
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
 
-			assertEquals("HTML", EmailUtils.getState().getLastRawType());
-			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
-			LOGGER.debug(EmailUtils.getState().toString());
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 0</li><li><b># Of Attachments Checked</b> - 0</li><li><b># Of Attachments Missing</b> - 0</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are no longer missing:</div><ul><li><span style='color:blue'>checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,FILE,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
-			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+		assertEquals("HTML", EmailUtils.getState().getLastRawType());
+		assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
+		LOGGER.debug(EmailUtils.getState().toString());
+		assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
+		assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
+		List<String> newResolved = new ArrayList<>();
+		newResolved.add("instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,FILE,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"keyword.txt\"\",");
+		assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(1, 1, 0, true, null, newResolved)));
+		assertEquals(true, EmailUtils.getState().isLastSuccess());
 	}
 
 	@Test
-	public void testOnlyMissingAttachmentsEmailOldMissingResolved() {
-		try {
+	public void testOnlyMissingAttachmentsEmailOldMissingResolved() throws InterruptedException {
 			Config.reset();
 			TestUtils.buildCheckFilesGeneralDbProps();
+			TestUtils.setDefaultEmailProps();
 			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
 			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
 			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
 			Config.getInstance().checkConfigsCheckFiles();
 
 			assertTrue(CheckFilesDriver.setup());
@@ -327,7 +363,7 @@ public class CheckFilesEmailTests {
 			assertTrue(CheckFilesDriver.finalizeRun());
 
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "1542");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_3_NO_MISSING_ATTS);
 
 			Thread.sleep(2000); // avoid name collision on the reports.
 
@@ -338,28 +374,25 @@ public class CheckFilesEmailTests {
 			if(EmailUtils.getState() != null) {
 				LOGGER.debug(EmailUtils.getState().toString());
 			}
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 0</li><li><b># Of Attachments Checked</b> - 0</li><li><b># Of Attachments Missing</b> - 0</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are no longer missing:</div><ul><li><span style='color:blue'>checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,FILE,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
+			assertThat(EmailUtils.getState().getLastSubject(), startsWith("oEQ-Toolbox:CheckFiles v"));
+			assertThat(EmailUtils.getState().getLastSubject(), endsWith("Report"));
+			List<String> newResolved = new ArrayList<>();
+			newResolved.add("instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,FILE,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"keyword.txt\"\",");
+			assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(1, 1, 0, true, null, newResolved)));
 			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 
 	@Test
-	public void testNormalEmailNewMissingAttachmentsOldMissingResolved() {
-		try {
+	public void testNormalEmailNewMissingAttachmentsOldMissingResolved() throws InterruptedException {
 			Config.reset();
 			TestUtils.buildCheckFilesGeneralDbProps();
 			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
 			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
 			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
+			TestUtils.setDefaultEmailProps();
 			Config.getInstance().checkConfigsCheckFiles();
 
 			assertTrue(CheckFilesDriver.setup());
@@ -367,7 +400,7 @@ public class CheckFilesEmailTests {
 			assertTrue(CheckFilesDriver.finalizeRun());
 
 			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "1485");
+			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_2_MISSING_ATTS);
 
 			Thread.sleep(2000); // avoid name collision on the reports.
 
@@ -378,53 +411,52 @@ public class CheckFilesEmailTests {
 			assertEquals("HTML", EmailUtils.getState().getLastRawType());
 			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
 			LOGGER.debug(EmailUtils.getState().toString());
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 1</li><li><b># Of Attachments Checked</b> - 4</li><li><b># Of Attachments Missing</b> - 1</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are no longer missing:</div><ul><li><span style='color:blue'>checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,FILE,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div>Attachments that are now missing:</div><ul><li><span style='color:red'>checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,FILE,a78040c6-4bd6-48ff-be8a-ce90bcf8f81e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
+			assertThat(EmailUtils.getState().getLastSubject(), startsWith("oEQ-Toolbox:CheckFiles v"));
+			assertThat(EmailUtils.getState().getLastSubject(), endsWith("Report"));
+			List<String> newResolved = new ArrayList<>();
+			newResolved.add("instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,FILE,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"keyword.txt\"\",");
+			List<String> newMissing = new ArrayList<>();
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,d8d002f7-63db-4c0c-bf9e-38d6334af37e,1,LIVE,FILE,3b24bdd0-f4d7-4bb3-a1cc-383faea4f981,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.txt\"\",");
+			newMissing.add("instXe,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8f5254e0-5b0f-4cfe-9af0-9ce2c5d784c5,1,LIVE,FILE,0578860d-65d7-44bf-8614-08469f268721,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"syllabus.html\"\",");
+			assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(4, 4, 2, true, newMissing, newResolved)));
 			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
 	}
 
 	@Test
-	public void testOnlyMissingAttachmentsEmailNewMissingAttachmentsOldMissingResolved() {
-		try {
-			Config.reset();
-			TestUtils.buildCheckFilesGeneralDbProps();
-			Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "845");
-			Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
-			Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
+	public void testOnlyMissingAttachmentsEmailNewMissingAttachmentsOldMissingResolved() throws InterruptedException {
+		Config.reset();
+		TestUtils.buildCheckFilesGeneralDbProps();
+		TestUtils.setDefaultEmailProps();
+		Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_1_MISSING_ATTS);
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, INST_SHORTNAME);
+		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "100");
+		Config.getInstance().setConfig(Config.CF_COMPARE_MISSING_ATTS_AFTER_RUN, "true");
 
-			TestUtils.buildEmailProps();
-			Config.getInstance().checkConfigsCheckFiles();
+		Config.getInstance().checkConfigsCheckFiles();
 
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
 
-			Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS.name());
-			Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, "1485");
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS.name());
+		Config.getInstance().setConfig(Config.CF_FILTER_BY_COLLECTION, COLL_ID_3_NO_MISSING_ATTS);
 
-			Thread.sleep(2000); // avoid name collision on the reports.
+		Thread.sleep(2000); // avoid name collision on the reports.
 
-			assertTrue(CheckFilesDriver.setup());
-			assertTrue(CheckFilesDriver.run());
-			assertTrue(CheckFilesDriver.finalizeRun());
+		assertTrue(CheckFilesDriver.setup());
+		assertTrue(CheckFilesDriver.run());
+		assertTrue(CheckFilesDriver.finalizeRun());
 
-			assertEquals("HTML", EmailUtils.getState().getLastRawType());
-			assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
-			LOGGER.debug(EmailUtils.getState().toString());
-			assertTrue(EmailUtils.getState().getLastSubject().startsWith("oEQ-Toolbox:CheckFiles v"));
-			assertTrue(EmailUtils.getState().getLastSubject().endsWith("Report"));
-			assertTrue(EmailUtils.getState().getLastBody().contains("<li><b>CheckFiles Type</b> - DB_ALL_ITEMS_ALL_ATTS</li><li><b>Adopter Name</b> - acme</li><li><b># Of Items Checked</b> - 1</li><li><b># Of Attachments Checked</b> - 4</li><li><b># Of Attachments Missing</b> - 1</li></ul><div style='color:blue'><b>oEQ-Toolbox:CheckFiles Errors:</b></div><ul><div>No fatal errors occurred.</div></ul><div style='color:blue'><b>Details of comparison report:</b></div><div>Comparison of <i>missing</i> attachments from previous run to current run: <span style='color:red'><b>CHANGED</b></span></div><br/><div><i><b>Placement legend: </b> Institution Shortname,Collection UUID,Item UUID,Item Version,ItemStatus,Attachment Type,Attachment UUID,Attachment Status,Attachment Response Code,Item Name,Attachment Filepath</i></div><br/><div>Attachments that are no longer missing:</div><ul><li><span style='color:blue'>checkFilesTesting,97574753-4054-4684-b135-9f8475124a8e,25ecc776-076b-4c9b-b2cf-1f3808007d9d,1,LIVE,FILE,9465f317-d2a7-48d3-a6e2-27e142b534e8,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div>Attachments that are now missing:</div><ul><li><span style='color:red'>checkFilesTesting,5a7b2083-2671-414b-8e5b-c4cd9dfa1f30,ad7a2f0d-7ad5-44cb-9dc6-824f0da38351,1,LIVE,FILE,a78040c6-4bd6-48ff-be8a-ce90bcf8f81e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"test.html\"\",</span></li></ul><div><b>Comparison file for previous run"));
-			assertEquals(true, EmailUtils.getState().isLastSuccess());
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
+		assertEquals("HTML", EmailUtils.getState().getLastRawType());
+		assertEquals(Config.get(Config.CF_EMAIL_RECIPIENTS), EmailUtils.getState().getLastRawToAddresses());
+		LOGGER.debug(EmailUtils.getState().toString());
+		assertThat(EmailUtils.getState().getLastSubject(), containsString("oEQ-Toolbox:CheckFiles v"));
+		assertThat(EmailUtils.getState().getLastSubject(), containsString("Report"));
+		List<String> newResolved = new ArrayList<>();
+		newResolved.add("instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,FILE,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"\"keyword.txt\"\",");
+		assertThat(EmailUtils.getState().getLastBody(), containsString(buildExpectedBody(1, 1, 0, true, null, newResolved)));
+		assertEquals(true, EmailUtils.getState().isLastSuccess());
 	}
 }

@@ -1,0 +1,80 @@
+<com.tle.common.ImportExportPack>
+  <entity class="com.tle.beans.entity.FederatedSearch">
+    <type>Z3950SearchEngine</type>
+    <timeout>30</timeout>
+    <id>332387</id>
+    <uuid>e1ed999e-2414-4ae6-bce1-557e335c637a</uuid>
+    <institution>
+      <id>144762</id>
+      <enabled>true</enabled>
+    </institution>
+    <owner>ef72744e-819a-e11c-a572-62e38337d30c</owner>
+    <dateModified class="sql-timestamp">2008-02-18 15:11:24.776</dateModified>
+    <dateCreated class="sql-timestamp">2008-01-22 10:42:22.481</dateCreated>
+    <name>
+      <id>371209</id>
+      <strings>
+        <entry>
+          <string>en</string>
+          <com.tle.beans.entity.LanguageString>
+            <id>371210</id>
+            <locale>en</locale>
+            <priority>1</priority>
+            <text>Books - Libraries Australia</text>
+            <bundle reference="../../../.."/>
+          </com.tle.beans.entity.LanguageString>
+        </entry>
+      </strings>
+    </name>
+    <attributes>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>port</key>
+        <value>210</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>username</key>
+        <value>ZIGANE</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>default</key>
+        <value>false</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>host</key>
+        <value>192.102.239.140</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>displayRecordSchema</key>
+        <value>http://www.loc.gov/mods/</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>xslt</key>
+        <value>federated_search_metadata mf 061207.xslt</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>collectionUuid</key>
+        <value>29c6294b-58df-485b-b194-92740d565fef</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>group</key>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>schemaInputTransform</key>
+        <value>z3950 to book</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>password</key>
+        <value>xx32hn</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>importRecordSchema</key>
+        <value>http://www.loc.gov/mods/</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>database</key>
+        <value>ANY</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+    </attributes>
+  </entity>
+  <version>3.2</version>
+</com.tle.common.ImportExportPack>

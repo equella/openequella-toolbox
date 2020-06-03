@@ -269,9 +269,20 @@ public class CheckFilesDbHandler {
 		}
 
 		final String path = basePath + attPath + attName;
-		logger.info("Using path [{}] to check attachment.", path);
-		FileUtils.findFile(basePath + attPath, attName);
-		return (new File(path)).exists();
+		final String altPath = basePath + "/" + attRow.getCollectionUuid() + attPath + attName;
+
+		if(Config.getInstance().hasConfig(key)) {
+			logger.info("Using advanced filestore path [{}] to check attachment.", path);
+		} else {
+			logger.info("Using path [{}] to check attachment.", path);
+		}
+		logger.info("Alt path [{}] to check attachment.", altPath);
+
+		if((new File(path)).exists()) {
+			return true;
+		} else {
+			return (new File(altPath)).exists();
+		}
 	}
 
 	/**
@@ -581,7 +592,7 @@ public class CheckFilesDbHandler {
 		try {
 			PreparedStatement stmt = con
 					.prepareStatement("select i.id, i.short_name, i.name, i.unique_id, i.url "
-							+ "from institution i");
+							+ "from institution i order by i.short_name");
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				InstitutionRow ir = new InstitutionRow();

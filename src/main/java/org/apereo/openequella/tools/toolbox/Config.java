@@ -130,6 +130,9 @@ public class Config {
 	public static final String CF_FILENAME_ENCODING_ORIGINAL = ".original";
 	public static final String CF_FILENAME_ENCODING_RESULT = ".result";
 
+	// For Testing
+	public static final String DEV_MODE = "dev.mode";
+	public static final String DEV_MODE_SKIP_EMAIL = "skip-email";
 
 	public enum CheckFilesType {
     REST,  // Implemented, but needs testing after the open source effort
@@ -503,7 +506,9 @@ public class Config {
 	  if(this.store == null) {
       this.store = new Properties();
     }
-		this.store.setProperty(key, val);
+    if(val != null) {
+			this.store.setProperty(key, val);
+		}
 	}
 
 	// convenience method

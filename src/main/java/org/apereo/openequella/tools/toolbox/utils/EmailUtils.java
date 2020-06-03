@@ -55,8 +55,14 @@ public class EmailUtils {
     // Save state for an audit (testing)
     lastState = new EmailState(rawType, rawToAddresses, subject, body);
 
+    if(!Check.isEmpty(Config.get(Config.DEV_MODE)) && Config.get(Config.DEV_MODE).contains(Config.DEV_MODE_SKIP_EMAIL)) {
+      LOGGER.info("SUCCESS - Email sending IGNORED!.");
+      lastState.setSuccess(true);
+      return;
+    }
+
     if (GeneralUtils.isNullOrEmpty(rawToAddresses)) {
-      logError("ERROR - [email-type] must be specified");
+      logError("ERROR - [email-to-addresses] must be specified");
       return;
     }
 

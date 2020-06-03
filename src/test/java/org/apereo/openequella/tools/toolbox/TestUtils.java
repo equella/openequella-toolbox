@@ -88,6 +88,10 @@ public class TestUtils {
 		passthroughs.add("cf.filename.encoding.caret.result");
 		passthroughs.add("cf.filename.encoding.periodAfterBackslash.original");
 		passthroughs.add("cf.filename.encoding.periodAfterBackslash.result");
+		passthroughs.add("cf.filename.encoding.leftAngle.original");
+		passthroughs.add("cf.filename.encoding.leftAngle.result");
+		passthroughs.add("cf.filename.encoding.rightAngle.original");
+		passthroughs.add("cf.filename.encoding.rightAngle.result");
 
 		Config.getInstance().setConfig(Config.TOOLBOX_FUNCTION, Config.ToolboxFunction.CheckFiles.name());
 		Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, "test-check-files-output/"+ UUID.randomUUID().toString()+"/");
@@ -101,13 +105,11 @@ public class TestUtils {
 		}
 
 		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "20");
-		final String advFsKeyBeta = "cf.filestore.advanced.812.44ac1c1a-dd0c-462f-b717-53324c0dd6f9";
-		Config.getInstance().setConfig(advFsKeyBeta, envSpecific.getProperty(advFsKeyBeta));
-		final String advFsKeyBetaInst2 = "cf.filestore.advanced.1509.44ac1c1a-dd0c-462f-b717-53324c0dd6f9";
-		Config.getInstance().setConfig(advFsKeyBetaInst2, envSpecific.getProperty(advFsKeyBetaInst2));
-		final String advFsKeyCharlie = "cf.filestore.advanced.812.5a7b2083-2671-414b-8e5b-c4cd9dfa1f30";
-		Config.getInstance().setConfig(advFsKeyCharlie, envSpecific.getProperty(advFsKeyCharlie));
-		Config.getInstance().setConfig("cf.db.filestore.institution.handle.checkFilesTesting2", "checkFilesTesting2Renamed");
+		final String advFsKey1 = "cf.filestore.advanced.1244.df727509-77f7-4ce6-a9cb-2c5385565358";
+		Config.getInstance().setConfig(advFsKey1, envSpecific.getProperty(advFsKey1));
+		final String advFsKey2 = "cf.filestore.advanced.1845.df727509-77f7-4ce6-a9cb-2c5385565358";
+		Config.getInstance().setConfig(advFsKey2, envSpecific.getProperty(advFsKey2));
+
 	}
 
 	public static void buildEmailProps() {
@@ -121,6 +123,17 @@ public class TestUtils {
 						envSpecific.getProperty(Config.EMAIL_USERNAME));
 		Config.getInstance().setConfig(Config.EMAIL_PASSWORD,
 						envSpecific.getProperty(Config.EMAIL_PASSWORD));
+	}
+
+	public static void setDefaultEmailProps() {
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
+		Config.getInstance().setConfig(Config.CF_EMAIL_RECIPIENTS, "norep@apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_SERVER, "not.exists.apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_SENDER_NAME, "Apereo");
+		Config.getInstance().setConfig(Config.EMAIL_SENDER_ADDRESS, "fake-tester@apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_USERNAME, "username-test");
+		Config.getInstance().setConfig(Config.EMAIL_PASSWORD, "password-test");
+		Config.getInstance().setConfig(Config.DEV_MODE, Config.DEV_MODE_SKIP_EMAIL);
 	}
 
 	public static Properties loadEnvSpecificDefaults() {
