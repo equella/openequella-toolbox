@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -39,24 +40,76 @@ public class TestUtils {
 
 	public static void buildCheckFilesGeneralDbProps() {
 		Properties envSpecific = loadEnvSpecificDefaults();
+
+		List<String> passthroughs = new ArrayList<>();
+		passthroughs.add(Config.CF_DB_URL);
+		passthroughs.add(Config.CF_DB_USERNAME);
+		passthroughs.add(Config.CF_DB_PASSWORD);
+		passthroughs.add(Config.CF_FILESTORE_DIR);
+		passthroughs.add(Config.CF_EMAIL_RECIPIENTS);
+		passthroughs.add(Config.CF_FILENAME_ENCODING_LIST);
+		passthroughs.add("cf.filename.encoding.doubleQuote.original");
+		passthroughs.add("cf.filename.encoding.doubleQuote.result");
+		passthroughs.add("cf.filename.encoding.colon.original");
+		passthroughs.add("cf.filename.encoding.colon.result");
+		passthroughs.add("cf.filename.encoding.plus.original");
+		passthroughs.add("cf.filename.encoding.plus.result");
+		passthroughs.add("cf.filename.encoding.questionMark.original");
+		passthroughs.add("cf.filename.encoding.questionMark.result");
+		passthroughs.add("cf.filename.encoding.percent.original");
+		passthroughs.add("cf.filename.encoding.percent.result");
+		passthroughs.add("cf.filename.encoding.spaceBackslash.original");
+		passthroughs.add("cf.filename.encoding.spaceBackslash.result");
+		passthroughs.add("cf.filename.encoding.backslash.original");
+		passthroughs.add("cf.filename.encoding.backslash.result");
+		passthroughs.add("cf.filename.encoding.forwardslash.original");
+		passthroughs.add("cf.filename.encoding.forwardslash.result");
+		passthroughs.add("cf.filename.encoding.openParen.original");
+		passthroughs.add("cf.filename.encoding.openParen.result");
+		passthroughs.add("cf.filename.encoding.closeParen.original");
+		passthroughs.add("cf.filename.encoding.closeParen.result");
+		passthroughs.add("cf.filename.encoding.openBracket.original");
+		passthroughs.add("cf.filename.encoding.openBracket.result");
+		passthroughs.add("cf.filename.encoding.closeBracket.original");
+		passthroughs.add("cf.filename.encoding.closeBracket.result");
+		passthroughs.add("cf.filename.encoding.openCurly.original");
+		passthroughs.add("cf.filename.encoding.openCurly.result");
+		passthroughs.add("cf.filename.encoding.closeCurly.original");
+		passthroughs.add("cf.filename.encoding.closeCurly.result");
+		passthroughs.add("cf.filename.encoding.leadingPeriod.original");
+		passthroughs.add("cf.filename.encoding.leadingPeriod.result");
+		passthroughs.add("cf.filename.encoding.leadingBackslash.original");
+		passthroughs.add("cf.filename.encoding.leadingBackslash.result");
+		passthroughs.add("cf.filename.encoding.pipe.original");
+		passthroughs.add("cf.filename.encoding.pipe.result");
+		passthroughs.add("cf.filename.encoding.asterisk.original");
+		passthroughs.add("cf.filename.encoding.asterisk.result");
+		passthroughs.add("cf.filename.encoding.caret.original");
+		passthroughs.add("cf.filename.encoding.caret.result");
+		passthroughs.add("cf.filename.encoding.periodAfterBackslash.original");
+		passthroughs.add("cf.filename.encoding.periodAfterBackslash.result");
+		passthroughs.add("cf.filename.encoding.leftAngle.original");
+		passthroughs.add("cf.filename.encoding.leftAngle.result");
+		passthroughs.add("cf.filename.encoding.rightAngle.original");
+		passthroughs.add("cf.filename.encoding.rightAngle.result");
+
 		Config.getInstance().setConfig(Config.TOOLBOX_FUNCTION, Config.ToolboxFunction.CheckFiles.name());
 		Config.getInstance().setConfig(Config.CF_OUTPUT_FOLDER, "test-check-files-output/"+ UUID.randomUUID().toString()+"/");
 		Config.getInstance().setConfig(Config.CF_ADOPTER_NAME, "acme");
 		Config.getInstance().setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
 		Config.getInstance().setConfig(Config.CF_DB_TYPE, Config.CheckFilesSupportedDB.POSTGRE.name());
-		Config.getInstance().setConfig(Config.CF_DB_URL, envSpecific.getProperty(Config.CF_DB_URL));
-		Config.getInstance().setConfig(Config.CF_DB_USERNAME, envSpecific.getProperty(Config.CF_DB_USERNAME));
-		Config.getInstance().setConfig(Config.CF_DB_PASSWORD, envSpecific.getProperty(Config.CF_DB_PASSWORD));
-		Config.getInstance().setConfig(Config.CF_FILESTORE_DIR, envSpecific.getProperty(Config.CF_FILESTORE_DIR));
-		Config.getInstance().setConfig(Config.CF_EMAIL_RECIPIENTS, envSpecific.getProperty(Config.CF_EMAIL_RECIPIENTS));
+
+		for(String key : passthroughs) {
+			LOGGER.debug("Loading passthrough key [{}] as [{}]", key, envSpecific.getProperty(key));
+			Config.getInstance().setConfig(key, envSpecific.getProperty(key));
+		}
+
 		Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "20");
-		final String advFsKeyBeta = "cf.filestore.advanced.812.44ac1c1a-dd0c-462f-b717-53324c0dd6f9";
-		Config.getInstance().setConfig(advFsKeyBeta, envSpecific.getProperty(advFsKeyBeta));
-		final String advFsKeyBetaInst2 = "cf.filestore.advanced.1509.44ac1c1a-dd0c-462f-b717-53324c0dd6f9";
-		Config.getInstance().setConfig(advFsKeyBetaInst2, envSpecific.getProperty(advFsKeyBetaInst2));
-		final String advFsKeyCharlie = "cf.filestore.advanced.812.5a7b2083-2671-414b-8e5b-c4cd9dfa1f30";
-		Config.getInstance().setConfig(advFsKeyCharlie, envSpecific.getProperty(advFsKeyCharlie));
-		Config.getInstance().setConfig("cf.db.filestore.institution.handle.checkFilesTesting2", "checkFilesTesting2Renamed");
+		final String advFsKey1 = "cf.filestore.advanced.1244.df727509-77f7-4ce6-a9cb-2c5385565358";
+		Config.getInstance().setConfig(advFsKey1, envSpecific.getProperty(advFsKey1));
+		final String advFsKey2 = "cf.filestore.advanced.1845.df727509-77f7-4ce6-a9cb-2c5385565358";
+		Config.getInstance().setConfig(advFsKey2, envSpecific.getProperty(advFsKey2));
+
 	}
 
 	public static void buildEmailProps() {
@@ -70,6 +123,17 @@ public class TestUtils {
 						envSpecific.getProperty(Config.EMAIL_USERNAME));
 		Config.getInstance().setConfig(Config.EMAIL_PASSWORD,
 						envSpecific.getProperty(Config.EMAIL_PASSWORD));
+	}
+
+	public static void setDefaultEmailProps() {
+		Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NORMAL.name());
+		Config.getInstance().setConfig(Config.CF_EMAIL_RECIPIENTS, "norep@apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_SERVER, "not.exists.apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_SENDER_NAME, "Apereo");
+		Config.getInstance().setConfig(Config.EMAIL_SENDER_ADDRESS, "fake-tester@apereo.org");
+		Config.getInstance().setConfig(Config.EMAIL_USERNAME, "username-test");
+		Config.getInstance().setConfig(Config.EMAIL_PASSWORD, "password-test");
+		Config.getInstance().setConfig(Config.DEV_MODE, Config.DEV_MODE_SKIP_EMAIL);
 	}
 
 	public static Properties loadEnvSpecificDefaults() {

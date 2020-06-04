@@ -36,7 +36,7 @@ public class Config {
 
 	private static Config config;
 
-  public static final String VERSION = "1.4.0";
+  public static final String VERSION = "1.4.1-SNAPSHOT-F";
 	// toolbox function
 	public static final String TOOLBOX_FUNCTION = "toolbox.function";
 	public static enum ToolboxFunction {
@@ -122,6 +122,18 @@ public class Config {
 	public static final String CF_COMPARE_MISSING_ATTS_AFTER_RUN = "cf.compare.missing.atts.after.run";
 
 
+	// CSV
+	public static final String CF_FILENAME_ENCODING_LIST = "cf.filename.encodingList";
+
+	// See note in conf/blank.properties
+	public static final String CF_FILENAME_ENCODING_BASE = "cf.filename.encoding.";
+	public static final String CF_FILENAME_ENCODING_ORIGINAL = ".original";
+	public static final String CF_FILENAME_ENCODING_RESULT = ".result";
+
+	// For Testing
+	public static final String DEV_MODE = "dev.mode";
+	public static final String DEV_MODE_SKIP_EMAIL = "skip-email";
+
 	public enum CheckFilesType {
     REST,  // Implemented, but needs testing after the open source effort
     DB_ALL_ITEMS_ALL_ATTS, // Currently the only supported method
@@ -132,9 +144,9 @@ public class Config {
     POSTGRE
   }
 
-  public enum CheckFilesEmailMode {
-    NONE, NORMAL, ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS
-  }
+	public enum CheckFilesEmailMode {
+		NONE, NORMAL, ONLY_NEW_MISSING_ATTACHMENTS_OR_ERRORS
+	}
 
   private static Logger LOGGER = LogManager.getLogger(Config.class);
 
@@ -319,7 +331,6 @@ public class Config {
         if(validConfig) checkInt(CF_TESTING_TIMEOUT, true);
         break;
       } case DB_BATCH_ITEMS_PER_ITEM_ATTS: {
-        LOGGER.warn("WARNING:  This mode needs more testing...");
       } case DB_ALL_ITEMS_ALL_ATTS: {
         checkConfig(CF_DB_URL, true, true);
         checkConfig(CF_DB_USERNAME, true, true);
@@ -329,8 +340,15 @@ public class Config {
         checkConfig(CF_FILESTORE_DIR, true, true);
         checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
         checkConfig(CF_FILTER_BY_COLLECTION, true, false);
-        checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
-        break;
+				checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
+				checkConfig(CF_FILENAME_ENCODING_LIST, true, false);
+				if(validConfig && hasConfig(CF_FILENAME_ENCODING_LIST)) {
+					for(String key : getConfigAsStringArray(CF_FILENAME_ENCODING_LIST)) {
+						checkConfig(CF_FILENAME_ENCODING_BASE+key+CF_FILENAME_ENCODING_ORIGINAL, true, true);
+						checkConfig(CF_FILENAME_ENCODING_BASE+key+CF_FILENAME_ENCODING_RESULT, true, true);
+					}
+				}
+				break;
       } default: {
         LOGGER.warn("Property {} must be a known value  Instead was [{}].", CF_MODE, getConfig(CF_MODE));
         validConfig = false;
@@ -338,6 +356,10 @@ public class Config {
       }
     }
   }
+
+  public String[] getConfigAsStringArray(String key) {
+		return this.getConfig(key).split(",");
+	}
 
   private void checkConfigsThumbnailV1() {
 		checkConfig(THUMBNAIL_V1_IM_LOCATION, true, true);
@@ -484,7 +506,9 @@ public class Config {
 	  if(this.store == null) {
       this.store = new Properties();
     }
-		this.store.setProperty(key, val);
+    if(val != null) {
+			this.store.setProperty(key, val);
+		}
 	}
 
 	// convenience method

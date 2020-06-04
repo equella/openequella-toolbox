@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.apereo.openequella.tools.toolbox.utils.FileUtils;
@@ -79,5 +80,16 @@ public class FileUtilsTest {
 			fail(e.getMessage());
 		}
 		
+	}
+
+	@Test
+	public void testCompareFilenames() {
+		try {
+			String pre = "test $ filename";
+			File f = File.createTempFile(pre, "txt");
+			assertTrue(f.getName().startsWith(pre));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 }

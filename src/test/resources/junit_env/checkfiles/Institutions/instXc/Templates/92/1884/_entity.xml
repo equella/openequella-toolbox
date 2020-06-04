@@ -1,0 +1,1617 @@
+<com.tle.common.ImportExportPack>
+  <entity class="com.tle.beans.entity.itemdef.ItemDefinition">
+    <system>false</system>
+    <schema entityclass="com.tle.beans.entity.Schema" uuid="9fc6f87c-88c8-4492-81e3-69b2e1399097"/>
+    <type>generic</type>
+    <wizardcategory>Moodle Demo</wizardcategory>
+    <iconPath>icons/text.gif</iconPath>
+    <iconUploaded>false</iconUploaded>
+    <reviewperiod>-2147483648</reviewperiod>
+    <slow>
+      <id>28958</id>
+      <itemMetadataRules/>
+      <wizard>
+        <pages>
+          <com.dytech.edge.wizard.beans.DefaultWizardPage>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Book details</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+            <background>-1</background>
+            <controls>
+              <com.dytech.edge.wizard.beans.control.ShuffleList>
+                <tokenise>true</tokenise>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>true</checkDuplication>
+                <controls/>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>5</size1>
+                <size2>450</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>ISBN</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Enter ISBN then click &quot;Add&quot;</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/isbn</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.ShuffleList>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>true</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>true</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Book Title</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Include the full title of the book</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/title</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/itembody/name</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>5</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Abstract or notes</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/abstract</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/itembody/description</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>50</size1>
+                <size2>2</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Intellectual responsibility</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Statement of author and other roles such as editor, translator etc.</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/responsibility</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.ShuffleList>
+                <tokenise>true</tokenise>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <controls/>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>5</size1>
+                <size2>450</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Author Name</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Enter the author(s) of this book (Surname, Given I.) then click &quot;Add&quot;</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/authors/author</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.ShuffleList>
+              <com.dytech.edge.wizard.beans.control.ShuffleList>
+                <tokenise>true</tokenise>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <controls/>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>5</size1>
+                <size2>450</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Editors</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Enter the editor(s) of this book (Surname, Given I.) then click &quot;Add&quot;</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <script>var bRet = false; 
+if( xml.contains(&apos;/item/copyright/@type&apos;, &apos;xxx&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/editors/editor</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.ShuffleList>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Edition</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>e.g. 4th ed.</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/edition</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>50</size1>
+                <size2>2</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Internal notes</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Bibliographic and other details viewable only by content administrators </text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <script>var bRet = false; 
+if( user.hasRole(&apos;ROLE_CONTENT_ADMINISTRATOR&apos;) ) 
+{ 
+    bRet = true; 
+} 
+return bRet; 
+</script>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/internalnotes</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.Html>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>0</size2>
+                <description>
+                  <id>0</id>
+                  <strings class="java.util.Collections-SingletonMap">
+                    <k class="string">en_AU</k>
+                    <v class="com.tle.beans.entity.LanguageString">
+                      <id>0</id>
+                      <locale>en_AU</locale>
+                      <priority>2</priority>
+                      <text>&lt;hr&gt;</text>
+                      <bundle reference="../../.."/>
+                    </v>
+                  </strings>
+                </description>
+                <targetnodes/>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.Html>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Place of publication</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/publication/place</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Publisher</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/publisher</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Year of publication of book</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <description>
+                  <id>0</id>
+                </description>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/publication/year</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.Html>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>0</size2>
+                <description>
+                  <id>0</id>
+                  <strings class="java.util.Collections-SingletonMap">
+                    <k class="string">en_AU</k>
+                    <v class="com.tle.beans.entity.LanguageString">
+                      <id>0</id>
+                      <locale>en_AU</locale>
+                      <priority>2</priority>
+                      <text>&lt;hr&gt;</text>
+                      <bundle reference="../../.."/>
+                    </v>
+                  </strings>
+                </description>
+                <targetnodes/>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.Html>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>true</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Total number of pages</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/pages</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.Html>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>0</size1>
+                <size2>0</size2>
+                <description>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en_AU</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en_AU</locale>
+                        <priority>2</priority>
+                        <text>&lt;hr&gt;</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </description>
+                <targetnodes/>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.Html>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>50</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Conference name</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/conference/name</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>10</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Conference number</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/conference/number</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>50</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Conference location</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/conference/location</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+              <com.dytech.edge.wizard.beans.control.EditBox>
+                <links>false</links>
+                <number>false</number>
+                <forceUnique>false</forceUnique>
+                <checkDuplication>false</checkDuplication>
+                <allowMultiLang>false</allowMultiLang>
+                <mandatory>false</mandatory>
+                <reload>false</reload>
+                <styles>false</styles>
+                <include>true</include>
+                <size1>20</size1>
+                <size2>1</size2>
+                <title>
+                  <id>0</id>
+                  <strings>
+                    <entry>
+                      <string>en</string>
+                      <com.tle.beans.entity.LanguageString>
+                        <id>0</id>
+                        <locale>en</locale>
+                        <priority>1</priority>
+                        <text>Conference date</text>
+                        <bundle reference="../../../.."/>
+                      </com.tle.beans.entity.LanguageString>
+                    </entry>
+                  </strings>
+                </title>
+                <targetnodes>
+                  <com.dytech.edge.wizard.TargetNode>
+                    <target>/item/copyright/conference/year</target>
+                    <attribute></attribute>
+                    <noSearch>false</noSearch>
+                  </com.dytech.edge.wizard.TargetNode>
+                </targetnodes>
+                <items/>
+              </com.dytech.edge.wizard.beans.control.EditBox>
+            </controls>
+          </com.dytech.edge.wizard.beans.DefaultWizardPage>
+        </pages>
+        <metadata>
+          <data>
+            <com.dytech.edge.wizard.beans.Metadata>
+              <target>/item/copyright/@type</target>
+              <value>Book</value>
+            </com.dytech.edge.wizard.beans.Metadata>
+          </data>
+        </metadata>
+        <saveScript>/* save script to modify the item display title to be of the form:
+&lt;title&gt;[, v.&lt;vol&gt;][, &lt;issuevalue&gt;][, &lt;year&gt;] 
+where issuevalue is one of:
+no. &lt;issuevalue&gt; (if a number)
+dd mmmmmmm (if a date), or
+&lt;issuevalue&gt; 							*/
+
+var hTitle = xml.get(&apos;/item/copyright/title&apos;);
+var hVol = xml.get(&apos;/item/copyright/volume&apos;);
+var hIssType = xml.get(&apos;/item/copyright/issue/type&apos;);
+var hIssVal = xml.get(&apos;/item/copyright/issue/value&apos;);
+var hYear = xml.get(&apos;/item/copyright/publication/year&apos;);
+
+/* testing - uncomment to show variables in XML
+xml.set(&apos;/item/aaa/hTitle&apos;,hTitle);
+xml.set(&apos;/item/aaa/hVol&apos;,hVol);
+xml.set(&apos;/item/aaa/hIssType&apos;,hIssType);
+xml.set(&apos;/item/aaa/hIssVal&apos;,hIssVal);
+xml.set(&apos;/item/aaa/hYear&apos;,hYear);
+ */
+
+/* Add volume if it exists */
+if (hVol != &apos;&apos;) {hTitle=hTitle+&apos;, vol. &apos;+hVol}
+
+/* change IssVal from &lt;date&gt;T&lt;time&gt; to dd mmmmmmm */
+var hIssValStr = hIssVal.toString();
+
+/* testing - uncomment to show variables in XML
+xml.set(&apos;/item/aaa/hIssValStr&apos;,hIssValStr);
+xml.set(&apos;/item/aaa/hIssValLength&apos;,hIssValStr.length());
+*/
+if (hIssType = &apos;date&apos; &amp;&amp; hIssValStr.length()==19)
+{
+  hIssValDay=hIssValStr.substr(8,2);
+  hIssValMonth=hIssValStr.substr(5,2);
+  if (hIssValMonth==&quot;01&quot;) {hIssValMonth=&quot;January&quot;};
+  if (hIssValMonth==&quot;02&quot;) {hIssValMonth=&quot;February&quot;};
+  if (hIssValMonth==&quot;03&quot;) {hIssValMonth=&quot;March&quot;};
+  if (hIssValMonth==&quot;04&quot;) {hIssValMonth=&quot;April&quot;};
+  if (hIssValMonth==&quot;05&quot;) {hIssValMonth=&quot;May&quot;};
+  if (hIssValMonth==&quot;06&quot;) {hIssValMonth=&quot;June&quot;};
+  if (hIssValMonth==&quot;07&quot;) {hIssValMonth=&quot;July&quot;};
+  if (hIssValMonth==&quot;08&quot;) {hIssValMonth=&quot;August&quot;};
+  if (hIssValMonth==&quot;09&quot;) {hIssValMonth=&quot;September&quot;};
+  if (hIssValMonth==&quot;10&quot;) {hIssValMonth=&quot;October&quot;};
+  if (hIssValMonth==&quot;11&quot;) {hIssValMonth=&quot;November&quot;};
+  if (hIssValMonth==&quot;12&quot;) {hIssValMonth=&quot;December&quot;};
+
+  /* testing - uncomment to show variables in XML
+  xml.set(&apos;/item/aaa/hIssValDay&apos;,hIssValDay);
+  xml.set(&apos;/item/aaa/hIssValMonth&apos;,hIssValMonth);
+  */
+  hTitle=hTitle+&apos;, &apos;+hIssValDay+&apos; &apos;+hIssValMonth;
+}
+else
+{
+  /* if a value exists, check to see if it is actually a number before adding &quot;no.&quot; */
+  if (hIssVal != &apos;&apos;)
+  {
+    if (isNaN(hIssVal))
+    {
+      hTitle=hTitle+&apos;, &apos;+hIssVal;
+    }
+    else
+    {
+      hTitle=hTitle+&apos;, no. &apos;+hIssVal;
+    }
+  }
+}
+
+/* Finally check for and add year to the display title */
+if (hYear != &apos;&apos;) {hTitle=hTitle+&apos;, &apos;+hYear}
+
+/* Store the created value back to the display title */
+xml.set(&apos;/item/itembody/name&apos;,hTitle);</saveScript>
+      </wizard>
+      <searchDetails>
+        <displayNodes>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <node>/item/copyright/isbn</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>isbn</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+        </displayNodes>
+      </searchDetails>
+      <metadataMapping>
+        <imsMapping class="list"/>
+        <htmlMapping class="list"/>
+        <literalMapping class="list"/>
+      </metadataMapping>
+      <confirmationTemplate>
+        <type>DISPLAY_NODES</type>
+        <displayNodes>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/authors/author</node>
+            <splitter>; </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Author</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/isbn</node>
+            <splitter>; </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>ISBN</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/publication/place</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Place</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/publisher</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Publisher</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/publication/year</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Year</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/pages</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Pages</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+        </displayNodes>
+      </confirmationTemplate>
+      <itemSummaryTemplate>
+        <type>DISPLAY_NODES</type>
+        <displayNodes>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/title</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Title</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/authors/author</node>
+            <splitter>: </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Author/s</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/editors/editor</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Editor</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/responsibility</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Responsibilities</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/publication/place</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Place</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/publisher</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Publisher</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/publication/year</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Pub. Year</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/edition</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Edition</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/isbn</node>
+            <splitter>; </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>ISBN</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/pages</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Pages</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/internalnotes</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Notes</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/conference/name</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Conference name</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>single</mode>
+            <node>/item/copyright/conference/location</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Conference location</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/conference/number</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Conf. No.</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+          <com.tle.beans.entity.itemdef.DisplayNode>
+            <mode>double</mode>
+            <node>/item/copyright/conference/year</node>
+            <splitter>, </splitter>
+            <type>text</type>
+            <title>
+              <id>0</id>
+              <strings>
+                <entry>
+                  <string>en</string>
+                  <com.tle.beans.entity.LanguageString>
+                    <id>0</id>
+                    <locale>en</locale>
+                    <priority>1</priority>
+                    <text>Conf. Year</text>
+                    <bundle reference="../../../.."/>
+                  </com.tle.beans.entity.LanguageString>
+                </entry>
+              </strings>
+            </title>
+          </com.tle.beans.entity.itemdef.DisplayNode>
+        </displayNodes>
+      </itemSummaryTemplate>
+      <escalations/>
+    </slow>
+    <thumbnailMax>3</thumbnailMax>
+    <thumbnailHeight>50</thumbnailHeight>
+    <id>28953</id>
+    <uuid>29c6294b-58df-485b-b194-92740d565fef</uuid>
+    <institution>
+      <id>10446</id>
+      <enabled>true</enabled>
+    </institution>
+    <owner>TLE_ADMINISTRATOR</owner>
+    <dateModified class="sql-timestamp">2008-08-19 22:02:58.346</dateModified>
+    <dateCreated class="sql-timestamp">2008-08-19 09:09:38.02</dateCreated>
+    <description>
+      <id>30982</id>
+      <strings>
+        <entry>
+          <string>en</string>
+          <com.tle.beans.entity.LanguageString>
+            <id>30983</id>
+            <locale>en</locale>
+            <priority>1</priority>
+            <text>Records for eReserve book holdings</text>
+            <bundle reference="../../../.."/>
+          </com.tle.beans.entity.LanguageString>
+        </entry>
+      </strings>
+    </description>
+    <name>
+      <id>30984</id>
+      <strings>
+        <entry>
+          <string>en</string>
+          <com.tle.beans.entity.LanguageString>
+            <id>30985</id>
+            <locale>en</locale>
+            <priority>1</priority>
+            <text>Books</text>
+            <bundle reference="../../../.."/>
+          </com.tle.beans.entity.LanguageString>
+        </entry>
+      </strings>
+    </name>
+    <attributes>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>com.tle.cal-AgreementFile</key>
+        <value>cal/Your HTML copyright VB notice goes here.htm</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>com.tle.cal-Enabled</key>
+        <value>true</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>com.tle.cal-ActivationError</key>
+        <value>&lt;xml&gt;&lt;string language=&quot;en&quot;&gt;Sorry, this activation would put you in violation of statutory copyright law. &amp;lt;a href=&amp;quot;mailto:helpful@somewhere.com&amp;quot;&amp;gt;Click here to email someone helpful for assistance.&amp;lt;/a&amp;gt;&lt;/string&gt;&lt;/xml&gt;</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>com.tle.cal-InActiveError</key>
+        <value>&lt;xml&gt;&lt;string language=&quot;en&quot;&gt;This item is currently not active. If you believe it should be, please activate it or &amp;lt;a href=&amp;quot;mailto:helpful@somewhere.com&amp;quot;&amp;gt;Click here to email someone helpful for assistance.&amp;lt;/a&amp;gt;&lt;/string&gt;&lt;/xml&gt;</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+      <com.tle.beans.entity.BaseEntity-Attribute>
+        <key>com.tle.cal-HasAgreement</key>
+        <value>true</value>
+      </com.tle.beans.entity.BaseEntity-Attribute>
+    </attributes>
+  </entity>
+  <version>3.2</version>
+  <targetList>
+    <entries>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>DEACTIVATE_ACTIVATION_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>DISCOVER_ITEM</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>EDIT_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>SHARE_ITEM</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>SEARCH_COLLECTION</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>DELETE_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>REASSIGN_OWNERSHIP_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>DELETE_COLLECTION</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>CREATE_ITEM</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>VIEW_ACTIVATION_ITEM</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>VIEW_ITEM</privilege>
+        <who>G:e873b4c7-1569-c8dc-43c9-fcc4698e1971 </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>DELETE_ACTIVATION_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>COPYRIGHT_ITEM</privilege>
+        <who>R:c76190d2-9077-4948-05eb-2612a55481ec </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>EDIT_COLLECTION</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+      <com.tle.common.security.TargetListEntry>
+        <granted>true</granted>
+        <override>false</override>
+        <privilege>VIEW_HISTORY_ITEM</privilege>
+        <who>G:02c8be86-d5aa-4e1b-d2cb-096541d9a58b </who>
+      </com.tle.common.security.TargetListEntry>
+    </entries>
+  </targetList>
+  <otherTargetLists>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>DELETED</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>DRAFT</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>REVIEW</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>ARCHIVED</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>LIVE</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>SUSPENDED</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>MODERATING</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+    <entry>
+      <com.tle.common.security.ItemStatusTarget>
+        <itemStatusValue>REJECTED</itemStatusValue>
+        <itemDefinition reference="../../../../entity"/>
+      </com.tle.common.security.ItemStatusTarget>
+      <com.tle.common.security.TargetList>
+        <entries/>
+      </com.tle.common.security.TargetList>
+    </entry>
+  </otherTargetLists>
+</com.tle.common.ImportExportPack>

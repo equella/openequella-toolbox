@@ -12,7 +12,10 @@
 		</File>
 	</Appenders>
 	<Loggers>
-		<Root level="DEBUG">
+		<!--<Logger name="org.apereo.openequella.tools.toolbox.utils.Stats" level="info">
+			<AppenderRef ref="Console"/>
+		</Logger>-->
+		<Root level="INFO">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="LogFile" />
 		</Root>

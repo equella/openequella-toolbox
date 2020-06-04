@@ -28,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -200,5 +202,32 @@ public class FileUtils {
 			sb.append(",");
 		}
 		return sb.toString();
+	}
+
+	public static boolean findFile(String base, String name) {
+		File baseFile = new File(base);
+		if(!baseFile.exists()) {
+			LOGGER.debug("File base doesn't exist - base=[{}], name=[{}].", base, name);
+			return false;
+		}
+
+		try {
+			Collection availableFiles = org.apache.commons.io.FileUtils.listFiles(baseFile, null, true);
+			final String filePathNameToCheck = base + name;
+			for (Iterator iterator = availableFiles.iterator(); iterator.hasNext();) {
+				File fileToCheck = (File) iterator.next();
+				if (fileToCheck.getAbsolutePath().equals(filePathNameToCheck)) {
+					LOGGER.debug("Filename in question [{}] FOUND at location [{}]", filePathNameToCheck, fileToCheck.getAbsolutePath());
+					return false;
+				} else {
+					LOGGER.debug("Filename in question [{}] does NOT equal the filename [{}]", filePathNameToCheck, fileToCheck.getAbsolutePath());
+				}
+			}
+		} catch(Exception e) {
+			LOGGER.error("Exception occurred when looking for file [{}][{}].  Assuming false.");
+			return false;
+		}
+		LOGGER.debug("File doesn't exist [{}][{}].", base, name);
+		return false;
 	}
 }

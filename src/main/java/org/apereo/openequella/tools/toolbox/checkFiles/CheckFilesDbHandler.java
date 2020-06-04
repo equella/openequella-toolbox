@@ -36,6 +36,8 @@ import org.apache.logging.log4j.Logger;
 
 import org.apereo.openequella.tools.toolbox.Config;
 import org.apereo.openequella.tools.toolbox.utils.Check;
+import org.apereo.openequella.tools.toolbox.utils.CheckFilesUtils;
+import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.apereo.openequella.tools.toolbox.utils.WhereClauseExpression;
 
 /**
@@ -227,6 +229,7 @@ public class CheckFilesDbHandler {
 				}
 			}
 		} catch (IOException e) {
+			// TODO - add to 'fatal errors' since returning false to stop the run
 			logger.fatal("Unrecoverable error while processing item - {}",
 					e.getMessage(), e);
 			return false;
@@ -239,24 +242,47 @@ public class CheckFilesDbHandler {
 
 		String attPath = String.format("/%d/%s/%s/",
 						hash, attRow.getItemUuid(),
-						attRow.getItemVersion())
-						// Prevent odd encoding issues by not taking part in the format operation
-						// Account for oEQ encoding plus signs (+) as %2b
-						+ attRow.getAttFilePath().replaceAll("\\+", "%2b");
+						attRow.getItemVersion());
+
+		// Prevent odd encoding issues by not taking part in the format operation
+		// above.  Allow for a configured set of percent encoded values
+		String attName = attRow.getAttFilePath();
+		logger.debug("Original attachment name: [{}]", attName);
+		if(Config.getInstance().hasConfig(Config.CF_FILENAME_ENCODING_LIST)) {
+			for(String key : Config.getInstance().getConfigAsStringArray(Config.CF_FILENAME_ENCODING_LIST)) {
+				final String original = CheckFilesUtils.specialCharReplace(Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_ORIGINAL));
+				final String result = Config.get(Config.CF_FILENAME_ENCODING_BASE+key+Config.CF_FILENAME_ENCODING_RESULT);
+				logger.trace("Attachment replacement [{}]->[{}]", original, result);
+				attName = attName.replaceAll(original, result);
+				logger.trace("Attachment name after a replacement of [{}]->[{}]: [{}]", original, result, attName);
+			}
+		}
 
 		String basePath = Config.get(Config.CF_FILESTORE_DIR)+"/"+institutionsById.get(attRow.getInstitutionId())
 						.getFilestoreHandle()+"/Attachments";
 
 		// See if this attachment is in an 'advanced filestore'.
 		final String key = Config.CF_FILESTORE_DIR_ADV+attRow.getInstitutionId()+"."+attRow.getCollectionUuid();
-		logger.debug("Checking if the attachment [{}] has an associated adv filestore via the property [{}].", attPath, key);
+		logger.debug("Checking if the attachment [{}][{}] has an associated adv filestore via the property [{}].", attPath, attName, key);
 		if(Config.getInstance().hasConfig(key)) {
 			basePath = Config.get(key);
 		}
 
-		final String path = basePath + attPath;
-		logger.info("Using path [{}] to check attachment.", path);
-		return (new File(path)).exists();
+		final String path = basePath + attPath + attName;
+		final String altPath = basePath + "/" + attRow.getCollectionUuid() + attPath + attName;
+
+		if(Config.getInstance().hasConfig(key)) {
+			logger.info("Using advanced filestore path [{}] to check attachment.", path);
+		} else {
+			logger.info("Using path [{}] to check attachment.", path);
+		}
+		logger.info("Alt path [{}] to check attachment.", altPath);
+
+		if((new File(path)).exists()) {
+			return true;
+		} else {
+			return (new File(altPath)).exists();
+		}
 	}
 
 	/**
@@ -433,7 +459,7 @@ public class CheckFilesDbHandler {
 				rs.close();
 				long batchDur = System.currentTimeMillis() - batchStart;
 				ReportManager.getInstance().getStats().queryRan(batchDur);
-				logger.info("Cached a batch of attachments.  Duration {} ms.",
+				logger.debug("Cached a batch of attachments.  Duration {} ms.",
 						batchDur);
 
 			}
@@ -445,6 +471,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		logger.info("Cached {} attachments (query per item).  Duration {} ms.",
 				counter, dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
 		return true;
 	}
 
@@ -479,6 +506,7 @@ public class CheckFilesDbHandler {
 		ReportManager.getInstance().getStats().queryRan(dur);
 		logger.info("Cached {} attachments (single query).  Duration {} ms.",
 				counter, dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
 		return true;
 	}
 
@@ -564,7 +592,7 @@ public class CheckFilesDbHandler {
 		try {
 			PreparedStatement stmt = con
 					.prepareStatement("select i.id, i.short_name, i.name, i.unique_id, i.url "
-							+ "from institution i");
+							+ "from institution i order by i.short_name");
 			ResultSet rs = stmt.executeQuery();
 			while (rs.next()) {
 				InstitutionRow ir = new InstitutionRow();
@@ -659,6 +687,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		ReportManager.getInstance().getStats().queryRan(dur);
 		logger.info("Cached items (single query).  Duration {} ms.", dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalItems(attachmentsCache.size());
 		return true;
 	}
 
@@ -675,7 +704,6 @@ public class CheckFilesDbHandler {
 							WhereClauseExpression
 									.makeWhereClause(whereClauseExpressions));
 			logger.debug("SQL:  [{}]", sql);
-
 			int offsetCounter = 0;
 			boolean hasMore = false;
 			do {
@@ -741,6 +769,7 @@ public class CheckFilesDbHandler {
 		long dur = System.currentTimeMillis() - start;
 		logger.info("Cached items (batched queries).  Total duration {} ms.",
 				dur);
+		ReportManager.getInstance().getStats().incNumGrandTotalItems(attachmentsCache.size());
 		return true;
 	}
 }
