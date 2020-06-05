@@ -1,5 +1,4 @@
 *.class
-*.log
 *.ctxt
 .mtj.tmp/
 *.jar
@@ -15,3 +14,5 @@ hs_err_pid*
 build/
 test*.properties
 test*.xml
+*.log
+!src/test/**/*.log
