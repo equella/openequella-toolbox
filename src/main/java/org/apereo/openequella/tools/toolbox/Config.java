@@ -144,7 +144,12 @@ public class Config {
   public enum CheckFilesType {
     REST, // Implemented, but needs testing after the open source effort
     DB_ALL_ITEMS_ALL_ATTS, // Currently the only supported method
-    DB_BATCH_ITEMS_PER_ITEM_ATTS // Implemented, but needs testing after the open source effort
+    DB_BATCH_ITEMS_PER_ITEM_ATTS,
+		// supports caching by a block of items, and for each item cached,
+		// pulls the attachments for the items and checks existance BEFORE
+		// getting more items.
+		DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE
+
   }
 
   public enum CheckFilesSupportedDB {
@@ -334,55 +339,46 @@ public class Config {
       checkConfigsEmail();
       checkConfig(CF_EMAIL_RECIPIENTS, true, true);
     }
-    if (validConfig) {
-      switch (CheckFilesType.valueOf(getConfig(CF_MODE))) {
-        case REST:
-          {
-            LOGGER.warn("WARNING:  This mode needs more testing...");
+    if(validConfig) {
+      switch(CheckFilesType.valueOf(getConfig(CF_MODE))) {
+      case REST: {
+        LOGGER.warn("WARNING:  This mode needs more testing...");
 
-            checkConfig(OEQ_URL, true, true);
-            checkConfig(OEQ_OAUTH_CLIENT_ID, true, true);
-            checkConfig(OEQ_OAUTH_CLIENT_SECRET, false, true);
-            checkConfig(CF_INSTITUTION_SHORTNAME, true, true);
-            checkConfig(CF_MAX_TRIES, true, true);
-            if (validConfig) checkInt(CF_MAX_TRIES, true);
-            checkConfig(CF_TESTING_TIMEOUT, true, true);
-            if (validConfig) checkInt(CF_TESTING_TIMEOUT, true);
-            break;
-          }
-        case DB_BATCH_ITEMS_PER_ITEM_ATTS:
-          {
-          }
-        case DB_ALL_ITEMS_ALL_ATTS:
-          {
-            checkConfig(CF_DB_URL, true, true);
-            checkConfig(CF_DB_USERNAME, true, true);
-            checkConfig(CF_DB_PASSWORD, false, true);
-            checkConfig(CF_DB_TYPE, true, true);
-            if (validConfig) checkEnum(CF_DB_TYPE, CheckFilesSupportedDB.class, true);
-            checkConfig(CF_FILESTORE_DIR, true, true);
-            checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
-            checkConfig(CF_FILTER_BY_COLLECTION, true, false);
-            checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
-            checkConfig(CF_FILENAME_ENCODING_LIST, true, false);
-            if (validConfig && hasConfig(CF_FILENAME_ENCODING_LIST)) {
-              for (String key : getConfigAsStringArray(CF_FILENAME_ENCODING_LIST)) {
-                checkConfig(
-                    CF_FILENAME_ENCODING_BASE + key + CF_FILENAME_ENCODING_ORIGINAL, true, true);
-                checkConfig(
-                    CF_FILENAME_ENCODING_BASE + key + CF_FILENAME_ENCODING_RESULT, true, true);
-              }
-            }
-            break;
-          }
-        default:
-          {
-            LOGGER.warn(
-                "Property {} must be a known value  Instead was [{}].",
-                CF_MODE,
-                getConfig(CF_MODE));
-            validConfig = false;
-          }
+        checkConfig(OEQ_URL, true, true);
+        checkConfig(OEQ_OAUTH_CLIENT_ID, true, true);
+        checkConfig(OEQ_OAUTH_CLIENT_SECRET, false, true);
+        checkConfig(CF_INSTITUTION_SHORTNAME, true, true);
+        checkConfig(CF_MAX_TRIES, true, true);
+        if(validConfig) checkInt(CF_MAX_TRIES, true);
+        checkConfig(CF_TESTING_TIMEOUT, true, true);
+        if(validConfig) checkInt(CF_TESTING_TIMEOUT, true);
+        break;
+      } case DB_BATCH_ITEMS_PER_ITEM_ATTS: {
+					// pass through
+				} case DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE: {
+					// pass through
+	    } case DB_ALL_ITEMS_ALL_ATTS: {
+        checkConfig(CF_DB_URL, true, true);
+        checkConfig(CF_DB_USERNAME, true, true);
+        checkConfig(CF_DB_PASSWORD, false, true);
+        checkConfig(CF_DB_TYPE, true, true);
+        if(validConfig) checkEnum(CF_DB_TYPE, CheckFilesSupportedDB.class, true);
+        checkConfig(CF_FILESTORE_DIR, true, true);
+        checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
+        checkConfig(CF_FILTER_BY_COLLECTION, true, false);
+				checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
+				checkConfig(CF_FILENAME_ENCODING_LIST, true, false);
+				if(validConfig && hasConfig(CF_FILENAME_ENCODING_LIST)) {
+					for(String key : getConfigAsStringArray(CF_FILENAME_ENCODING_LIST)) {
+						checkConfig(CF_FILENAME_ENCODING_BASE+key+CF_FILENAME_ENCODING_ORIGINAL, true, true);
+						checkConfig(CF_FILENAME_ENCODING_BASE+key+CF_FILENAME_ENCODING_RESULT, true, true);
+					}
+				}
+				break;
+      } default: {
+        LOGGER.warn("Property {} must be a known value  Instead was [{}].", CF_MODE, getConfig(CF_MODE));
+        validConfig = false;
+      }
       }
     }
   }
