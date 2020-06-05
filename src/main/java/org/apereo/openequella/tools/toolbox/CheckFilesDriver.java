@@ -150,21 +150,26 @@ public class CheckFilesDriver {
     return true;
   }
 
-    public static boolean run() {
-        switch(Config.getCheckFilesTypeConfig()) {
-            case REST: {
-                LOGGER.error("REST mode has not been reimplemented.  Exiting.");
-                //return (new AttachmentPingHandler()).execute();
-                return false;
-            } case DB_BATCH_ITEMS_PER_ITEM_ATTS:
-            case DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE:
-            case DB_ALL_ITEMS_ALL_ATTS: {
-                return (new CheckFilesDbHandler()).execute();
-            } default: {
-                LOGGER.error("Unknown CheckFiles mode of [{}]...", Config.get(Config.CF_MODE));
-                return false;
-            }
+  public static boolean run() {
+    switch (Config.getCheckFilesTypeConfig()) {
+      case REST:
+        {
+          LOGGER.error("REST mode has not been reimplemented.  Exiting.");
+          // return (new AttachmentPingHandler()).execute();
+          return false;
         }
+      case DB_BATCH_ITEMS_PER_ITEM_ATTS:
+      case DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE:
+      case DB_ALL_ITEMS_ALL_ATTS:
+        {
+          return (new CheckFilesDbHandler()).execute();
+        }
+      default:
+        {
+          LOGGER.error("Unknown CheckFiles mode of [{}]...", Config.get(Config.CF_MODE));
+          return false;
+        }
+    }
   }
 
   public static boolean finalizeRun() {
