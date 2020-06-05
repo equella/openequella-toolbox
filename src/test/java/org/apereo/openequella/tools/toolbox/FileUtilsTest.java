@@ -25,71 +25,70 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.Properties;
-
 import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.junit.Test;
 
 public class FileUtilsTest {
-	
-	@Test
-	public void testExtractSuffixAudio() {
-		Properties props = new Properties();
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3 , .wma, .wav");
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
-		try {
-			Config.reset();
-			Config.getInstance().init(props);
-			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
-			assertEquals(".MP3", FileUtils.extractSuffix("myfilename.mP3"));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-		
-	}
-	
-	@Test
-	public void testExtractSuffixVideo() {
-		Properties props = new Properties();
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3, .wma, .wav");
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
-		try {
-			Config.reset();
-			Config.getInstance().init(props);
-			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
-			assertEquals(".MOV", FileUtils.extractSuffix("myfilename.moV"));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-		
-	}
-	
-	@Test
-	public void testExtractSuffixNoSuffix() {
-		Properties props = new Properties();
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".mp3, .wma, .wav");
-		props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
-		try {
-			Config.reset();
-			Config.getInstance().init(props);
-			Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
-			assertTrue("Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
-			assertNull(FileUtils.extractSuffix("myfilename"));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-		
-	}
 
-	@Test
-	public void testCompareFilenames() {
-		try {
-			String pre = "test $ filename";
-			File f = File.createTempFile(pre, "txt");
-			assertTrue(f.getName().startsWith(pre));
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+  @Test
+  public void testExtractSuffixAudio() {
+    Properties props = new Properties();
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3 , .wma, .wav");
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
+    try {
+      Config.reset();
+      Config.getInstance().init(props);
+      Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+      assertTrue(
+          "Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+      assertEquals(".MP3", FileUtils.extractSuffix("myfilename.mP3"));
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testExtractSuffixVideo() {
+    Properties props = new Properties();
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".Mp3, .wma, .wav");
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
+    try {
+      Config.reset();
+      Config.getInstance().init(props);
+      Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+      assertTrue(
+          "Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+      assertEquals(".MOV", FileUtils.extractSuffix("myfilename.moV"));
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testExtractSuffixNoSuffix() {
+    Properties props = new Properties();
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO, ".mp3, .wma, .wav");
+    props.put(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO, ".mp4,.mov");
+    try {
+      Config.reset();
+      Config.getInstance().init(props);
+      Config.getInstance().checkMigrateToKalturaAttachmentSuffixes();
+      assertTrue(
+          "Config is expected to be valid, but is not.", Config.getInstance().isValidConfig());
+      assertNull(FileUtils.extractSuffix("myfilename"));
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testCompareFilenames() {
+    try {
+      String pre = "test $ filename";
+      File f = File.createTempFile(pre, "txt");
+      assertTrue(f.getName().startsWith(pre));
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
+  }
 }

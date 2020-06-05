@@ -18,11 +18,7 @@
 
 package org.apereo.openequella.tools.toolbox.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apereo.openequella.tools.toolbox.Config;
-import org.apereo.openequella.tools.toolbox.checkFiles.ReportManager;
-
+import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.PasswordAuthentication;
@@ -30,13 +26,15 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apereo.openequella.tools.toolbox.Config;
+import org.apereo.openequella.tools.toolbox.checkFiles.ReportManager;
 
 public class EmailUtils {
   private static final String HTML_MIME_TYPE = "text/html; charset=UTF-8";
   private static final String TEXT_MIME_TYPE = "text/plain; charset=UTF-8";
   private static final String UTF8 = "UTF-8";
-
 
   private static Logger LOGGER = LogManager.getLogger(EmailUtils.class);
 
@@ -55,7 +53,8 @@ public class EmailUtils {
     // Save state for an audit (testing)
     lastState = new EmailState(rawType, rawToAddresses, subject, body);
 
-    if(!Check.isEmpty(Config.get(Config.DEV_MODE)) && Config.get(Config.DEV_MODE).contains(Config.DEV_MODE_SKIP_EMAIL)) {
+    if (!Check.isEmpty(Config.get(Config.DEV_MODE))
+        && Config.get(Config.DEV_MODE).contains(Config.DEV_MODE_SKIP_EMAIL)) {
       LOGGER.info("SUCCESS - Email sending IGNORED!.");
       lastState.setSuccess(true);
       return;
@@ -67,7 +66,7 @@ public class EmailUtils {
     }
 
     String type = TEXT_MIME_TYPE;
-    if(rawType.equalsIgnoreCase("html")) {
+    if (rawType.equalsIgnoreCase("html")) {
       type = HTML_MIME_TYPE;
     }
 
@@ -92,7 +91,11 @@ public class EmailUtils {
     InternetAddress senderAddr;
     try {
       final String senderEmail = Config.get(Config.EMAIL_SENDER_ADDRESS);
-      senderAddr = new InternetAddress(senderEmail, Config.get(org.apereo.openequella.tools.toolbox.Config.EMAIL_SENDER_NAME), UTF8);
+      senderAddr =
+          new InternetAddress(
+              senderEmail,
+              Config.get(org.apereo.openequella.tools.toolbox.Config.EMAIL_SENDER_NAME),
+              UTF8);
       final Properties props = System.getProperties();
 
       int ind = server.indexOf(':');
@@ -109,13 +112,18 @@ public class EmailUtils {
       props.put("mail.smtp.user", Config.get(Config.EMAIL_USERNAME));
       props.put("mail.smtp.password", Config.get(Config.EMAIL_PASSWORD));
 
-      Session mailSession = Session.getInstance(props, new Authenticator() {
-        // Set the account information session，transport will send mail
-        @Override
-        protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(Config.get(org.apereo.openequella.tools.toolbox.Config.EMAIL_USERNAME), Config.get(Config.EMAIL_PASSWORD));
-        }
-      });
+      Session mailSession =
+          Session.getInstance(
+              props,
+              new Authenticator() {
+                // Set the account information session，transport will send mail
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(
+                      Config.get(org.apereo.openequella.tools.toolbox.Config.EMAIL_USERNAME),
+                      Config.get(Config.EMAIL_PASSWORD));
+                }
+              });
 
       Message mimeMessage = new MimeMessage(mailSession);
       mimeMessage.setFrom(senderAddr);
@@ -143,7 +151,8 @@ public class EmailUtils {
 
   private static void logError(Exception e, String msg, Object... args) {
     final String err = String.format(msg, args);
-    if(Config.get(Config.TOOLBOX_FUNCTION).equalsIgnoreCase(Config.ToolboxFunction.CheckFiles.name())) {
+    if (Config.get(Config.TOOLBOX_FUNCTION)
+        .equalsIgnoreCase(Config.ToolboxFunction.CheckFiles.name())) {
       ReportManager.getInstance().addFatalError(err);
     }
     LOGGER.error(err, e);

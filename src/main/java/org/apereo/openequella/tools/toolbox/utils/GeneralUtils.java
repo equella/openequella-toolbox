@@ -22,17 +22,17 @@ import java.util.Properties;
 
 public class GeneralUtils {
 
-    public static boolean isNullOrEmpty(String s) {
-        return s == null || s.isEmpty();
-    }
+  public static boolean isNullOrEmpty(String s) {
+    return s == null || s.isEmpty();
+  }
 
-    public static void setDefaultIfNotPresent(Properties p, String key, String val) {
-        if(!p.containsKey(key)) {
-            p.setProperty(key, val);
-        }
+  public static void setDefaultIfNotPresent(Properties p, String key, String val) {
+    if (!p.containsKey(key)) {
+      p.setProperty(key, val);
     }
+  }
 
-    public static int findHash(String uuid) {
-        return uuid.hashCode() & 127;
-    }
+  public static int findHash(String uuid) {
+    return uuid.hashCode() & 127;
+  }
 }

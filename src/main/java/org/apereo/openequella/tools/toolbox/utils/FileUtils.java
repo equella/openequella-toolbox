@@ -18,6 +18,10 @@
 
 package org.apereo.openequella.tools.toolbox.utils;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -31,11 +35,6 @@ import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -46,188 +45,219 @@ import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
 
 public class FileUtils {
-	private static Logger LOGGER = LogManager.getLogger(FileUtils.class);
+  private static Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
-	public static boolean downloadWithProgress(File targetFile, String bestFitAttLink, String accessToken,
-			int verboseLevel, Long expectedSize) {
-		LOGGER.info("Downloading attachment to: [" + targetFile.getAbsolutePath() + "]");
-		try {
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpGet http = new HttpGet(bestFitAttLink);
-			http.addHeader("X-Authorization", "access_token=" + accessToken);
-			Long totalSize = -1L;
-			try (CloseableHttpResponse httpResponse = httpclient.execute(http);
-					FileOutputStream fos = new java.io.FileOutputStream(targetFile);
-					BufferedOutputStream bout = new BufferedOutputStream(fos, 1024);) {
-				HttpEntity entity = httpResponse.getEntity();
-				if (entity != null) {
-					InputStream eis = entity.getContent();
-					BufferedInputStream beis = new BufferedInputStream(eis);
-					totalSize = entity.getContentLength();
-					Long readLength = 0L;
-					int toggle = 0;
-					byte[] chunk = new byte[1024];
-					int currentLength = 0;
-					while ((currentLength = beis.read(chunk, 0, 1024)) >= 0) {
-						bout.write(chunk, 0, currentLength);
-						readLength += currentLength;
-						if (toggle++ > verboseLevel) {
-							LOGGER.info("Downloaded (" + (readLength * 100 / totalSize) + "%) - " + readLength + "B / "
-									+ totalSize + "B");
-							toggle = 0;
-						}
-					}
-					LOGGER.info(
-							"Downloaded (" + readLength * 100 / totalSize + "%) - " + readLength + "B / " + totalSize + "B");
-					bout.flush();
-					bout.close();
-					fos.flush();
-					fos.close();
-					beis.close();
-					eis.close();
+  public static boolean downloadWithProgress(
+      File targetFile,
+      String bestFitAttLink,
+      String accessToken,
+      int verboseLevel,
+      Long expectedSize) {
+    LOGGER.info("Downloading attachment to: [" + targetFile.getAbsolutePath() + "]");
+    try {
+      CloseableHttpClient httpclient = HttpClients.createDefault();
+      HttpGet http = new HttpGet(bestFitAttLink);
+      http.addHeader("X-Authorization", "access_token=" + accessToken);
+      Long totalSize = -1L;
+      try (CloseableHttpResponse httpResponse = httpclient.execute(http);
+          FileOutputStream fos = new java.io.FileOutputStream(targetFile);
+          BufferedOutputStream bout = new BufferedOutputStream(fos, 1024); ) {
+        HttpEntity entity = httpResponse.getEntity();
+        if (entity != null) {
+          InputStream eis = entity.getContent();
+          BufferedInputStream beis = new BufferedInputStream(eis);
+          totalSize = entity.getContentLength();
+          Long readLength = 0L;
+          int toggle = 0;
+          byte[] chunk = new byte[1024];
+          int currentLength = 0;
+          while ((currentLength = beis.read(chunk, 0, 1024)) >= 0) {
+            bout.write(chunk, 0, currentLength);
+            readLength += currentLength;
+            if (toggle++ > verboseLevel) {
+              LOGGER.info(
+                  "Downloaded ("
+                      + (readLength * 100 / totalSize)
+                      + "%) - "
+                      + readLength
+                      + "B / "
+                      + totalSize
+                      + "B");
+              toggle = 0;
+            }
+          }
+          LOGGER.info(
+              "Downloaded ("
+                  + readLength * 100 / totalSize
+                  + "%) - "
+                  + readLength
+                  + "B / "
+                  + totalSize
+                  + "B");
+          bout.flush();
+          bout.close();
+          fos.flush();
+          fos.close();
+          beis.close();
+          eis.close();
 
-					// If the download method with progress doesn't work, this is a simple alternative (no progress) 
-					// try (FileOutputStream outstream = new FileOutputStream(targetFile)) {
-					//
-					// entity.writeTo(outstream);
-					// }
-				}
-			}
+          // If the download method with progress doesn't work, this is a simple alternative (no
+          // progress)
+          // try (FileOutputStream outstream = new FileOutputStream(targetFile)) {
+          //
+          // entity.writeTo(outstream);
+          // }
+        }
+      }
 
-			// TODO might cause issues to do a blocking check, but we'll handle that if it occurs.
-			if (totalSize != expectedSize) {
-				LOGGER.info("Download complete.  Total filesize: [" + totalSize + "B], expected filesize: ["
-						+ expectedSize + "B]");
-				return true;
-			} else {
-				LOGGER.info("Download complete, but filesize from Equella [" + expectedSize
-						+ "B] did not match download filesize [" + totalSize + "B]");
-				return false;
-			}
+      // TODO might cause issues to do a blocking check, but we'll handle that if it occurs.
+      if (totalSize != expectedSize) {
+        LOGGER.info(
+            "Download complete.  Total filesize: ["
+                + totalSize
+                + "B], expected filesize: ["
+                + expectedSize
+                + "B]");
+        return true;
+      } else {
+        LOGGER.info(
+            "Download complete, but filesize from Equella ["
+                + expectedSize
+                + "B] did not match download filesize ["
+                + totalSize
+                + "B]");
+        return false;
+      }
 
-		} catch (MalformedURLException e) {
-			LOGGER.info("Download failed: " + e.getMessage(), e);
-		} catch (IOException e) {
-			LOGGER.info("Download failed: " + e.getMessage(), e);
-		}
-		return false;
-	}
-	
-	
-	public static void removeFileAndParent(String parentname, String filename) {
-		LOGGER.info("Removing downloaded file and parent directory: {}, {}", parentname, filename);
-		if(removeFile(filename)) {
-			removeFile(parentname);
-		}
-	}
-	
-	private static boolean removeFile(String filename) {
-		File f = new File(filename);
-		if(f.exists()) {
-			if(f.delete()) {
-				LOGGER.info("Deleted: {}", filename);
-				return true;
-			} else {
-				LOGGER.warn("Unable to delete: {}", filename);
-			}
-		} else {
-			LOGGER.warn("No file/directory exists at location: {}", filename);
-		}
-		return false;
-	}
-	
-	
-	/**
-	 * Checks if the filename ends with a known suffix, and returns the suffix (in uppercase) 
-	 * 
-	 * Currently supports the Audio and Video suffix configs
-	 * 
-	 * @param filename
-	 * @return the suffix in uppercase, null if not a known suffix.
-	 * @throws Exception
-	 */
-	public static String extractSuffix(String filename) {
-		List<String> audioSuffixes = Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO);
-		for(String validSuffix : audioSuffixes) {
-			if(filename.toUpperCase().endsWith(validSuffix.trim())) {
-				return validSuffix.trim();
-			}
-		}
-		
-		List<String> videoSuffixes = Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO);
-		for(String validSuffix : videoSuffixes) {
-			if(filename.toUpperCase().endsWith(validSuffix.trim())) {
-				return validSuffix.trim();
-			}
-		}	
-		return null;
-	}
+    } catch (MalformedURLException e) {
+      LOGGER.info("Download failed: " + e.getMessage(), e);
+    } catch (IOException e) {
+      LOGGER.info("Download failed: " + e.getMessage(), e);
+    }
+    return false;
+  }
 
-	public static JsonElement parseAsJson(String filename_key) throws java.io.IOException {
-		JsonParser jp = new JsonParser();
+  public static void removeFileAndParent(String parentname, String filename) {
+    LOGGER.info("Removing downloaded file and parent directory: {}, {}", parentname, filename);
+    if (removeFile(filename)) {
+      removeFile(parentname);
+    }
+  }
 
-		File file = new File(Config.get(filename_key));
-		Config.getInstance().setConfig(Config.REPORT_CONFIG_TEMP_FILENAME, file.getName());
-		try ( BufferedReader br = new BufferedReader(new FileReader(file)) ){
-			JsonElement root = jp.parse(br);
-			return root;
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Unable to parse JSON file: " + e.getMessage(), e);
-		}
-		return null;
-	}
+  private static boolean removeFile(String filename) {
+    File f = new File(filename);
+    if (f.exists()) {
+      if (f.delete()) {
+        LOGGER.info("Deleted: {}", filename);
+        return true;
+      } else {
+        LOGGER.warn("Unable to delete: {}", filename);
+      }
+    } else {
+      LOGGER.warn("No file/directory exists at location: {}", filename);
+    }
+    return false;
+  }
 
-	public static String exposeKeys(JsonElement e, String keys) {
-		JsonObject jObj = e.getAsJsonObject();
-		String[] keyArr = keys.split(",");
-		StringBuilder sb = new StringBuilder();
+  /**
+   * Checks if the filename ends with a known suffix, and returns the suffix (in uppercase)
+   *
+   * <p>Currently supports the Audio and Video suffix configs
+   *
+   * @param filename
+   * @return the suffix in uppercase, null if not a known suffix.
+   * @throws Exception
+   */
+  public static String extractSuffix(String filename) {
+    List<String> audioSuffixes =
+        Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_AUDIO);
+    for (String validSuffix : audioSuffixes) {
+      if (filename.toUpperCase().endsWith(validSuffix.trim())) {
+        return validSuffix.trim();
+      }
+    }
 
-		for(String key : keyArr) {
-			String cleanedKey = key.trim();
-			if((cleanedKey.length() > 0) && jObj.has(cleanedKey)) {
-				JsonElement entry = jObj.get(cleanedKey);
-				LOGGER.debug("Checking key ({}) in json ({})", cleanedKey,  jObj);
-				if(entry.isJsonArray()) {
-					JsonArray arr = entry.getAsJsonArray();
-					for(int i = 0; i < arr.size(); i++) {
-						sb.append(arr.get(i).getAsString());
-						if(i < arr.size()-1) {
-							sb.append("|");
-						}
-					}
-				} else {
-					sb.append(entry.getAsString());
-				}
-			}
-			sb.append(",");
-		}
-		return sb.toString();
-	}
+    List<String> videoSuffixes =
+        Config.getInstance().getConfigAsList(Config.OEQ_SEARCH_ATT_SUFFIXES_VIDEO);
+    for (String validSuffix : videoSuffixes) {
+      if (filename.toUpperCase().endsWith(validSuffix.trim())) {
+        return validSuffix.trim();
+      }
+    }
+    return null;
+  }
 
-	public static boolean findFile(String base, String name) {
-		File baseFile = new File(base);
-		if(!baseFile.exists()) {
-			LOGGER.debug("File base doesn't exist - base=[{}], name=[{}].", base, name);
-			return false;
-		}
+  public static JsonElement parseAsJson(String filename_key) throws java.io.IOException {
+    JsonParser jp = new JsonParser();
 
-		try {
-			Collection availableFiles = org.apache.commons.io.FileUtils.listFiles(baseFile, null, true);
-			final String filePathNameToCheck = base + name;
-			for (Iterator iterator = availableFiles.iterator(); iterator.hasNext();) {
-				File fileToCheck = (File) iterator.next();
-				if (fileToCheck.getAbsolutePath().equals(filePathNameToCheck)) {
-					LOGGER.debug("Filename in question [{}] FOUND at location [{}]", filePathNameToCheck, fileToCheck.getAbsolutePath());
-					return false;
-				} else {
-					LOGGER.debug("Filename in question [{}] does NOT equal the filename [{}]", filePathNameToCheck, fileToCheck.getAbsolutePath());
-				}
-			}
-		} catch(Exception e) {
-			LOGGER.error("Exception occurred when looking for file [{}][{}].  Assuming false.");
-			return false;
-		}
-		LOGGER.debug("File doesn't exist [{}][{}].", base, name);
-		return false;
-	}
+    File file = new File(Config.get(filename_key));
+    Config.getInstance().setConfig(Config.REPORT_CONFIG_TEMP_FILENAME, file.getName());
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+      JsonElement root = jp.parse(br);
+      return root;
+    } catch (FileNotFoundException e) {
+      LOGGER.error("Unable to parse JSON file: " + e.getMessage(), e);
+    }
+    return null;
+  }
+
+  public static String exposeKeys(JsonElement e, String keys) {
+    JsonObject jObj = e.getAsJsonObject();
+    String[] keyArr = keys.split(",");
+    StringBuilder sb = new StringBuilder();
+
+    for (String key : keyArr) {
+      String cleanedKey = key.trim();
+      if ((cleanedKey.length() > 0) && jObj.has(cleanedKey)) {
+        JsonElement entry = jObj.get(cleanedKey);
+        LOGGER.debug("Checking key ({}) in json ({})", cleanedKey, jObj);
+        if (entry.isJsonArray()) {
+          JsonArray arr = entry.getAsJsonArray();
+          for (int i = 0; i < arr.size(); i++) {
+            sb.append(arr.get(i).getAsString());
+            if (i < arr.size() - 1) {
+              sb.append("|");
+            }
+          }
+        } else {
+          sb.append(entry.getAsString());
+        }
+      }
+      sb.append(",");
+    }
+    return sb.toString();
+  }
+
+  public static boolean findFile(String base, String name) {
+    File baseFile = new File(base);
+    if (!baseFile.exists()) {
+      LOGGER.debug("File base doesn't exist - base=[{}], name=[{}].", base, name);
+      return false;
+    }
+
+    try {
+      Collection availableFiles = org.apache.commons.io.FileUtils.listFiles(baseFile, null, true);
+      final String filePathNameToCheck = base + name;
+      for (Iterator iterator = availableFiles.iterator(); iterator.hasNext(); ) {
+        File fileToCheck = (File) iterator.next();
+        if (fileToCheck.getAbsolutePath().equals(filePathNameToCheck)) {
+          LOGGER.debug(
+              "Filename in question [{}] FOUND at location [{}]",
+              filePathNameToCheck,
+              fileToCheck.getAbsolutePath());
+          return false;
+        } else {
+          LOGGER.debug(
+              "Filename in question [{}] does NOT equal the filename [{}]",
+              filePathNameToCheck,
+              fileToCheck.getAbsolutePath());
+        }
+      }
+    } catch (Exception e) {
+      LOGGER.error("Exception occurred when looking for file [{}][{}].  Assuming false.");
+      return false;
+    }
+    LOGGER.debug("File doesn't exist [{}][{}].", base, name);
+    return false;
+  }
 }

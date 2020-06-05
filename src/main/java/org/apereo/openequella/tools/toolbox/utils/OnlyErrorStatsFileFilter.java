@@ -18,17 +18,15 @@
 
 package org.apereo.openequella.tools.toolbox.utils;
 
-
-import org.apereo.openequella.tools.toolbox.Config;
-
 import java.io.File;
 import java.io.FilenameFilter;
+import org.apereo.openequella.tools.toolbox.Config;
 
 public class OnlyErrorStatsFileFilter implements FilenameFilter {
 
-	@Override
-	public boolean accept(File dir, String name) {
-		String part = "_"+ Config.get(Config.CF_ADOPTER_NAME)+"_error_stats_";
-		return (new File(dir.getAbsolutePath()+"/"+name)).isFile() && name.contains(part);
-	}
+  @Override
+  public boolean accept(File dir, String name) {
+    String part = "_" + Config.get(Config.CF_ADOPTER_NAME) + "_error_stats_";
+    return (new File(dir.getAbsolutePath() + "/" + name)).isFile() && name.contains(part);
+  }
 }

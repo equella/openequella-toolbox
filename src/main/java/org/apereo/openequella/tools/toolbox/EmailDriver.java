@@ -23,19 +23,18 @@ import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.utils.EmailUtils;
 
 public class EmailDriver {
-    private static Logger LOGGER = LogManager.getLogger(EmailDriver.class);
+  private static Logger LOGGER = LogManager.getLogger(EmailDriver.class);
 
-    public void execute(String[] args) {
-        if(args.length != 5) {
-            LOGGER.error("ERROR - Emailer expects 5 parameters, but has [{}]", args.length);
-            return;
-
-        }
-        final String rawType = args[1];
-        final String rawToAddresses = args[2];
-        final String subject = args[3];
-        final String body = args[4];
-
-        EmailUtils.execute(rawType, rawToAddresses, subject, body);
+  public void execute(String[] args) {
+    if (args.length != 5) {
+      LOGGER.error("ERROR - Emailer expects 5 parameters, but has [{}]", args.length);
+      return;
     }
+    final String rawType = args[1];
+    final String rawToAddresses = args[2];
+    final String subject = args[3];
+    final String body = args[4];
+
+    EmailUtils.execute(rawType, rawToAddresses, subject, body);
+  }
 }

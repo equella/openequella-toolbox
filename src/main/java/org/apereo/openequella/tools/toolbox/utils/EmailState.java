@@ -20,17 +20,6 @@ package org.apereo.openequella.tools.toolbox.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apereo.openequella.tools.toolbox.Config;
-import org.apereo.openequella.tools.toolbox.checkFiles.ReportManager;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
 
 public class EmailState {
   private static Logger LOGGER = LogManager.getLogger(EmailState.class);
@@ -53,7 +42,6 @@ public class EmailState {
     lastSuccess = b;
   }
 
-
   public String getLastRawType() {
     return lastRawType;
   }
@@ -75,11 +63,16 @@ public class EmailState {
   }
 
   public String toString() {
-    return "EmailState - status=[" +
-            isLastSuccess() + "], type=[" +
-            getLastRawType() + "], toAddresses=[" +
-            getLastRawToAddresses() + "], subject=[" +
-            getLastSubject() + "], body=[ " +
-            getLastBody() + "]";
+    return "EmailState - status=["
+        + isLastSuccess()
+        + "], type=["
+        + getLastRawType()
+        + "], toAddresses=["
+        + getLastRawToAddresses()
+        + "], subject=["
+        + getLastSubject()
+        + "], body=[ "
+        + getLastBody()
+        + "]";
   }
 }

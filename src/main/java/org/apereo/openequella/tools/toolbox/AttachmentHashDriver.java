@@ -23,15 +23,16 @@ import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 
 public class AttachmentHashDriver {
-    private static Logger LOGGER = LogManager.getLogger(AttachmentHashDriver.class);
+  private static Logger LOGGER = LogManager.getLogger(AttachmentHashDriver.class);
 
-    public void execute(String[] args) {
-        if (args.length < 2) {
-            LOGGER.error("No parameters found!  AttachmentHash parameters - [req] config file, [req] att-uuid");
-            return;
-        }
-
-        final int res = GeneralUtils.findHash(args[1]);
-        LOGGER.info("Hash is [{}]", res);
+  public void execute(String[] args) {
+    if (args.length < 2) {
+      LOGGER.error(
+          "No parameters found!  AttachmentHash parameters - [req] config file, [req] att-uuid");
+      return;
     }
+
+    final int res = GeneralUtils.findHash(args[1]);
+    LOGGER.info("Hash is [{}]", res);
+  }
 }
