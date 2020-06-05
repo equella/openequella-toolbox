@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
 import org.apereo.openequella.tools.toolbox.utils.Check;
 import org.apereo.openequella.tools.toolbox.utils.CheckFilesUtils;
+import org.apereo.openequella.tools.toolbox.utils.Pair;
 import org.apereo.openequella.tools.toolbox.utils.WhereClauseExpression;
 
 /**
@@ -104,39 +105,47 @@ public class CheckFilesDbHandler {
       return false;
     }
 
-    // Cache Items
-    if (Config.get(Config.CF_MODE).contains("ALL_ITEMS")) {
-      if (!cacheItemsAll()) {
+    if (Config.CheckFilesType.valueOf(Config.get(Config.CF_MODE))
+        == Config.CheckFilesType.DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE) {
+      if (!cacheItemsBatched(true)) {
         closeConnection();
         return false;
       }
     } else {
-      if (!cacheItemsBatched()) {
-        closeConnection();
-        return false;
+      // Cache Items
+      if (Config.get(Config.CF_MODE).contains("ALL_ITEMS")) {
+        if (!cacheItemsAll()) {
+          closeConnection();
+          return false;
+        }
+      } else {
+        if (!cacheItemsBatched(false)) {
+          closeConnection();
+          return false;
+        }
       }
-    }
 
-    // Cache Attachments
-    if (Config.get(Config.CF_MODE).endsWith("ALL_ATTACHMENTS")) {
-      if (!cacheAttachmentsAll()) {
-        closeConnection();
-        return false;
+      // Cache Attachments
+      if (Config.get(Config.CF_MODE).endsWith("ALL_ATTACHMENTS")) {
+        if (!cacheAttachmentsAll()) {
+          closeConnection();
+          return false;
+        }
+      } else {
+        if (!cacheAttachmentsPerItem()) {
+          closeConnection();
+          return false;
+        }
       }
-    } else {
-      if (!cacheAttachmentsPerItem()) {
-        closeConnection();
-        return false;
-      }
-    }
 
-    // Check attachments one item at a time
-    int counter = 0;
-    for (Integer itemId : attachmentsCache.keySet()) {
-      counter++;
-      if (!processItem(itemId, counter)) {
-        closeConnection();
-        return false;
+      // Check attachments one item at a time
+      int counter = 0;
+      for (Integer itemId : attachmentsCache.keySet()) {
+        counter++;
+        if (!processItem(itemId, counter)) {
+          closeConnection();
+          return false;
+        }
       }
     }
 
@@ -443,33 +452,11 @@ public class CheckFilesDbHandler {
     try {
       // For each item cached, query for the associated attachments.
       for (List<ResultsRow> itemRowSet : attachmentsCache.values()) {
-        long batchStart = System.currentTimeMillis();
-
-        int itemId = itemRowSet.get(0).getItemId();
-        PreparedStatement stmt =
-            con.prepareStatement(
-                "select a.type, a.url, a.value1, a.uuid, a.id "
-                    + "from attachment a where a.item_id = ?");
-        stmt.setInt(1, itemId);
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-          counter++;
-          ResultsRow attRow =
-              inflateAttRow(
-                  rs.getString(1),
-                  rs.getString(2),
-                  rs.getString(3),
-                  rs.getString(4),
-                  rs.getInt(5),
-                  itemId);
-          // Note - at this point, attRow will not be null.
-          attachmentsCache.get(attRow.getItemId()).add(attRow);
-          logger.info("Attachment ({}) gathered: {}", counter, attRow.toString());
+        Pair<Boolean, Integer> result = cacheAttachmentsPerItem(itemRowSet.get(0).getItemId());
+        if (!result.getFirst()) {
+          return false;
         }
-        rs.close();
-        long batchDur = System.currentTimeMillis() - batchStart;
-        ReportManager.getInstance().getStats().queryRan(batchDur);
-        logger.debug("Cached a batch of attachments.  Duration {} ms.", batchDur);
+        counter += result.getSecond();
       }
     } catch (Exception e) {
       logger.error("Unable to cache attachments (query per item) - {}", e.getMessage(), e);
@@ -479,6 +466,46 @@ public class CheckFilesDbHandler {
     logger.info("Cached {} attachments (query per item).  Duration {} ms.", counter, dur);
     ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
     return true;
+  }
+
+  private Pair<Boolean, Integer> cacheAttachmentsPerItem(int itemId) {
+    long start = System.currentTimeMillis();
+    int counter = 0;
+    try {
+      long batchStart = System.currentTimeMillis();
+
+      PreparedStatement stmt =
+          con.prepareStatement(
+              "select a.type, a.url, a.value1, a.uuid, a.id "
+                  + "from attachment a where a.item_id = ?");
+      stmt.setInt(1, itemId);
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) {
+        counter++;
+        ResultsRow attRow =
+            inflateAttRow(
+                rs.getString(1),
+                rs.getString(2),
+                rs.getString(3),
+                rs.getString(4),
+                rs.getInt(5),
+                itemId);
+        // Note - at this point, attRow will not be null.
+        attachmentsCache.get(attRow.getItemId()).add(attRow);
+        logger.info("Attachment ({}) gathered: {}", counter, attRow.toString());
+      }
+      rs.close();
+      long batchDur = System.currentTimeMillis() - batchStart;
+      ReportManager.getInstance().getStats().queryRan(batchDur);
+      logger.debug("Cached a batch of attachments.  Duration {} ms.", batchDur);
+    } catch (Exception e) {
+      logger.error("Unable to cache attachments (query per item) - {}", e.getMessage(), e);
+      return Pair.pair(false, counter);
+    }
+    long dur = System.currentTimeMillis() - start;
+    logger.info("Cached {} attachments (query per item).  Duration {} ms.", counter, dur);
+    ReportManager.getInstance().getStats().incNumGrandTotalAttachments(counter);
+    return Pair.pair(true, counter);
   }
 
   private boolean cacheAttachmentsAll() {
@@ -704,7 +731,7 @@ public class CheckFilesDbHandler {
    *
    * @return
    */
-  private boolean cacheItemsBatched() {
+  private boolean cacheItemsBatched(boolean confirmInline) {
     long start = System.currentTimeMillis();
     try {
       String sql =
@@ -755,6 +782,20 @@ public class CheckFilesDbHandler {
           attachmentsCache.put(itemRow.getItemId(), seeder);
 
           logger.info("Found the [{}]th item:  {}", (attachmentsCache.size()), itemRow.toString());
+          if (confirmInline) {
+            Pair<Boolean, Integer> result = cacheAttachmentsPerItem(itemRow.getItemId());
+            if (result.getFirst()) {
+              if (!processItem(itemRow.getItemId(), attachmentsCache.size())) {
+                rs.close();
+                throw new Exception(
+                    "Unable to check attachments for item [" + itemRow.getItemId() + "]");
+              }
+            } else {
+              rs.close();
+              throw new Exception(
+                  "Unable to cache attachments for item [" + itemRow.getItemId() + "]");
+            }
+          }
         }
         rs.close();
         offsetCounter++;

@@ -159,6 +159,7 @@ public class CheckFilesDriver {
           return false;
         }
       case DB_BATCH_ITEMS_PER_ITEM_ATTS:
+      case DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE:
       case DB_ALL_ITEMS_ALL_ATTS:
         {
           return (new CheckFilesDbHandler()).execute();

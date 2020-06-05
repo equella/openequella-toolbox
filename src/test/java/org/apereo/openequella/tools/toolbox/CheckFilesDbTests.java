@@ -261,6 +261,61 @@ public class CheckFilesDbTests {
   }
 
   @Test
+  public void testAllInstitutionsConfirmInlineBatchedByDefault() {
+    Config.reset();
+    TestUtils.buildCheckFilesGeneralDbProps();
+    Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+    Config.getInstance()
+        .setConfig(
+            Config.CF_MODE,
+            Config.CheckFilesType.DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE.name());
+    Config.getInstance().checkConfigsCheckFiles();
+
+    assertTrue(CheckFilesDriver.setup(true));
+    assertTrue(CheckFilesDriver.run());
+    assertTrue(CheckFilesDriver.finalizeRun());
+
+    TestUtils.debugDumpList(ReportManager.getInstance().getAllStatsWriterList());
+    TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
+    confirmResultsAllInstitutions(
+        ReportManager.getInstance().getAllStatsWriterList(),
+        ReportManager.getInstance().getErrorStatsWriterList());
+    assertEquals(
+        "# Of queries ran,32",
+        ReportManager.getInstance()
+            .getAllStatsWriterList()
+            .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
+  }
+
+  @Test
+  public void testAllInstitutionsConfirmInlineBatchedBy1() {
+    Config.reset();
+    TestUtils.buildCheckFilesGeneralDbProps();
+    Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+    Config.getInstance()
+        .setConfig(
+            Config.CF_MODE,
+            Config.CheckFilesType.DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE.name());
+    Config.getInstance().setConfig(Config.CF_NUM_OF_ITEMS_PER_QUERY, "1");
+    Config.getInstance().checkConfigsCheckFiles();
+
+    assertTrue(CheckFilesDriver.setup(true));
+    assertTrue(CheckFilesDriver.run());
+    assertTrue(CheckFilesDriver.finalizeRun());
+
+    TestUtils.debugDumpList(ReportManager.getInstance().getAllStatsWriterList());
+    TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
+    confirmResultsAllInstitutions(
+        ReportManager.getInstance().getAllStatsWriterList(),
+        ReportManager.getInstance().getErrorStatsWriterList());
+    assertEquals(
+        "# Of queries ran,56",
+        ReportManager.getInstance()
+            .getAllStatsWriterList()
+            .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
+  }
+
+  @Test
   public void testAllInstitutionsBatchBy1() {
     Config.reset();
     TestUtils.buildCheckFilesGeneralDbProps();

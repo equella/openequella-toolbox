@@ -144,7 +144,11 @@ public class Config {
   public enum CheckFilesType {
     REST, // Implemented, but needs testing after the open source effort
     DB_ALL_ITEMS_ALL_ATTS, // Currently the only supported method
-    DB_BATCH_ITEMS_PER_ITEM_ATTS // Implemented, but needs testing after the open source effort
+    DB_BATCH_ITEMS_PER_ITEM_ATTS,
+    // supports caching by a block of items, and for each item cached,
+    // pulls the attachments for the items and checks existance BEFORE
+    // getting more items.
+    DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE
   }
 
   public enum CheckFilesSupportedDB {
@@ -352,6 +356,11 @@ public class Config {
           }
         case DB_BATCH_ITEMS_PER_ITEM_ATTS:
           {
+            // pass through
+          }
+        case DB_BATCH_ITEMS_PER_ITEM_ATTS_CONFIRM_INLINE:
+          {
+            // pass through
           }
         case DB_ALL_ITEMS_ALL_ATTS:
           {
