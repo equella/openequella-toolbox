@@ -18,8 +18,9 @@
 
 package org.apereo.openequella.tools.toolbox;
 
-import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 import static org.junit.Assert.assertEquals;
+
+import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 import org.junit.Test;
 
 public class AttachmentHashTests {

@@ -19,55 +19,54 @@
 package org.apereo.openequella.tools.toolbox;
 
 import java.io.File;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class FileListerDriver {
-    private static Logger LOGGER = LogManager.getLogger(FileListerDriver.class);
+  private static Logger LOGGER = LogManager.getLogger(FileListerDriver.class);
 
-    public void execute(String[] args) {
-        if(args.length < 2) {
-            LOGGER.error("No parameters found!  FileLister parameters - [req] config file, [req] directory(or file) to list, [opt] -useParent flag");
-            return;
-        }
-
-        boolean checkParentFolder = (args.length > 2) && args[2].equals("-useParent");
-
-        File base = new File(args[1]);
-        if(base.exists() && checkParentFolder) {
-            base = base.getAbsoluteFile().getParentFile();
-            LOGGER.debug("Base's parent is: " + base.getAbsolutePath());
-        }
-
-        if(base.exists() && !base.isDirectory()) {
-            LOGGER.error("Specific path is a file [" + base.getAbsolutePath() + "]");
-            System.exit(2);
-        } else if(base.exists()) {
-            JSONArray files = new JSONArray();
-            list(base, "", Config.get(Config.GENERAL_OS_SLASH), files);
-            JSONObject res = new JSONObject();
-            res.put("files", files);
-            LOGGER.info(res);
-        } else {
-            LOGGER.error("Unable to find file [" + base.getAbsolutePath() + "]");
-            System.exit(1);
-        }
-
+  public void execute(String[] args) {
+    if (args.length < 2) {
+      LOGGER.error(
+          "No parameters found!  FileLister parameters - [req] config file, [req] directory(or file) to list, [opt] -useParent flag");
+      return;
     }
 
-    private static void list(File base, String path, String slash, JSONArray results) {
-        LOGGER.debug("list() - Using a base of [" + base.getName() + "]");
-        File[] files = base.listFiles();
-        for(File f : files) {
-            String tempPath = path.isEmpty() ? f.getName() : path+slash+f.getName();
-            LOGGER.debug("["+tempPath+"]");
-            results.put(tempPath);
-            if(f.isDirectory()) {
-                list(f, tempPath, slash, results);
-            }
-        }
+    boolean checkParentFolder = (args.length > 2) && args[2].equals("-useParent");
+
+    File base = new File(args[1]);
+    if (base.exists() && checkParentFolder) {
+      base = base.getAbsoluteFile().getParentFile();
+      LOGGER.debug("Base's parent is: " + base.getAbsolutePath());
     }
+
+    if (base.exists() && !base.isDirectory()) {
+      LOGGER.error("Specific path is a file [" + base.getAbsolutePath() + "]");
+      System.exit(2);
+    } else if (base.exists()) {
+      JSONArray files = new JSONArray();
+      list(base, "", Config.get(Config.GENERAL_OS_SLASH), files);
+      JSONObject res = new JSONObject();
+      res.put("files", files);
+      LOGGER.info(res);
+    } else {
+      LOGGER.error("Unable to find file [" + base.getAbsolutePath() + "]");
+      System.exit(1);
+    }
+  }
+
+  private static void list(File base, String path, String slash, JSONArray results) {
+    LOGGER.debug("list() - Using a base of [" + base.getName() + "]");
+    File[] files = base.listFiles();
+    for (File f : files) {
+      String tempPath = path.isEmpty() ? f.getName() : path + slash + f.getName();
+      LOGGER.debug("[" + tempPath + "]");
+      results.put(tempPath);
+      if (f.isDirectory()) {
+        list(f, tempPath, slash, results);
+      }
+    }
+  }
 }

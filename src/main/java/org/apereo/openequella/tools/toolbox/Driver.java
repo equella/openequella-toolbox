@@ -23,55 +23,71 @@ import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config.ToolboxFunction;
 
 public class Driver {
-	private static Logger LOGGER = LogManager.getLogger(Driver.class);
+  private static Logger LOGGER = LogManager.getLogger(Driver.class);
 
-	
-	/** 
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
-		if(args.length < 1) {
-			LOGGER.error("Exiting - requires a config file.");
-			return;
-		}
-		Config.getInstance().init(args[0]);
-		if(!Config.getInstance().isValidConfig() ) {
-			LOGGER.error("Exiting - invalid config.");
-			return;
-		}
-		
-		// Since the config is valid, this is guaranteed to work.
-		ToolboxFunction tool = ToolboxFunction.valueOf(Config.get(Config.TOOLBOX_FUNCTION));
-		switch (tool) {
-		case MigrateToKaltura: {
-			(new MigrateItemsToKalturaDriver()).execute();
-			break;
-		} case ExportItems: {
-			(new ExportItemsDriver()).execute();
-			break;
-		} case Email: {
-			(new EmailDriver()).execute(args);
-			break;
-		} case FileLister: {
-			(new FileListerDriver()).execute(args);
-			break;
-		} case ThumbnailV1: {
-				(new ThumbnailDriver()).execute(args);
-				break;
-		} case JsonReport: {
-				(new JsonReportDriver()).execute(args);
-				break;
-		} case CheckFiles: {
-				(new CheckFilesDriver()).execute(args);
-				break;
-		} case AttachmentHash: {
-			(new AttachmentHashDriver()).execute(args);
-			break;
-		} default: {
-			LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
-			return;
-		}
-		}	
-	}
+  /**
+   * @param args
+   * @throws Exception
+   */
+  public static void main(String[] args) throws Exception {
+    if (args.length < 1) {
+      LOGGER.error("Exiting - requires a config file.");
+      return;
+    }
+    Config.getInstance().init(args[0]);
+    if (!Config.getInstance().isValidConfig()) {
+      LOGGER.error("Exiting - invalid config.");
+      return;
+    }
+
+    // Since the config is valid, this is guaranteed to work.
+    ToolboxFunction tool = ToolboxFunction.valueOf(Config.get(Config.TOOLBOX_FUNCTION));
+    switch (tool) {
+      case MigrateToKaltura:
+        {
+          (new MigrateItemsToKalturaDriver()).execute();
+          break;
+        }
+      case ExportItems:
+        {
+          (new ExportItemsDriver()).execute();
+          break;
+        }
+      case Email:
+        {
+          (new EmailDriver()).execute(args);
+          break;
+        }
+      case FileLister:
+        {
+          (new FileListerDriver()).execute(args);
+          break;
+        }
+      case ThumbnailV1:
+        {
+          (new ThumbnailDriver()).execute(args);
+          break;
+        }
+      case JsonReport:
+        {
+          (new JsonReportDriver()).execute(args);
+          break;
+        }
+      case CheckFiles:
+        {
+          (new CheckFilesDriver()).execute(args);
+          break;
+        }
+      case AttachmentHash:
+        {
+          (new AttachmentHashDriver()).execute(args);
+          break;
+        }
+      default:
+        {
+          LOGGER.error("Exiting - Unimplemented toolbox function of: {}.", tool);
+          return;
+        }
+    }
+  }
 }

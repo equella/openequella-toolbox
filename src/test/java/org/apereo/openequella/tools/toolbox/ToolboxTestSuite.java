@@ -23,20 +23,17 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses(
-        {
-                ConfigTest.class,
-                ExportItemsDriverTest.class,
-                FileUtilsTest.class,
-                MigrationUtilsTest.class,
-                CheckFilesCompareTests.class,
-                CheckFilesEmailTests.class,
-                CheckFilesRestTests.class,
-                CheckFilesDbTests.class,
-                CheckFilesRestTests.class,
-                CheckFilesUtilsTests.class,
-                AttachmentHashTests.class
-        })
-public class ToolboxTestSuite {
-
-}
+@SuiteClasses({
+  ConfigTest.class,
+  ExportItemsDriverTest.class,
+  FileUtilsTest.class,
+  MigrationUtilsTest.class,
+  CheckFilesCompareTests.class,
+  CheckFilesEmailTests.class,
+  CheckFilesRestTests.class,
+  CheckFilesDbTests.class,
+  CheckFilesRestTests.class,
+  CheckFilesUtilsTests.class,
+  AttachmentHashTests.class
+})
+public class ToolboxTestSuite {}

@@ -19,14 +19,12 @@
 package org.apereo.openequella.tools.toolbox.utils.sorts;
 
 import java.util.Comparator;
-
 import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
 
 public class SortOpenEquellaItemByName implements Comparator<EquellaItem> {
 
-	@Override
-	public int compare(EquellaItem o1, EquellaItem o2) {
-		return o1.getName().compareTo(o2.getName());
-	}
-
+  @Override
+  public int compare(EquellaItem o1, EquellaItem o2) {
+    return o1.getName().compareTo(o2.getName());
+  }
 }
