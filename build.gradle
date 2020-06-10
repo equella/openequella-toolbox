@@ -1,5 +1,7 @@
 plugins {
 	id 'com.github.sherter.google-java-format' version '0.8'
+	id 'com.gtramontina.ghooks.gradle' version '1.1.0'
+	id 'com.github.spotbugs' version '4.3.0'
 }
 
 apply plugin: 'eclipse'
@@ -11,7 +13,7 @@ sourceCompatibility = 1.8
 
 repositories {
 	maven {
-	        url "https://mvnrepository.com/"
+		url 'https://mvnrepository.com/'
 	}
 	mavenCentral()
 }
@@ -41,6 +43,10 @@ dependencies {
 
 	// Use JUnit test framework
 	testImplementation 'junit:junit:4.12'
+
+	// Spotbugs plugins
+	spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.1'
+	spotbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.7'
 }
 
 jar {
@@ -51,4 +57,13 @@ jar {
 	from {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	}
+}
+
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+        }
+    }
 }
