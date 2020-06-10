@@ -16,3 +16,4 @@ test*.properties
 test*.xml
 *.log
 !src/test/**/*.log
+test-check-files-output/
