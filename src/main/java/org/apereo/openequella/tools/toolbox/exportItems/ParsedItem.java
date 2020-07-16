@@ -16,12 +16,16 @@
  * limitations under the License.
  */
 
-package org.apereo.openequella.tools.toolbox.utils;
+package org.apereo.openequella.tools.toolbox.exportItems;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 
-public class EquellaItem {
+public class ParsedItem {
   private String uuid;
   private int version;
   private String name;
@@ -30,9 +34,12 @@ public class EquellaItem {
   private String kalturaMediaId;
   private JSONObject json;
   private String metadata;
+  private Map<String, List<String>> parsedMetadata;
+  private List<ParsedAttachment> attachments;
   private String kalturaTags;
-  private String createdDateStr;
   private Date createdDate;
+  private String modifiedDateStr;
+  private String createdDateStr;
   private String primaryFileType;
 
   public String getKalturaMediaId() {
@@ -123,11 +130,69 @@ public class EquellaItem {
     createdDate = date;
   }
 
+  public String getCreatedDateStr() {
+    return createdDateStr;
+  }
+
+  public void setCreatedDateStr(String date) {
+    createdDateStr = date;
+  }
+
+  public String getModifiedDateStr() {
+    return modifiedDateStr;
+  }
+
+  public void setModifiedDateStr(String date) {
+    modifiedDateStr = date;
+  }
+
   public void setPrimaryFileType(String suffix) {
     primaryFileType = suffix;
   }
 
   public String getPrimaryFileType() {
     return primaryFileType;
+  }
+
+  public Map<String, List<String>> getParsedMetadata() {
+    return parsedMetadata;
+  }
+
+  public List<String> getParsedMetadata(String key) {
+    if ((parsedMetadata != null) && parsedMetadata.containsKey(key)) {
+      return parsedMetadata.get(key);
+    }
+    return new ArrayList<>();
+  }
+
+  public void addToParsedMetadata(String key, String val) {
+    if (this.parsedMetadata == null) {
+      this.parsedMetadata = new HashMap<>();
+    }
+    if (!this.parsedMetadata.containsKey(key)) {
+      this.parsedMetadata.put(key, new ArrayList<>());
+    }
+    this.parsedMetadata.get(key).add(val);
+  }
+
+  public List<ParsedAttachment> getAttachments() {
+    return attachments;
+  }
+
+  public void addToParsedAttachments(ParsedAttachment pAtt) {
+    if (this.attachments == null) {
+      this.attachments = new ArrayList<>();
+    }
+    this.attachments.add(pAtt);
+  }
+
+  public ParsedAttachment getMungedAttachment() {
+    ParsedAttachment pa = new ParsedAttachment(new JSONObject());
+    for (ParsedAttachment pAttToMunge : this.attachments) {
+      for (String key : pAttToMunge.getKeys()) {
+        pa.append(key, pAttToMunge.get(key));
+      }
+    }
+    return pa;
   }
 }

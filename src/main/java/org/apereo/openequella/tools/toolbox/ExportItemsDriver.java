@@ -25,8 +25,6 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +36,13 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.api.OpenEquellaRestUtils;
-import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
-import org.apereo.openequella.tools.toolbox.utils.sorts.SortOpenEquellaItemByName;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedAttachment;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
+import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
@@ -52,9 +52,10 @@ import org.xml.sax.InputSource;
 public class ExportItemsDriver {
   private static Logger LOGGER = LogManager.getLogger(ExportItemsDriver.class);
 
-  private Map<String, EquellaItem> cache = new HashMap<>();
+  int globalExportedItemCounter = 0;
 
   public void execute() {
+    globalExportedItemCounter = 0;
     Long start = System.currentTimeMillis();
     // Ensure openEQUELLA is accessible
     OpenEquellaRestUtils oeru = new OpenEquellaRestUtils();
@@ -79,100 +80,31 @@ public class ExportItemsDriver {
 
       // Setup CSV writer and 'heading'
       csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT);
-      List<String> headers = parseCSV(Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT));
-      csvPrinter.printRecord(headers);
-
-      // Setup filter by date created (optional)
-      Date filterByDateCreated = null;
-      if (Config.getInstance().hasConfig(Config.EXPORT_ITEMS_FILTER_DATE_CREATED)) {
-        filterByDateCreated =
-            Config.DATE_FORMAT_CONFIG_FILE.parse(
-                Config.get(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
-      }
+      csvPrinter.printRecord(GeneralUtils.parseCSV(Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT)));
 
       // Loop through search results and save to the output file
       while (oeru.hasMoreResourcesToCache()) {
         try {
           start = System.currentTimeMillis();
 
-          List<EquellaItem> nextBatch = oeru.gatherItemsGeneral();
+          List<ParsedItem> nextBatch = oeru.gatherItemsGeneral();
           LOGGER.info(
               "Duration to obtain batch of items: {}ms", (System.currentTimeMillis() - start));
-          start = System.currentTimeMillis();
 
-          for (EquellaItem ei : nextBatch) {
-            // filter by date created if the filter was specified
-            if (filterByDateCreated == null || !ei.getCreatedDate().before(filterByDateCreated)) {
-              if (cache.containsKey(ei.getUuid())) {
-                // Ensure the latest live version is exported
-                if (cache.get(ei.getUuid()).getVersion() < ei.getVersion()) {
-                  LOGGER.debug(
-                      "{} - Filtering out since there is a later LIVE version {}.",
-                      cache.get(ei.getUuid()).getSignature(),
-                      ei.getSignature());
-                  cache.put(ei.getUuid(), ei);
-                }
-              } else {
-                cache.put(ei.getUuid(), ei);
-              }
-            } else {
-              LOGGER.debug(
-                  "{} - Filtering out since it's dateCreated ({}) is before the specified date {}",
-                  ei.getSignature(),
-                  Config.DATE_FORMAT_OEQ_API.format(ei.getCreatedDate()),
-                  Config.get(Config.EXPORT_ITEMS_FILTER_DATE_CREATED));
-            }
-          }
-          LOGGER.info(
-              "Duration to cache batch of items: {}ms", (System.currentTimeMillis() - start));
+          toCsv(csvPrinter, nextBatch);
+
         } catch (Exception e) {
+          LOGGER.error(e.getMessage(), e);
           LOGGER.error(
-              "Ending openEQUELLA run - error caching output file was not able to be created: {} - {}",
+              "Error with openEQUELLA run against output file - {} - {}",
               output.getAbsolutePath(),
               e.getMessage());
           return;
         }
       }
-      LOGGER.info(
-          "All items gathered.  Printing out to CSV file [{}].",
-          Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE));
-
-      start = System.currentTimeMillis();
-
-      List<EquellaItem> records = new ArrayList<>(cache.values());
-      Collections.sort(records, new SortOpenEquellaItemByName());
-      LOGGER.info(
-          "Duration to prep cached items for printing: {}ms", (System.currentTimeMillis() - start));
-      start = System.currentTimeMillis();
-
-      int counter = 1;
-      for (EquellaItem ei : records) {
-        List<String> record = buildRecord(headers, ei);
-        LOGGER.debug(
-            "Duration to build csv record: {}ms - {}",
-            (System.currentTimeMillis() - start),
-            ei.getSignature());
-        start = System.currentTimeMillis();
-
-        csvPrinter.printRecord(record);
-
-        LOGGER.debug("Duration to print record: {}ms", (System.currentTimeMillis() - start));
-        start = System.currentTimeMillis();
-
-        if (counter % 10 == 0) {
-          LOGGER.debug("Printing status:  {} items complete.", counter);
-        }
-        counter++;
-      }
-      csvPrinter.flush();
-
       csvPrinter.flush();
       csvPrinter.close();
-      LOGGER.info("Duration to flush printer: {}ms", (System.currentTimeMillis() - start));
 
-      if (counter % 10 != 0) {
-        LOGGER.info("Printing status:  {} items complete.", counter);
-      }
       LOGGER.info("Export complete.");
 
     } catch (Exception e) {
@@ -181,90 +113,117 @@ public class ExportItemsDriver {
           csvPrinter.flush();
           csvPrinter.close();
         } catch (IOException e1) {
+          LOGGER.error(e1.getMessage(), e1);
           LOGGER.error("Issue forcing a close of the CSV Printer - {}", e.getMessage());
         }
       }
-      LOGGER.error("Ending openEQUELLA run - {}", e.getMessage());
-      return;
+      LOGGER.error(e.getMessage(), e);
+      LOGGER.error("Error ending openEQUELLA run - {}", e.getMessage());
     }
+  }
+
+  private void toCsv(CSVPrinter csvPrinter, List<ParsedItem> records) throws Exception {
+    LOGGER.info(
+        "Printing out batch to CSV file [{}].", Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE));
+
+    long start = System.currentTimeMillis();
+
+    for (ParsedItem ei : records) {
+      parseRecord(ei);
+
+      LOGGER.debug(
+          "Duration to parse record: {}ms - {}",
+          (System.currentTimeMillis() - start),
+          ei.getSignature());
+      start = System.currentTimeMillis();
+
+      if (Boolean.valueOf(Config.get(Config.EXPORT_ITEMS_ONE_ATT_PER_LINE))) {
+        for (List<String> record : displayRecord(ei)) {
+          csvPrinter.printRecord(record);
+        }
+      } else {
+        csvPrinter.printRecord(displayRecord(ei).get(0));
+      }
+      csvPrinter.flush();
+
+      LOGGER.debug("Duration to print record: {}ms", (System.currentTimeMillis() - start));
+
+      start = System.currentTimeMillis();
+
+      globalExportedItemCounter++;
+    }
+
+    LOGGER.info("Printing status:  {} items complete.", globalExportedItemCounter);
   }
 
   // While MigrationUtils.findFirstOccurrenceInXml() is similar, this combines the 'reserved
   // keywords' with a single invocation of parsing the XML.
-  public List<String> buildRecord(List<String> headers, EquellaItem ei) throws Exception {
+  public void parseRecord(ParsedItem ei) throws Exception {
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse(new InputSource(new StringReader(ei.getMetadata())));
     XPathFactory xPathfactory = XPathFactory.newInstance();
     XPath xpath = xPathfactory.newXPath();
 
-    List<String> record = new ArrayList<>();
-    for (String header : headers) {
-      if (header.equalsIgnoreCase("uuid")) {
-        record.add(ei.getUuid());
-      } else if (header.equalsIgnoreCase("version")) {
-        record.add(ei.getVersion() + "");
-      } else if (header.equalsIgnoreCase("attachment_names")) {
-        record.add(parseAttachmentFilenames(ei));
-      } else if (header.equalsIgnoreCase("name")) {
-        record.add(ei.getName());
-      } else if (header.equalsIgnoreCase("description")) {
-        record.add(ei.getDescription());
-      } else if (header.equalsIgnoreCase("kaltura_id")) {
-        record.add(findFirstKalturaIdInAttachments(ei));
-      } else {
+    Map<String, List<String>> record = new HashMap<>();
+    for (String header : GeneralUtils.parseCSV(Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT))) {
+      if (header.contains("/")) {
         // Assume it's a metadata path
+        final String metadataPath = "/xml/" + header;
         try {
-          XPathExpression expr = xpath.compile("/xml/" + header);
-          List<String> results = new ArrayList<>();
+          XPathExpression expr = xpath.compile(metadataPath);
           Object xmlResults = expr.evaluate(doc, XPathConstants.NODESET);
           NodeList nodeResults = (NodeList) xmlResults;
           for (int i = 0; i < nodeResults.getLength(); i++) {
-            results.add(nodeResults.item(i).getTextContent());
+            ei.addToParsedMetadata(header, nodeResults.item(i).getTextContent());
           }
-          record.add(String.join(",", results));
         } catch (Exception e) {
-          e.printStackTrace();
-          throw new Exception("Unable to parse column format xpath " + header);
+          LOGGER.error(e.getMessage(), e);
+          throw new Exception(
+              "Unable to parse column format xpath "
+                  + metadataPath
+                  + "] due to: "
+                  + e.getMessage());
         }
       }
     }
-    return record;
+
+    parseAttachments(ei);
   }
 
-  public String parseAttachmentFilenames(EquellaItem ei) {
+  // While MigrationUtils.findFirstOccurrenceInXml() is similar, this combines the 'reserved
+  // keywords' with a single invocation of parsing the XML.
+  public List<List<String>> displayRecord(ParsedItem ei) throws Exception {
+    List<List<String>> results = new ArrayList<>();
+
+    if ((ei.getAttachments() == null) || ei.getAttachments().isEmpty()) {
+      // Empty set
+      results.add(createDisplayRecord(ei, null));
+    } else if (Boolean.valueOf(Config.get(Config.EXPORT_ITEMS_ONE_ATT_PER_LINE))) {
+      for (ParsedAttachment pAtt : ei.getAttachments()) {
+        results.add(createDisplayRecord(ei, pAtt));
+      }
+    } else {
+      // Munge all attachments
+      ParsedAttachment munged = ei.getMungedAttachment();
+      results.add(createDisplayRecord(ei, munged));
+    }
+
+    return results;
+  }
+
+  public void parseAttachments(ParsedItem ei) {
     JSONObject json = ei.getJson();
     if (json.has(OpenEquellaRestUtils.KEY_ATTS)) {
-      StringBuilder sb = new StringBuilder();
-
       JSONArray atts = json.getJSONArray(OpenEquellaRestUtils.KEY_ATTS);
       for (int i = 0; i < atts.length(); i++) {
-        JSONObject att = atts.getJSONObject(i);
-        switch (att.getString(OpenEquellaRestUtils.KEY_ATT_TYPE)) {
-          case OpenEquellaRestUtils.VAL_ATT_TYPE_FILE:
-            {
-              if (sb.length() != 0) {
-                sb.append(",");
-              }
-              sb.append(
-                  constructAttachmentPath(
-                      ei, att.getString(OpenEquellaRestUtils.KEY_ATT_FILENAME)));
-              break;
-            }
-          default:
-            {
-              // Ignore other attachment types
-            }
-        }
+        ParsedAttachment pAtt = new ParsedAttachment(atts.getJSONObject(i));
+        ei.addToParsedAttachments(pAtt);
       }
-
-      return sb.toString();
-    } else {
-      return "";
     }
   }
 
-  public String findFirstKalturaIdInAttachments(EquellaItem ei) {
+  public String findFirstKalturaIdInAttachments(ParsedItem ei) {
     JSONObject json = ei.getJson();
     if (json.has(OpenEquellaRestUtils.KEY_ATTS)) {
       JSONArray atts = json.getJSONArray(OpenEquellaRestUtils.KEY_ATTS);
@@ -281,16 +240,7 @@ public class ExportItemsDriver {
     return "";
   }
 
-  private List<String> parseCSV(String csv) {
-    List<String> tokens = new ArrayList<>();
-    String[] rawTokens = csv.split(",");
-    for (String rawToken : rawTokens) {
-      tokens.add(rawToken.trim());
-    }
-    return tokens;
-  }
-
-  public String constructAttachmentPath(EquellaItem ei, String attName) {
+  public String constructAttachmentPath(ParsedItem ei, String attName) {
     String template = Config.get(Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE);
     if (template.contains("@HASH")) {
       template = template.replaceFirst("@HASH", (ei.getUuid().hashCode() & 127) + "");
@@ -309,5 +259,65 @@ public class ExportItemsDriver {
     }
 
     return template;
+  }
+
+  private List<String> createDisplayRecord(ParsedItem pi, ParsedAttachment pAtt) {
+    List<String> result = new ArrayList<>();
+    LOGGER.debug(
+        "Creating display record for {}/{} - {}", pi.getUuid(), pi.getVersion(), pi.getName());
+    for (String header : GeneralUtils.parseCSV(Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT))) {
+      if (header.equalsIgnoreCase("uuid")) {
+        result.add(pi.getUuid());
+      } else if (header.equalsIgnoreCase("version")) {
+        result.add(pi.getVersion() + "");
+      } else if (header.equalsIgnoreCase("attachment_names")) {
+        if (pAtt == null) {
+          result.add("");
+        } else if (pAtt.get("type").equals("file")) {
+          result.add(pAtt.get("filename"));
+        } else if (pAtt.get("type").equals("url")) {
+          result.add(pAtt.get("url"));
+        } else {
+          result.add("");
+        }
+      } else if (header.equalsIgnoreCase("attachment_size")) {
+        if (pAtt == null) {
+          result.add("");
+        } else if (pAtt.get("type").equals("file")) {
+          result.add(pAtt.get("size"));
+        } else {
+          result.add("");
+        }
+      } else if (header.equalsIgnoreCase("attachment_uuid")) {
+        if (pAtt == null) {
+          result.add("");
+        } else {
+          result.add(pAtt.get("uuid"));
+        }
+      } else if (header.equalsIgnoreCase("attachment_disabled")) {
+        if (pAtt == null) {
+          result.add("");
+        } else if (pAtt.get("type").equals("url")) {
+          result.add(pAtt.get("disabled"));
+        } else {
+          result.add("");
+        }
+      } else if (header.equalsIgnoreCase("item_datecreated")) {
+        result.add(pi.getCreatedDateStr());
+      } else if (header.equalsIgnoreCase("item_datemodified")) {
+        result.add(pi.getModifiedDateStr());
+      } else if (header.equalsIgnoreCase("name")) {
+        result.add(pi.getName());
+      } else if (header.equalsIgnoreCase("description")) {
+        result.add(pi.getDescription());
+      } else if (header.equalsIgnoreCase("kaltura_id")) {
+        result.add(findFirstKalturaIdInAttachments(pi));
+      } else {
+        result.add(
+            StringUtils.join(
+                pi.getParsedMetadata(header), Config.get(Config.EXPORT_ITEMS_MULTI_VALUE_DELIM)));
+      }
+    }
+    return result;
   }
 }

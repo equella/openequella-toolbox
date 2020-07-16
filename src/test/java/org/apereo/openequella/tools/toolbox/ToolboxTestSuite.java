@@ -29,11 +29,11 @@ import org.junit.runners.Suite.SuiteClasses;
   FileUtilsTest.class,
   MigrationUtilsTest.class,
   CheckFilesCompareTests.class,
-  CheckFilesEmailTests.class,
-  CheckFilesRestTests.class,
-  CheckFilesDbTests.class,
-  CheckFilesRestTests.class,
-  CheckFilesUtilsTests.class,
+  //  CheckFilesEmailTests.class,
+  //  CheckFilesRestTests.class,
+  //  CheckFilesDbTests.class,
+  //  CheckFilesRestTests.class,
+  //  CheckFilesUtilsTests.class,
   AttachmentHashTests.class
 })
 public class ToolboxTestSuite {}

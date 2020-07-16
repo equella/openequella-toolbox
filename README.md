@@ -9,6 +9,41 @@ Search openEQUELLA for items with a given criteria.  For each item found, downlo
 ### Export Items
 Search openEQUELLA for items with a given criteria.  For each item found, export the metadata in a given format.
 
+Supports:
+* multi-valued metadata paths
+* An option to have each file / URL attachment on it's own row; when doing so, the rest of the metadata gets copied for each row.
+
+Example properties:
+```properties
+toolbox.function=ExportItems
+
+oeq.url=https://my.oeq.url
+oeq.oauth.client.id=asdf
+oeq.oauth.client.secret=qwer
+oeq.search.api.requested.length=50
+#oeq.search.api=/api/search/?collections=csv-of-collection-uuids&order=name&reverse=false&info=all&showall=false&status=LIVE
+
+# Use \\ for Windows, / for Mac and Linux
+general.os.slash=/
+general.download.folder=/my/download/folder
+general.download.chatter=400
+
+### Needed for ExportItems
+export.items.output=export-example.csv
+
+# Format:  YYYY-MM-DD
+export.items.filter.dateCreated=1960-01-01
+
+# CSV of metadata paths
+# Keywords:  name,description,uuid,version,attachment_names,metadata/my/values,attachment_uuid,attachment_size,item_datecreated,item_datemodified,attachment_disabled, kaltura_id
+# The rest of the columns are assumed to be xpaths.  The script will automatically add prefix 'xml/' and add a suffix of '/text()'
+export.items.columnFormat=name,uuid,version,attachment_names,metadata/my/values,attachment_uuid,attachment_size,item_datecreated,item_datemodified,attachment_disabled
+export.items.attachment.path.template=@FILENAME
+export.items.multiValueDelim=|
+export.items.oneAttachmentPerLine=true
+```
+
+
 ### Email
 Invocation arguments:
 * [req] config file
