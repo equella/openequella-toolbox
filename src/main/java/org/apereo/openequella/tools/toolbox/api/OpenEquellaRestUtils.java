@@ -35,7 +35,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
-import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
 import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.apereo.openequella.tools.toolbox.utils.MigrationUtils;
 import org.json.JSONArray;
@@ -157,7 +157,7 @@ public class OpenEquellaRestUtils {
   }
 
   // Ideally merge this with gatherItemsGeneral()
-  public List<EquellaItem> gatherItems() throws Exception {
+  public List<ParsedItem> gatherItems() throws Exception {
     CloseableHttpClient httpclient = HttpClients.createDefault();
     String url =
         Config.get(Config.OEQ_URL)
@@ -185,7 +185,7 @@ public class OpenEquellaRestUtils {
       throw new Exception(msg);
     }
 
-    List<EquellaItem> cachedItems = new ArrayList<>();
+    List<ParsedItem> cachedItems = new ArrayList<>();
 
     JSONObject searchResults = new JSONObject(respStr);
     int availableResults = confirmAndGatherInt(searchResults, "available");
@@ -203,13 +203,15 @@ public class OpenEquellaRestUtils {
       for (int i = 0; i < itemsArr.length(); i++) {
         JSONObject resourceObj = itemsArr.getJSONObject(i);
 
-        EquellaItem ei = new EquellaItem();
+        ParsedItem ei = new ParsedItem();
+        ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
+        ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
+        // TODO - add item filter here as well
+
         ei.setName(confirmAndGatherString(resourceObj, "name"));
         // 'description' can be optional.
         ei.setDescription(
             resourceObj.has("description") ? resourceObj.getString("description") : "");
-        ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
-        ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
         ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
         try {
           String tags =
@@ -249,7 +251,7 @@ public class OpenEquellaRestUtils {
     return cachedItems;
   }
 
-  public List<EquellaItem> gatherItemsGeneral() throws Exception {
+  public List<ParsedItem> gatherItemsGeneral() throws Exception {
     CloseableHttpClient httpclient = HttpClients.createDefault();
     String url =
         Config.get(Config.OEQ_URL)
@@ -278,7 +280,7 @@ public class OpenEquellaRestUtils {
       throw new Exception(msg);
     }
 
-    List<EquellaItem> cachedItems = new ArrayList<>();
+    List<ParsedItem> cachedItems = new ArrayList<>();
 
     JSONObject searchResults = new JSONObject(respStr);
     cacheStatAvailable = confirmAndGatherInt(searchResults, "available");
@@ -296,18 +298,23 @@ public class OpenEquellaRestUtils {
       for (int i = 0; i < itemsArr.length(); i++) {
         JSONObject resourceObj = itemsArr.getJSONObject(i);
 
-        EquellaItem ei = new EquellaItem();
-        ei.setName(confirmAndGatherString(resourceObj, "name"));
-        ei.setDescription(
-            resourceObj.has("description") ? resourceObj.getString("description") : "");
+        ParsedItem ei = new ParsedItem();
         ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
         ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
+
+        ei.setName(confirmAndGatherString(resourceObj, "name"));
+        ei.setDescription(
+                resourceObj.has("description") ? resourceObj.getString("description") : "");
         ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
         ei.setCreatedDate(
-            Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
+                Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
+        ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
+        ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
         ei.setJson(resourceObj);
 
         LOGGER.info("CACHED {}", ei.getSignature());
+        LOGGER.debug("CACHED JSON {}", ei.getJson());
+
         cachedItems.add(ei);
       }
     } else {
@@ -331,9 +338,14 @@ public class OpenEquellaRestUtils {
     return o.getLong(key);
   }
 
-  private String confirmAndGatherString(JSONObject o, String key) throws Exception {
-    if (!o.has(key)) throw new Exception("Unable to find the key " + key + " in " + o);
-    return o.getString(key);
+  private String confirmAndGatherString(JSONObject o, String key) { // } throws Exception {
+    if (!o.has(key)) {
+      return null;
+    } else {
+      return o.getString(key);
+    }
+    // throw new Exception("Unable to find the key " + key + " in " + o);
+
   }
 
   private JSONArray confirmAndGatherJsonArray(JSONObject o, String key) throws Exception {
@@ -368,7 +380,7 @@ public class OpenEquellaRestUtils {
   // - Description contains a certain phrase
   // - filename should end in .mp4 or .mov
   // If multiple attachments meet the criteria, use the larger one
-  public boolean downloadAttachmentForKaltura(EquellaItem ei) {
+  public boolean downloadAttachmentForKaltura(ParsedItem ei) {
     LOGGER.info("{} - Beginning to process item.", ei.getSignature());
 
     int bestFitAttIndex = -1;
@@ -482,7 +494,7 @@ public class OpenEquellaRestUtils {
   //	 * @param eqResource
   //	 */
   //	public boolean newVersionEquellaResourceWithKalturaAttachment(MediaEntry kalResource,
-  // EquellaItem eqResource) {
+  // ParsedItem eqResource) {
   //		try {
   //
   //			JSONObject collJson = new JSONObject();

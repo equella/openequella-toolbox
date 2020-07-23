@@ -6,7 +6,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group = 'org.apereo.openequella'
-version = '1.4.1-SNAPSHOT-F'
+version = '1.4.1-SNAPSHOT-G'
 sourceCompatibility = 1.8
 
 repositories {
@@ -51,4 +51,8 @@ jar {
 	from {
 		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
 	}
+}
+
+test {
+	exclude 'org/apereo/openequella/tools/toolbox/CheckFiles*'
 }

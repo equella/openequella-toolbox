@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.api.OpenEquellaRestUtils;
-import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
 
 // import com.kaltura.client.types.MediaEntry;
 // import com.kaltura.client.utils.response.OnCompletion;
@@ -30,7 +30,7 @@ import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
 public class MigrateItemsToKalturaDriver {
   private static Logger LOGGER = LogManager.getLogger(MigrateItemsToKalturaDriver.class);
 
-  private static List<EquellaItem> itemsToProcess;
+  private static List<ParsedItem> itemsToProcess;
 
   private static int totalNumOfItemsMigrated = 0;
 
@@ -80,7 +80,7 @@ public class MigrateItemsToKalturaDriver {
     }
   }
 
-  //	private void processItem(KalturaUtils ku, OpenEquellaRestUtils oeru, EquellaItem eqResource) {
+  //	private void processItem(KalturaUtils ku, OpenEquellaRestUtils oeru, ParsedItem eqResource) {
   //		kalturaUploadInProgress = true;
   //		if(oeru.downloadAttachmentForKaltura(eqResource)) {
   //			// Add the video to Kaltura

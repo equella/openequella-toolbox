@@ -18,6 +18,8 @@
 
 package org.apereo.openequella.tools.toolbox.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class GeneralUtils {
@@ -34,5 +36,14 @@ public class GeneralUtils {
 
   public static int findHash(String uuid) {
     return uuid.hashCode() & 127;
+  }
+
+  public static List<String> parseCSV(String csv) {
+    List<String> tokens = new ArrayList<>();
+    String[] rawTokens = csv.split(",");
+    for (String rawToken : rawTokens) {
+      tokens.add(rawToken.trim());
+    }
+    return tokens;
   }
 }

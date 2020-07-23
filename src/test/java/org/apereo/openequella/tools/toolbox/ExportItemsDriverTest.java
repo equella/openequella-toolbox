@@ -19,53 +19,124 @@
 package org.apereo.openequella.tools.toolbox;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.apereo.openequella.tools.toolbox.utils.EquellaItem;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 
 public class ExportItemsDriverTest {
+  public static final String DATE_CREATED_STR = "2014-11-12T11:43:05.543-05:00";
+  public static final String DATE_MODIFIED_STR = "2015-11-12T11:43:05.543-05:00";
 
   @Test
-  public void testParseAttachmentFilenames() {
-    JSONObject json = new JSONObject();
-    JSONObject att1 = new JSONObject();
-    att1.put("type", "kaltura");
-    att1.put("description", "This is an interesting kaltura link description");
-    att1.put("title", "A title of a kaltura link");
-    JSONObject att2 = new JSONObject();
-    att2.put("type", "file");
-    att2.put("description", "This is an interesting file description");
-    att2.put("filename", "myfile.pdf");
-    JSONObject att3 = new JSONObject();
-    att3.put("type", "custom");
-    att3.put("description", "This is an interesting custom description");
-    att3.put("filename", "not real");
-    JSONArray atts = new JSONArray();
-    atts.put(att1);
-    atts.put(att2);
-    atts.put(att3);
-    json.put("attachments", atts);
-    EquellaItem ei = new EquellaItem();
-    ei.setJson(json);
-    ei.setUuid("ec48a0e1-9643-4d50-840a-db26fd9fa15a");
+  public void testParseAttachmentFilenames() throws Exception {
+    // Build out test data
+    ParsedItem ei = new ParsedItem();
+    ei.setJson(buildEquellaItemAttSetup1());
+    ei.setName("name1");
+    ei.setUuid("1-2-3-4");
     ei.setVersion(1);
-    ExportItemsDriver eid = new ExportItemsDriver();
-    Properties props = new Properties();
+    ei.setMetadata(
+        "<xml><metadata><learning><content>nif,ty</content><content>This is \" some data!</content></learning><keywords><keyword>k1</keyword></keywords><general>asdf</general><keywords><keyword>k2</keyword><keyword>k3</keyword></keywords></metadata></xml>");
+    ei.setCreatedDateStr(DATE_CREATED_STR);
+    ei.setModifiedDateStr(DATE_MODIFIED_STR);
+    // Set configs
+    Properties props = buildGeneralExportItemsProps();
     props.put(
         Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE,
         "/Attachments/@HASH/@UUID/@VERSION/@FILENAME");
+    props.put(Config.EXPORT_ITEMS_ONE_ATT_PER_LINE, "true");
+    props.put(Config.EXPORT_ITEMS_MULTI_VALUE_DELIM, "|");
     Config.reset();
     Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
 
-    assertEquals(
-        "/Attachments/40/ec48a0e1-9643-4d50-840a-db26fd9fa15a/1/myfile.pdf",
-        eid.parseAttachmentFilenames(ei));
+    // Run test
+    ExportItemsDriver eid = new ExportItemsDriver();
+    eid.parseRecord(ei);
+    List<List<String>> results = eid.displayRecord(ei);
+
+    assertEquals(6, results.size());
+    assertEquals(11, results.get(0).size());
+    assertEquals("name1", results.get(0).get(0));
+    assertEquals("1-2-3-4", results.get(0).get(1));
+    assertEquals("1", results.get(0).get(2));
+    assertEquals("", results.get(0).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(0).get(4));
+    assertEquals("k1|k2|k3", results.get(0).get(5));
+    assertEquals("", results.get(0).get(6));
+    assertEquals("5-8-7-6", results.get(0).get(7));
+    assertEquals("", results.get(0).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(0).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(0).get(10));
+
+    assertEquals(11, results.get(1).size());
+    assertEquals("name1", results.get(1).get(0));
+    assertEquals("1-2-3-4", results.get(1).get(1));
+    assertEquals("1", results.get(1).get(2));
+    assertEquals("", results.get(1).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(1).get(4));
+    assertEquals("k1|k2|k3", results.get(1).get(5));
+    assertEquals("", results.get(1).get(6));
+    assertEquals("8-5-6-8", results.get(1).get(7));
+    assertEquals("", results.get(1).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(1).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(1).get(10));
+
+    assertEquals(11, results.get(2).size());
+    assertEquals("name1", results.get(2).get(0));
+    assertEquals("1-2-3-4", results.get(2).get(1));
+    assertEquals("1", results.get(2).get(2));
+    assertEquals("https://apereo.org/oeq-examples/fake-url-1", results.get(2).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(2).get(4));
+    assertEquals("k1|k2|k3", results.get(2).get(5));
+    assertEquals("", results.get(2).get(6));
+    assertEquals("url-att-1-uuid", results.get(2).get(7));
+    assertEquals("false", results.get(2).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(2).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(2).get(10));
+
+    assertEquals(11, results.get(3).size());
+    assertEquals("name1", results.get(3).get(0));
+    assertEquals("1-2-3-4", results.get(3).get(1));
+    assertEquals("1", results.get(3).get(2));
+    assertEquals("file-att-2 with spaces and quotes \" and pipes |.pdf", results.get(3).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(3).get(4));
+    assertEquals("k1|k2|k3", results.get(3).get(5));
+    assertEquals("85645", results.get(3).get(6));
+    assertEquals("file-att-2-uuid", results.get(3).get(7));
+    assertEquals("", results.get(3).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(3).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(3).get(10));
+
+    assertEquals(11, results.get(4).size());
+    assertEquals("name1", results.get(4).get(0));
+    assertEquals("1-2-3-4", results.get(4).get(1));
+    assertEquals("1", results.get(4).get(2));
+    assertEquals("https://apereo.org/oeq-examples/fake-url-2", results.get(4).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(4).get(4));
+    assertEquals("k1|k2|k3", results.get(4).get(5));
+    assertEquals("", results.get(4).get(6));
+    assertEquals("url-att-2-uuid", results.get(4).get(7));
+    assertEquals("true", results.get(4).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(4).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(4).get(10));
+
+    assertEquals(11, results.get(5).size());
+    assertEquals("name1", results.get(5).get(0));
+    assertEquals("1-2-3-4", results.get(5).get(1));
+    assertEquals("1", results.get(5).get(2));
+    assertEquals("file-att-1.pdf", results.get(5).get(3));
+    assertEquals("nif,ty|This is \" some data!", results.get(5).get(4));
+    assertEquals("k1|k2|k3", results.get(5).get(5));
+    assertEquals("43432", results.get(5).get(6));
+    assertEquals("file-att-1-uuid", results.get(5).get(7));
+    assertEquals("", results.get(5).get(8));
+    assertEquals(DATE_CREATED_STR, results.get(5).get(9));
+    assertEquals(DATE_MODIFIED_STR, results.get(5).get(10));
   }
 
   @Test
@@ -88,47 +159,112 @@ public class ExportItemsDriverTest {
     atts.put(att2);
     atts.put(att3);
     json.put("attachments", atts);
-    EquellaItem ei = new EquellaItem();
+    ParsedItem ei = new ParsedItem();
     ei.setJson(json);
     ExportItemsDriver eid = new ExportItemsDriver();
     assertEquals("0_12345", eid.findFirstKalturaIdInAttachments(ei));
   }
 
-  @Test
-  public void testBuildRecordMultipleValuesTogether() {
-    EquellaItem ei = new EquellaItem();
-    ei.setMetadata(
-        "<xml><metadata><general>asdf</general><keywords><keyword>k1</keyword><keyword>k2</keyword></keywords></metadata></xml>");
+  private Properties buildGeneralExportItemsProps() {
+    Properties props = new Properties();
+    props.put(Config.TOOLBOX_FUNCTION, "ExportItems");
+    props.put(Config.OEQ_URL, "https://someurl");
+    props.put(Config.OEQ_OAUTH_CLIENT_ID, "1234");
+    props.put(Config.OEQ_OAUTH_CLIENT_SECRET, "asdf");
+    props.put(Config.OEQ_SEARCH_API_REQUESTED_LENGTH, "10");
+    props.put(Config.OEQ_SEARCH_API, "/api/search");
+    props.put(Config.GENERAL_OS_SLASH, "/");
+    props.put(Config.GENERAL_DOWNLOAD_FOLDER, "/temp");
+    props.put(Config.GENERAL_DOWNLOAD_CHATTER, "400");
+    props.put(
+        Config.EXPORT_ITEMS_OUTPUT_FILE, "/tmp/export-file" + System.currentTimeMillis() + ".csv");
+    props.put(Config.EXPORT_ITEMS_FILTER_DATE_CREATED, "1960-01-01");
+    props.put(
+        Config.EXPORT_ITEMS_COLUMN_FORMAT,
+        "name,UUID,Version,attachment_names,metadata/learning/content,metadata/keywords/keyword,attachment_size,attachment_uuid,attachment_disabled,item_datecreated,item_datemodified");
+    props.put(Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE, "@FILENAME");
 
-    List<String> headers = new ArrayList<>();
-    headers.add("metadata/keywords/keyword");
-
-    ExportItemsDriver eid = new ExportItemsDriver();
-    try {
-      List<String> result = eid.buildRecord(headers, ei);
-      assertEquals(1, result.size());
-      assertEquals("k1,k2", result.get(0));
-    } catch (Exception e) {
-      fail("buildRecord failed with: " + e.getMessage());
-    }
+    return props;
   }
 
-  @Test
-  public void testBuildRecordMultipleValuesApart() {
-    EquellaItem ei = new EquellaItem();
-    ei.setMetadata(
-        "<xml><metadata><keywords><keyword>k1</keyword></keywords><general>asdf</general><keywords><keyword>k2</keyword><keyword>k3</keyword></keywords></metadata></xml>");
+  // Noted as '1' and enabled
+  private JSONObject buildUrlAttachment1() {
+    JSONObject a = new JSONObject();
+    a.put("type", "url");
+    a.put("uuid", "url-att-1-uuid");
+    a.put("description", "This is an interesting url-att-1 description");
+    a.put("preview", false);
+    a.put("restricted", false);
+    a.put("url", "https://apereo.org/oeq-examples/fake-url-1");
+    a.put("disabled", false);
+    // does not build out links
+    return a;
+  }
 
-    List<String> headers = new ArrayList<>();
-    headers.add("metadata/keywords/keyword");
+  // Noted as '2' and disabled
+  private JSONObject buildUrlAttachment2() {
+    JSONObject a = new JSONObject();
+    a.put("type", "url");
+    a.put("uuid", "url-att-2-uuid");
+    a.put("description", "This is an interesting url-att-2 description");
+    a.put("preview", false);
+    a.put("restricted", false);
+    a.put("url", "https://apereo.org/oeq-examples/fake-url-2");
+    a.put("disabled", true);
+    // does not build out links
+    return a;
+  }
 
-    ExportItemsDriver eid = new ExportItemsDriver();
-    try {
-      List<String> result = eid.buildRecord(headers, ei);
-      assertEquals(1, result.size());
-      assertEquals("k1,k2,k3", result.get(0));
-    } catch (Exception e) {
-      fail("buildRecord failed with: " + e.getMessage());
-    }
+  private JSONObject buildFileAttachment1() {
+    JSONObject a = new JSONObject();
+    a.put("type", "file");
+    a.put("uuid", "file-att-1-uuid");
+    a.put("description", "This is an interesting file-att-1 description");
+    a.put("preview", false);
+    a.put("restricted", false);
+    a.put("filename", "file-att-1.pdf");
+    a.put("size", 43432);
+    a.put("conversion", false);
+    a.put("thumbFilename", "_THUMBS/file-att-1.pdf");
+    // does not build out links / thumbnail
+    return a;
+  }
+
+  private JSONObject buildFileAttachment2() {
+    JSONObject a = new JSONObject();
+    a.put("type", "file");
+    a.put("uuid", "file-att-2-uuid");
+    a.put("description", "This is an interesting file-att-2 description");
+    a.put("preview", false);
+    a.put("restricted", false);
+    a.put("filename", "file-att-2 with spaces and quotes \" and pipes |.pdf");
+    a.put("size", 85645);
+    a.put("conversion", false);
+    a.put("thumbFilename", "_THUMBS/file-att-2.pdf");
+    // does not build out links / thumbnail
+    return a;
+  }
+
+  private JSONObject buildEquellaItemAttSetup1() {
+    JSONObject json = new JSONObject();
+    JSONObject att1 = new JSONObject();
+    att1.put("type", "kaltura");
+    att1.put("uuid", "5-8-7-6");
+    att1.put("description", "This is an interesting kaltura link description");
+    att1.put("title", "A title of a kaltura link");
+    JSONObject att2 = new JSONObject();
+    att2.put("type", "custom");
+    att2.put("uuid", "8-5-6-8");
+    att2.put("description", "This is an interesting custom description");
+    att2.put("filename", "not real");
+    JSONArray atts = new JSONArray();
+    atts.put(att1);
+    atts.put(att2);
+    atts.put(buildUrlAttachment1());
+    atts.put(buildFileAttachment2());
+    atts.put(buildUrlAttachment2());
+    atts.put(buildFileAttachment1());
+    json.put("attachments", atts);
+    return json;
   }
 }

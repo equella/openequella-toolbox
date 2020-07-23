@@ -77,9 +77,11 @@ public class Config {
   // ExportItems
   public static final String EXPORT_ITEMS_OUTPUT_FILE = "export.items.output";
   public static final String EXPORT_ITEMS_COLUMN_FORMAT = "export.items.columnFormat";
+  public static final String EXPORT_ITEMS_MULTI_VALUE_DELIM = "export.items.multiValueDelim";
   public static final String EXPORT_ITEMS_FILTER_DATE_CREATED = "export.items.filter.dateCreated";
   public static final String EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE =
       "export.items.attachment.path.template";
+  public static final String EXPORT_ITEMS_ONE_ATT_PER_LINE = "export.items.oneAttachmentPerLine";
 
   // Email
   public static final String EMAIL_SERVER = "email.server";
@@ -203,7 +205,7 @@ public class Config {
     }
   }
 
-  private void checkConfigs() {
+  public void checkConfigs() {
     try {
       checkConfig(TOOLBOX_FUNCTION, true, true);
       if (validConfig) {
@@ -414,6 +416,19 @@ public class Config {
     }
     checkConfig(EXPORT_ITEMS_COLUMN_FORMAT, true, true);
     checkConfig(EXPORT_ITEMS_FILTER_DATE_CREATED, true, false);
+
+    // Default is a comma
+    checkConfig(EXPORT_ITEMS_MULTI_VALUE_DELIM, true, false);
+    if (get(EXPORT_ITEMS_MULTI_VALUE_DELIM) == null) {
+      setConfig(EXPORT_ITEMS_MULTI_VALUE_DELIM, ",");
+    }
+
+    // Default is a false - multiple attachments will be recorded on a single line
+    checkConfig(EXPORT_ITEMS_ONE_ATT_PER_LINE, true, false);
+    if (get(EXPORT_ITEMS_ONE_ATT_PER_LINE) == null) {
+      setConfig(EXPORT_ITEMS_ONE_ATT_PER_LINE, "false");
+    }
+
     checkConfig(EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE, true, true);
   }
 

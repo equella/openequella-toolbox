@@ -70,7 +70,7 @@ public class KalturaUtils {
   //		}
   //	}
   //
-  //	public void addMedia(EquellaItem eItem, final OnCompletion<MediaEntry> onCompletion)
+  //	public void addMedia(ParsedItem eItem, final OnCompletion<MediaEntry> onCompletion)
   //	{
   //		LOGGER.info("{} - Processing resource:  ", eItem.getSignature());
   //		MediaEntry entry = new MediaEntry();
@@ -188,7 +188,7 @@ public class KalturaUtils {
   //		APIOkRequestsExecutor.getExecutor().queue(requestBuilder.build(client));
   //	}
   //
-  //	public void confirmProcessedEntry(final EquellaItem item, final Boolean checkReady, final
+  //	public void confirmProcessedEntry(final ParsedItem item, final Boolean checkReady, final
   // OnCompletion<MediaEntry> onCompletion) {
   //		final int maxTries = 50;
   //		final int sleepInterval = 30 * 1000;
