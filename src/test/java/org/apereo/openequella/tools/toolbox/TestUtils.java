@@ -95,6 +95,7 @@ public class TestUtils {
             Config.CF_OUTPUT_FOLDER,
             "test-check-files-output/" + UUID.randomUUID().toString() + "/");
     Config.getInstance().setConfig(Config.CF_ADOPTER_NAME, "acme");
+    Config.getInstance().setConfig(Config.GENERAL_OS_SLASH, "/");
     Config.getInstance()
         .setConfig(Config.CF_MODE, Config.CheckFilesType.DB_ALL_ITEMS_ALL_ATTS.name());
     Config.getInstance().setConfig(Config.CF_DB_TYPE, Config.CheckFilesSupportedDB.POSTGRE.name());

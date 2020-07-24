@@ -46,6 +46,8 @@ public class CheckFilesDbTests {
   private static final int INST_XC_COLL_FS2_NUM_ERR_RESULTS = 20;
   private static final int INST_XD_COLL_LR_NUM_ALL_RESULTS = 30;
   private static final int INST_XD_COLL_LR_NUM_ERR_RESULTS = 20;
+  private static final int INST_XF_NUM_OF_ALL_RESULTS = 48;
+  private static final int INST_XF_NUM_OF_ERR_RESULTS = 22;
   private static final int INST_ALL_NUM_OF_ALL_RESULTS = 54;
   private static final int INST_ALL_NUM_OF_ERR_RESULTS = 25;
   private static final int OFFSET_FOR_QUERY_STATEMENT = 3;
@@ -386,6 +388,31 @@ public class CheckFilesDbTests {
         "The institution shortname to filter by [swirl] is not in the institution cache.");
   }
 
+//  @Test
+//  public void testZipFiles() {
+//    Config.reset();
+//    TestUtils.buildCheckFilesGeneralDbProps();
+//    Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+//    Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, "instXf");
+//    Config.getInstance().checkConfigsCheckFiles();
+//
+//    assertTrue(CheckFilesDriver.setup(true));
+//    assertTrue(CheckFilesDriver.run());
+//    assertTrue(CheckFilesDriver.finalizeRun());
+//
+//    TestUtils.debugDumpList(ReportManager.getInstance().getAllStatsWriterList());
+//    TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
+//    confirmResultsInstitutionXf(
+//            ReportManager.getInstance().getAllStatsWriterList(),
+//            ReportManager.getInstance().getErrorStatsWriterList());
+//    assertEquals(
+//            ReportManager.getInstance()
+//                    .getAllStatsWriterList()
+//                    .get(INST_XD_COLL_LR_NUM_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
+//            "# Of queries ran,16");
+//  }
+
+
   private void confirmResultsAllInstitutions(List<String> allOriginal, List<String> errOriginal) {
     assertEquals(INST_ALL_NUM_OF_ALL_RESULTS, allOriginal.size());
     // This is the primary flow that will change when new items / institutions are added to the test
@@ -531,6 +558,48 @@ public class CheckFilesDbTests {
     assertEquals(
         err.get(idx++),
         "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,file,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"keyword.txt\",");
+  }
+
+  private void confirmResultsInstitutionXf(List<String> allOriginal, List<String> errOriginal) {
+    assertEquals(INST_XF_NUM_OF_ALL_RESULTS, allOriginal.size());
+    // This is the primary flow that will change when new items / institutions are added to the test
+    // institution.
+    // Sort the results in a sandbox to make checking results a bit simplier
+    List<String> all = new ArrayList<>();
+    all.addAll(allOriginal);
+    Collections.sort(all.subList(7, all.size()));
+    List<String> err = new ArrayList<>();
+    err.addAll(errOriginal);
+    Collections.sort(err.subList(7, err.size()));
+    int idx = 7;
+    assertEquals(all.get(idx++), "# Of ALL Attachments,34");
+    assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
+    assertEquals(all.get(idx++), "# Of Items affected,5");
+    assertEquals(all.get(idx++), "# Of Items,26");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,5");
+    idx += 8; // Skip the non-critical rows
+    assertEquals(
+            all.get(idx++),
+            "instXa,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,0a16eb9d-88af-4951-82bb-40da96516a2f,1,LIVE,file,16fd1eea-86bd-46a4-ae7b-c4b8686bc5dd,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.rtf\",");
+    assertEquals(
+            all.get(idx++),
+            "oeqgeneral,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,79b7fa12-7e96-46b1-a8dc-57eeb4dc799a,1,LIVE,file,a8b37c17-a30e-4fc9-9b41-f4fafa8f96c2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.rtf\",");
+
+    assertEquals(INST_XF_NUM_OF_ERR_RESULTS, err.size());
+
+    idx = 7;
+    assertEquals(all.get(idx++), "# Of ALL Attachments,34");
+    assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
+    assertEquals(all.get(idx++), "# Of Items affected,5");
+    assertEquals(all.get(idx++), "# Of Items,26");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,5");
+    idx += 8; // Skip the non-critical rows
+    assertEquals(
+            err.get(idx++),
+            "instXb,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,711de2a7-62e9-41b1-93b9-95cc794e6f7a,1,LIVE,file,fb442db8-71f2-408d-b03b-679c4e2d7220,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"syllabus.html\",");
+    assertEquals(
+            err.get(idx++),
+            "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,file,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"keyword.txt\",");
   }
 
   private void confirmResultsInstitutionXaAllCollections(List<String> all, List<String> err) {
