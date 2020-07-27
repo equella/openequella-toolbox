@@ -293,6 +293,15 @@ public class OpenEquellaRestUtils {
         cacheStatLength,
         cacheStatAvailable,
         resultsLength);
+
+    String[] itemExclusions = new String[0];
+    if ((Config.ToolboxFunction.valueOf(Config.get(Config.TOOLBOX_FUNCTION))
+            == Config.ToolboxFunction.ExportItems)
+        && Config.getInstance().hasConfig(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
+      itemExclusions =
+          Config.getInstance().getConfigAsStringArray(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS);
+    }
+
     if (resultsLength > 0) {
       cacheStatStart += resultsLength;
       for (int i = 0; i < itemsArr.length(); i++) {
@@ -301,27 +310,42 @@ public class OpenEquellaRestUtils {
         ParsedItem ei = new ParsedItem();
         ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
         ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
-
         ei.setName(confirmAndGatherString(resourceObj, "name"));
-        ei.setDescription(
-                resourceObj.has("description") ? resourceObj.getString("description") : "");
-        ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
-        ei.setCreatedDate(
-                Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
-        ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
-        ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
-        ei.setJson(resourceObj);
+        if (isItemExcluded(itemExclusions, ei)) {
+          LOGGER.info("SKIPPING ITEM due to exclusion match {}", ei.getSignature());
+        } else {
+          ei.setDescription(
+              resourceObj.has("description") ? resourceObj.getString("description") : "");
+          ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
+          ei.setCreatedDate(
+              Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
+          ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
+          ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
+          ei.setJson(resourceObj);
 
-        LOGGER.info("CACHED {}", ei.getSignature());
-        LOGGER.debug("CACHED JSON {}", ei.getJson());
+          LOGGER.info("CACHED {}", ei.getSignature());
+          LOGGER.debug("CACHED JSON {}", ei.getJson());
 
-        cachedItems.add(ei);
+          cachedItems.add(ei);
+        }
       }
     } else {
       moreResourcesToCache = false;
     }
 
     return cachedItems;
+  }
+
+  private boolean isItemExcluded(String[] exclusions, ParsedItem parsedItem) {
+    if (exclusions.length > 0) {
+      for (int exclusionIndex = 0; exclusionIndex < exclusions.length; exclusionIndex++) {
+        if (exclusions[exclusionIndex].equals(
+            parsedItem.getUuid() + "/" + parsedItem.getVersion())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public boolean hasMoreResourcesToCache() {
