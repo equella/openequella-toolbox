@@ -30,9 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
@@ -194,7 +192,8 @@ public class CheckFilesDbHandler {
         // Start attCounter at 1 since the first element is always the
         // item framework.
         for (int attCounter = 1; attCounter < rawTotal; attCounter++) {
-          final String stat = String.format("item [%s] - att [%s]/[%s]", itemCounter, attCounter, attTotal);
+          final String stat =
+              String.format("item [%s] - att [%s]/[%s]", itemCounter, attCounter, attTotal);
           allGood &= checkAttachment(stat, attachments.get(attCounter));
         }
         if (!allGood) {
@@ -209,12 +208,9 @@ public class CheckFilesDbHandler {
     return true;
   }
 
-
-
   private boolean checkAttachment(String stat, ResultsRow attRow) throws IOException {
     ReportManager.getInstance().getStats().incNumTotalAttachments();
-    logger.info(
-            "Processing item attachment {}", stat);
+    logger.info("Processing item attachment {}", stat);
 
     // Determine attachment status
     if (attRow.getAttStatus().equals(ResultsRow.IGNORED)) {
@@ -290,60 +286,112 @@ public class CheckFilesDbHandler {
       logger.info("Using path [{}] to check attachment.", path);
     }
     logger.info("Alt path [{}] to check attachment.", altPath);
+    logger.info("Att type [{}].", attRow.getAttType());
 
+    final File stdFile = new File(path);
+    final File altFile = new File(altPath);
 
-
-    if ((new File(path)).exists()) {
-      if(attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
+    if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP_ENTRY)) {
+      if (attRow.getAttStatus().equals("IN_PROGRESS_ZIP_DIR")) {
+        if ((stdFile.exists() && stdFile.isDirectory())
+            || (altFile.exists() && altFile.isDirectory())) {
+          return true;
+        }
+        return failAndRunChecks(stdFile, altFile, false);
+      }
+      // Otherwise, its supposed to be a file
+      if ((stdFile.exists() && stdFile.isFile()) || (altFile.exists() && altFile.isFile())) {
+        return true;
+      }
+      return failAndRunChecks(stdFile, altFile);
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
+      // need to check zip
+      if (stdFile.exists() && stdFile.isFile()) {
         checkZip(stat, path.substring(0, path.length() - attName.length()), attName, attRow);
-      }
-      return true;
-    } else  if ((new File(altPath)).exists()) {
-      if(attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
+        return true;
+      } else if (altFile.exists() && altFile.isFile()) {
         checkZip(stat, altPath.substring(0, altPath.length() - attName.length()), attName, attRow);
+        return true;
       }
-      return true;
-    } else {
-      return false;
+      return failAndRunChecks(stdFile, altFile);
     }
+
+    // if we get to this point, it should be a normal file
+    if ((stdFile.exists() && stdFile.isFile()) || (altFile.exists() && altFile.isFile())) {
+      return true;
+    }
+    return failAndRunChecks(stdFile, altFile);
+  }
+
+  private void logIfExistsAndDirOrFile(File f, String type, boolean shouldBeAFile) {
+    if (f.exists() && shouldBeAFile && f.isDirectory()) {
+      logger.warn("{} file location exists, but is a directory!  [{}]", type, f.getAbsolutePath());
+    } else if (f.exists() && !shouldBeAFile && f.isFile()) {
+      logger.warn("{} file location exists, but is a directory!  [{}]", type, f.getAbsolutePath());
+    }
+  }
+
+  private boolean failAndRunChecks(File stdFile, File altFile) {
+    logIfExistsAndDirOrFile(stdFile, "standard", true);
+    logIfExistsAndDirOrFile(altFile, "alternate", true);
+    return false;
+  }
+
+  private boolean failAndRunChecks(File stdFile, File altFile, boolean shouldBeAFile) {
+    logIfExistsAndDirOrFile(stdFile, "standard", shouldBeAFile);
+    logIfExistsAndDirOrFile(altFile, "alternate", shouldBeAFile);
+    return false;
   }
 
   private void checkZip(String stat, String path, String name, ResultsRow parentAttsRow) {
     try {
       List<ResultsRow> zipAtts = new ArrayList<>();
-      ZipFile zipFile = new ZipFile(path+Config.get(Config.GENERAL_OS_SLASH)+name);
+      ZipFile zipFile = new ZipFile(path + Config.get(Config.GENERAL_OS_SLASH) + name);
       // Unzipped files are stored in a directory named [zip-name].
       // The zip attachment name's format is _zips/[zip-name].zip
-      final String unzippedLocation = (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
-      File zipDir = new File(path+Config.get(Config.GENERAL_OS_SLASH)+unzippedLocation);
+      final String unzippedLocation =
+          (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
+      File zipDir = new File(path + Config.get(Config.GENERAL_OS_SLASH) + unzippedLocation);
       // There is a risk here that the zip file was expanded and the unzipped location
       // doesn't exist (instead of the user choosing to not expand the zip file)
-      logger.info("Reviewing the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
+      logger.info(
+          "Reviewing the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
 
-      if(zipDir.exists() && zipDir.isDirectory()) {
-        logger.info("Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
+      if (zipDir.exists() && zipDir.isDirectory()) {
+        logger.info(
+            "Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
         // Treat each zip entry as a file attachment
         // Build a new results row for each zip entry
-        zipFile.stream()
-                .map(ZipEntry::getName)
-                .forEach(s -> {
-                  ResultsRow rr =  ResultsRow.buildItemFrame(parentAttsRow);
+        zipFile
+            .stream()
+            .forEach(
+                ze -> {
+                  ResultsRow rr = ResultsRow.buildItemFrame(parentAttsRow);
                   rr.setAttType(Config.ATT_TYPE_ZIP_ENTRY);
-                  rr.setAttFilePath(unzippedLocation + Config.get(Config.GENERAL_OS_SLASH) + s);
+                  rr.setAttFilePath(
+                      unzippedLocation + Config.get(Config.GENERAL_OS_SLASH) + ze.getName());
                   rr.setAttUuid(parentAttsRow.getAttUuid());
-                  rr.setAttStatus("FISHY");
+                  rr.setAttStatus(ze.isDirectory() ? "IN_PROGRESS_ZIP_DIR" : "IN_PROGESS_ZIP_FILE");
                   logger.info("Found zip entry: [{}]", rr.toString());
                   zipAtts.add(rr);
                 });
         for (int i = 0; i < zipAtts.size(); i++) {
-          checkAttachment(stat + String.format(" - sub att [%s]/[%s]", i+1, zipAtts.size()), zipAtts.get(i));
+          checkAttachment(
+              stat + String.format(" - sub att [%s]/[%s]", i + 1, zipAtts.size()), zipAtts.get(i));
         }
       } else {
-        logger.info("NOT checking the contents of the zip since the unzipped directory does not exist [{}]/[{}]/[{}]", path, name, unzippedLocation);
+        logger.info(
+            "NOT checking the contents of the zip since the unzipped directory does not exist [{}]/[{}]/[{}]",
+            path,
+            name,
+            unzippedLocation);
       }
     } catch (IOException ioe) {
-      // TODO
-      logger.info("Something bad happened when checking the zipfile: {}", ioe.getMessage());
+      String msg =
+          String.format(
+              "Something bad happened when checking the zipfile:  [%s]", ioe.getMessage());
+      logger.fatal(msg);
+      ReportManager.getInstance().addFatalError(msg);
     }
   }
 
@@ -631,7 +679,8 @@ public class CheckFilesDbHandler {
     if (attRow.getAttType().equals(Config.ATT_TYPE_FILE)) {
       attRow.setAttFilePath(attRow.getAttUrl());
     } else if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
-      // TODO - a deeper check would see if the unzipped content's root folder exists, and then unzip the zip in a temp directory, and run the check against the unzipped files as well.
+      // TODO - a deeper check would see if the unzipped content's root folder exists, and then
+      // unzip the zip in a temp directory, and run the check against the unzipped files as well.
       attRow.setAttFilePath(attRow.getAttUrl());
     } else if (attRow.getAttType().equals(Config.ATT_TYPE_HTML)) {
       attRow.setAttFilePath(String.format("_mypages/%s/page.html", attRow.getAttUuid()));
@@ -641,7 +690,8 @@ public class CheckFilesDbHandler {
     } else if (attRow.getAttType().equals(Config.ATT_TYPE_IMSRES)) {
       // TODO
       attRow.setAttStatus(ResultsRow.IGNORED);
-    } else if (attRow.getAttType().equals(Config.ATT_TYPE_CUSTOM) && value1.equals(Config.ATT_TYPE_CUSTOM_SCORM)) {
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_CUSTOM)
+        && value1.equals(Config.ATT_TYPE_CUSTOM_SCORM)) {
       attRow.setAttType(Config.ATT_TYPE_CUSTOM_SCORM);
       // Unsupported for now.
       // filepath = String.format("_IMS/%s", attRow.getAttUrl());

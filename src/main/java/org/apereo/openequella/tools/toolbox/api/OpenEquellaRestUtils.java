@@ -304,10 +304,10 @@ public class OpenEquellaRestUtils {
 
         ei.setName(confirmAndGatherString(resourceObj, "name"));
         ei.setDescription(
-                resourceObj.has("description") ? resourceObj.getString("description") : "");
+            resourceObj.has("description") ? resourceObj.getString("description") : "");
         ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
         ei.setCreatedDate(
-                Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
+            Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
         ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
         ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
         ei.setJson(resourceObj);
