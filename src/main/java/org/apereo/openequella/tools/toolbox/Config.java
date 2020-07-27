@@ -436,13 +436,13 @@ public class Config {
     checkConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS, true, false);
     if (validConfig && hasConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
       String[] itemExclusions = getConfigAsStringArray(EXPORT_ITEMS_ITEM_EXCLUSIONS);
-      for (int i = 0; i < itemExclusions.length; i++) {
-        final String[] key = itemExclusions[i].split("/");
+      for(String item : itemExclusions) {
+        final String[] key = item.split("/");
         if ((key.length != 2)) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't match [{}].",
                   EXPORT_ITEMS_ITEM_EXCLUSIONS,
-              itemExclusions[i]);
+                  item);
           validConfig = false;
           return;
         }
@@ -451,7 +451,7 @@ public class Config {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have the right length of UUID [{}].",
                   EXPORT_ITEMS_ITEM_EXCLUSIONS,
-              itemExclusions[i]);
+                  item);
           validConfig = false;
           return;
         }
@@ -462,7 +462,7 @@ public class Config {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have a numeric version [{}].",
                   EXPORT_ITEMS_ITEM_EXCLUSIONS,
-              itemExclusions[i]);
+                  item);
           validConfig = false;
           return;
         }
