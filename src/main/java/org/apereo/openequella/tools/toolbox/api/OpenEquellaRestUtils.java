@@ -294,12 +294,12 @@ public class OpenEquellaRestUtils {
         cacheStatAvailable,
         resultsLength);
 
-    String[] itemBlacklist = new String[0];
+    String[] itemExclusions = new String[0];
     if ((Config.ToolboxFunction.valueOf(Config.get(Config.TOOLBOX_FUNCTION))
             == Config.ToolboxFunction.ExportItems)
-        && Config.getInstance().hasConfig(Config.EXPORT_ITEMS_ITEM_BLACKLIST)) {
-      itemBlacklist =
-          Config.getInstance().getConfigAsStringArray(Config.EXPORT_ITEMS_ITEM_BLACKLIST);
+        && Config.getInstance().hasConfig(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
+      itemExclusions =
+          Config.getInstance().getConfigAsStringArray(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS);
     }
 
     if (resultsLength > 0) {
@@ -311,8 +311,8 @@ public class OpenEquellaRestUtils {
         ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
         ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
         ei.setName(confirmAndGatherString(resourceObj, "name"));
-        if (itemInBlacklist(itemBlacklist, ei)) {
-          LOGGER.info("SKIPPING ITEM due to blacklist match {}", ei.getSignature());
+        if (isItemExcluded(itemExclusions, ei)) {
+          LOGGER.info("SKIPPING ITEM due to exclusion match {}", ei.getSignature());
         } else {
           ei.setDescription(
               resourceObj.has("description") ? resourceObj.getString("description") : "");
@@ -336,10 +336,10 @@ public class OpenEquellaRestUtils {
     return cachedItems;
   }
 
-  private boolean itemInBlacklist(String[] blacklist, ParsedItem parsedItem) {
-    if (blacklist.length > 0) {
-      for (int blacklistIndex = 0; blacklistIndex < blacklist.length; blacklistIndex++) {
-        if (blacklist[blacklistIndex].equals(
+  private boolean isItemExcluded(String[] exclusions, ParsedItem parsedItem) {
+    if (exclusions.length > 0) {
+      for (int exclusionIndex = 0; exclusionIndex < exclusions.length; exclusionIndex++) {
+        if (exclusions[exclusionIndex].equals(
             parsedItem.getUuid() + "/" + parsedItem.getVersion())) {
           return true;
         }

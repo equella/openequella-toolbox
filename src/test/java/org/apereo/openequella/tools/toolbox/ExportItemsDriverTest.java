@@ -142,39 +142,39 @@ public class ExportItemsDriverTest {
   }
 
   @Test
-  public void testExportItemsItemBlacklistConfig() throws Exception {
+  public void testExportItemsItemExclusionConfig() throws Exception {
     Properties props = buildGeneralExportItemsProps();
     props.put(
         Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE,
         "/Attachments/@HASH/@UUID/@VERSION/@FILENAME");
     props.put(Config.EXPORT_ITEMS_ONE_ATT_PER_LINE, "true");
     props.put(Config.EXPORT_ITEMS_MULTI_VALUE_DELIM, "|");
-    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "asdf");
+    props.put(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS, "asdf");
     Config.reset();
     Config.getInstance().init(props);
     Config.getInstance().checkConfigs();
     assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
 
-    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "qwerty/asdf");
+    props.put(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS, "qwerty/asdf");
     Config.reset();
     Config.getInstance().init(props);
     Config.getInstance().checkConfigs();
     assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
 
-    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "12345678-1234-1234-1234-123456789012/one");
+    props.put(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS, "12345678-1234-1234-1234-123456789012/one");
     Config.reset();
     Config.getInstance().init(props);
     Config.getInstance().checkConfigs();
     assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
 
-    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "12345678-1234-1234-1234-123456789012/78");
+    props.put(Config.EXPORT_ITEMS_ITEM_EXCLUSIONS, "12345678-1234-1234-1234-123456789012/78");
     Config.reset();
     Config.getInstance().init(props);
     Config.getInstance().checkConfigs();
     assertTrue("Config should be valid", Config.getInstance().isValidConfig());
 
     props.put(
-        Config.EXPORT_ITEMS_ITEM_BLACKLIST,
+        Config.EXPORT_ITEMS_ITEM_EXCLUSIONS,
         "12345678-1234-1234-1234-123456789012/78,12345678-1234-1234-1234-123456789056/1,12345678-1234-1234-1234-123456789012/77");
     Config.reset();
     Config.getInstance().init(props);

@@ -42,7 +42,7 @@ export.items.attachment.path.template=@FILENAME
 export.items.multiValueDelim=|
 export.items.oneAttachmentPerLine=true
 # Optional, but if configured, each pair needs to be of the form {uuid}/{version}, where {uuid} is 36 characters long, and {version} is numerical.
-export.items.item.blacklist=uuidX/versionX,uuidY/versionY,...
+export.items.item.exclusions=uuidX/versionX,uuidY/versionY,...
 ```
 
 
