@@ -19,6 +19,8 @@
 package org.apereo.openequella.tools.toolbox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
@@ -137,6 +139,47 @@ public class ExportItemsDriverTest {
     assertEquals("", results.get(5).get(8));
     assertEquals(DATE_CREATED_STR, results.get(5).get(9));
     assertEquals(DATE_MODIFIED_STR, results.get(5).get(10));
+  }
+
+  @Test
+  public void testExportItemsItemBlacklistConfig() throws Exception {
+    Properties props = buildGeneralExportItemsProps();
+    props.put(
+        Config.EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE,
+        "/Attachments/@HASH/@UUID/@VERSION/@FILENAME");
+    props.put(Config.EXPORT_ITEMS_ONE_ATT_PER_LINE, "true");
+    props.put(Config.EXPORT_ITEMS_MULTI_VALUE_DELIM, "|");
+    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "asdf");
+    Config.reset();
+    Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
+    assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
+
+    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "qwerty/asdf");
+    Config.reset();
+    Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
+    assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
+
+    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "12345678-1234-1234-1234-123456789012/one");
+    Config.reset();
+    Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
+    assertFalse("Config should not be valid", Config.getInstance().isValidConfig());
+
+    props.put(Config.EXPORT_ITEMS_ITEM_BLACKLIST, "12345678-1234-1234-1234-123456789012/78");
+    Config.reset();
+    Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
+    assertTrue("Config should be valid", Config.getInstance().isValidConfig());
+
+    props.put(
+        Config.EXPORT_ITEMS_ITEM_BLACKLIST,
+        "12345678-1234-1234-1234-123456789012/78,12345678-1234-1234-1234-123456789056/1,12345678-1234-1234-1234-123456789012/77");
+    Config.reset();
+    Config.getInstance().init(props);
+    Config.getInstance().checkConfigs();
+    assertTrue("Config should be valid", Config.getInstance().isValidConfig());
   }
 
   @Test

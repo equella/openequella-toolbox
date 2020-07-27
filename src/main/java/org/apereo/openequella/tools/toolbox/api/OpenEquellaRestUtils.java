@@ -293,6 +293,15 @@ public class OpenEquellaRestUtils {
         cacheStatLength,
         cacheStatAvailable,
         resultsLength);
+
+    String[] itemBlacklist = new String[0];
+    if ((Config.ToolboxFunction.valueOf(Config.get(Config.TOOLBOX_FUNCTION))
+            == Config.ToolboxFunction.ExportItems)
+        && Config.getInstance().hasConfig(Config.EXPORT_ITEMS_ITEM_BLACKLIST)) {
+      itemBlacklist =
+          Config.getInstance().getConfigAsStringArray(Config.EXPORT_ITEMS_ITEM_BLACKLIST);
+    }
+
     if (resultsLength > 0) {
       cacheStatStart += resultsLength;
       for (int i = 0; i < itemsArr.length(); i++) {
@@ -301,27 +310,42 @@ public class OpenEquellaRestUtils {
         ParsedItem ei = new ParsedItem();
         ei.setUuid(confirmAndGatherString(resourceObj, "uuid"));
         ei.setVersion(confirmAndGatherInt(resourceObj, "version"));
-
         ei.setName(confirmAndGatherString(resourceObj, "name"));
-        ei.setDescription(
-                resourceObj.has("description") ? resourceObj.getString("description") : "");
-        ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
-        ei.setCreatedDate(
-                Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
-        ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
-        ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
-        ei.setJson(resourceObj);
+        if (itemInBlacklist(itemBlacklist, ei)) {
+          LOGGER.info("SKIPPING ITEM due to blacklist match {}", ei.getSignature());
+        } else {
+          ei.setDescription(
+              resourceObj.has("description") ? resourceObj.getString("description") : "");
+          ei.setMetadata(confirmAndGatherString(resourceObj, "metadata"));
+          ei.setCreatedDate(
+              Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
+          ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
+          ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
+          ei.setJson(resourceObj);
 
-        LOGGER.info("CACHED {}", ei.getSignature());
-        LOGGER.debug("CACHED JSON {}", ei.getJson());
+          LOGGER.info("CACHED {}", ei.getSignature());
+          LOGGER.debug("CACHED JSON {}", ei.getJson());
 
-        cachedItems.add(ei);
+          cachedItems.add(ei);
+        }
       }
     } else {
       moreResourcesToCache = false;
     }
 
     return cachedItems;
+  }
+
+  private boolean itemInBlacklist(String[] blacklist, ParsedItem parsedItem) {
+    if (blacklist.length > 0) {
+      for (int blacklistIndex = 0; blacklistIndex < blacklist.length; blacklistIndex++) {
+        if (blacklist[blacklistIndex].equals(
+            parsedItem.getUuid() + "/" + parsedItem.getVersion())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public boolean hasMoreResourcesToCache() {
