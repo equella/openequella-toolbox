@@ -530,14 +530,14 @@ public class CheckFilesDbTests {
         all.get(idx++),
         "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,bfc4e251-f9ba-4c0a-8fea-b37634c5997c,1,LIVE,file,14ec0166-7331-4fdf-8e94-4358aa78728c,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.js\",");
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
+        all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
         all.get(idx++));
@@ -632,14 +632,14 @@ public class CheckFilesDbTests {
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
         all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
+        all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
@@ -927,14 +927,14 @@ public class CheckFilesDbTests {
         err.get(idx++),
         "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,file,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"keyword.txt\",");
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
-            err.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
         err.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
-            err.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
@@ -1004,14 +1004,14 @@ public class CheckFilesDbTests {
     assertEquals("# Of MISSING Attachments,19", all.get(idx++));
     idx += 8; // Skip the non-critical rows
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
-            all.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
+        all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
         all.get(idx++));
@@ -1106,14 +1106,14 @@ public class CheckFilesDbTests {
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
         all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        all.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
-            all.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
+        all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
@@ -1383,14 +1383,14 @@ public class CheckFilesDbTests {
     assertEquals("# Of MISSING Attachments,19", err.get(idx++));
     idx += 8; // Skip the non-critical rows
     assertEquals(
-            "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
-            err.get(idx++));
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
         err.get(idx++));
     assertEquals(
-            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
-            err.get(idx++));
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
