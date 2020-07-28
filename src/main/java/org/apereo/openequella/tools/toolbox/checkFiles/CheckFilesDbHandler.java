@@ -675,12 +675,9 @@ public class CheckFilesDbHandler {
     attRow.setAttUrl(attUrl);
     attRow.setAttType(attType);
 
-    // Determine the filestore
     if (attRow.getAttType().equals(Config.ATT_TYPE_FILE)) {
       attRow.setAttFilePath(attRow.getAttUrl());
     } else if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
-      // TODO - a deeper check would see if the unzipped content's root folder exists, and then
-      // unzip the zip in a temp directory, and run the check against the unzipped files as well.
       attRow.setAttFilePath(attRow.getAttUrl());
     } else if (attRow.getAttType().equals(Config.ATT_TYPE_HTML)) {
       attRow.setAttFilePath(String.format("_mypages/%s/page.html", attRow.getAttUuid()));
