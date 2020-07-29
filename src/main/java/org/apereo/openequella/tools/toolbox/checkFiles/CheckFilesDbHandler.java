@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.zip.ZipFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
@@ -58,6 +60,7 @@ public class CheckFilesDbHandler {
 
   private List<WhereClauseExpression> whereClauseExpressions =
       new ArrayList<WhereClauseExpression>();
+  private boolean currentItemAttsAllGood = false;
 
   public boolean execute() {
     // Setup database connection
@@ -140,7 +143,8 @@ public class CheckFilesDbHandler {
 
       // Check attachments one item at a time
       int counter = 0;
-      for (Integer itemId : attachmentsCache.keySet()) {
+      final Set<Integer> ids = attachmentsCache.keySet();
+      for (Integer itemId : ids) {
         counter++;
         if (!processItem(itemId, counter)) {
           closeConnection();
@@ -185,40 +189,17 @@ public class CheckFilesDbHandler {
         attachments.get(0).setAttStatus(ResultsRow.NOATT);
         ReportManager.getInstance().stdOutWriteln(attachments.get(0).toString());
       } else {
-        boolean allGood = true;
+        currentItemAttsAllGood = true;
         final int rawTotal = attachments.size();
         final int attTotal = rawTotal - 1; // See reason below.
         // Start attCounter at 1 since the first element is always the
         // item framework.
         for (int attCounter = 1; attCounter < rawTotal; attCounter++) {
-          ResultsRow attRow = attachments.get(attCounter);
-          ReportManager.getInstance().getStats().incNumTotalAttachments();
-          logger.info(
-              "Processing item attachment [item#{}]-[att#{}] (out of [{}] attachments for this item)...",
-              itemCounter,
-              attCounter,
-              attTotal);
-
-          // Determine attachment status
-          if (attRow.getAttStatus().equals(ResultsRow.IGNORED)) {
-            // Consider not an error.
-            logger.info("Attachment {} is ignored.", attRow.getAttFilePath());
-            ReportManager.getInstance().getStats().incNumTotalAttachmentsIgnored();
-          } else if (doesAttachmentExist(attRow)) {
-            logger.info("Attachment {} is present.", attRow.getAttFilePath());
-            attRow.setAttStatus(ResultsRow.PRESENT);
-          } else {
-            logger.info("Attachment {} is missing.", attRow.getAttFilePath());
-            ReportManager.getInstance().getStats().incNumTotalAttachmentsMissing();
-            attRow.setAttStatus(ResultsRow.MISSING);
-            ReportManager.getInstance().errOutWriteln(attRow.toString());
-            allGood = false;
-          }
-          // Always send the attachment report to the standard file
-          // writer.
-          ReportManager.getInstance().stdOutWriteln(attRow.toString());
+          final String stat =
+              String.format("item [%s] - att [%s]/[%s]", itemCounter, attCounter, attTotal);
+          checkAttachment(stat, attachments.get(attCounter));
         }
-        if (!allGood) {
+        if (!currentItemAttsAllGood) {
           ReportManager.getInstance().getStats().incNumTotalItemsAffected();
         }
       }
@@ -230,7 +211,32 @@ public class CheckFilesDbHandler {
     return true;
   }
 
-  private boolean doesAttachmentExist(ResultsRow attRow) {
+  private void checkAttachment(String stat, ResultsRow attRow) throws IOException {
+    ReportManager.getInstance().getStats().incNumTotalAttachments();
+    logger.info("Processing item attachment {}", stat);
+
+    // Determine attachment status
+    if (attRow.getAttStatus().equals(ResultsRow.IGNORED)) {
+      // Consider not an error.
+      logger.info("Attachment {} is ignored.", attRow.getAttFilePath());
+      ReportManager.getInstance().getStats().incNumTotalAttachmentsIgnored();
+    } else if (doesAttachmentExist(stat, attRow)) {
+      logger.info("Attachment {} is present.", attRow.getAttFilePath());
+      attRow.setAttStatus(ResultsRow.PRESENT);
+    } else {
+      logger.info("Attachment {} is missing.", attRow.getAttFilePath());
+      ReportManager.getInstance().getStats().incNumTotalAttachmentsMissing();
+      attRow.setAttStatus(ResultsRow.MISSING);
+      ReportManager.getInstance().dualWriteLn(attRow.toString());
+      currentItemAttsAllGood = false;
+      return;
+    }
+    // Always send the attachment report to the standard file
+    // writer.
+    ReportManager.getInstance().stdOutWriteln(attRow.toString());
+  }
+
+  private boolean doesAttachmentExist(String stat, ResultsRow attRow) {
     int hash = attRow.getItemUuid().hashCode() & 127;
 
     String attPath =
@@ -283,11 +289,99 @@ public class CheckFilesDbHandler {
       logger.info("Using path [{}] to check attachment.", path);
     }
     logger.info("Alt path [{}] to check attachment.", altPath);
+    logger.info("Att type [{}].", attRow.getAttType());
 
-    if ((new File(path)).exists()) {
+    final File stdFile = new File(path);
+    final File altFile = new File(altPath);
+
+    if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP_ENTRY)) {
+      if (attRow.getAttStatus().equals("IN_PROGRESS_ZIP_DIR")) {
+        if ((stdFile.exists() && stdFile.isDirectory())
+            || (altFile.exists() && altFile.isDirectory())) {
+          return true;
+        }
+        return failAndRunChecks(stdFile, altFile, false);
+      }
+      // Otherwise, it's supposed to be a file
+      if ((stdFile.exists() && stdFile.isFile()) || (altFile.exists() && altFile.isFile())) {
+        return true;
+      }
+      return failAndRunChecks(stdFile, altFile);
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
+      // need to check zip
+      if (stdFile.exists() && stdFile.isFile()) {
+        checkZip(stat, path.substring(0, path.length() - attName.length()), attName, attRow);
+        return true;
+      } else if (altFile.exists() && altFile.isFile()) {
+        checkZip(stat, altPath.substring(0, altPath.length() - attName.length()), attName, attRow);
+        return true;
+      }
+      return failAndRunChecks(stdFile, altFile);
+    }
+
+    // if we get to this point, it should be a normal file
+    if ((stdFile.exists() && stdFile.isFile()) || (altFile.exists() && altFile.isFile())) {
       return true;
-    } else {
-      return (new File(altPath)).exists();
+    }
+    return failAndRunChecks(stdFile, altFile);
+  }
+
+  private void logIfExistsAndDirOrFile(File f, String type, boolean shouldBeAFile) {
+    if (f.exists() && shouldBeAFile && f.isDirectory()) {
+      logger.warn("{} file location exists, but is a directory!  [{}]", type, f.getAbsolutePath());
+    } else if (f.exists() && !shouldBeAFile && f.isFile()) {
+      logger.warn("{} file location exists, but is a directory!  [{}]", type, f.getAbsolutePath());
+    }
+  }
+
+  private boolean failAndRunChecks(File stdFile, File altFile) {
+    logIfExistsAndDirOrFile(stdFile, "standard", true);
+    logIfExistsAndDirOrFile(altFile, "alternate", true);
+    return false;
+  }
+
+  private boolean failAndRunChecks(File stdFile, File altFile, boolean shouldBeAFile) {
+    logIfExistsAndDirOrFile(stdFile, "standard", shouldBeAFile);
+    logIfExistsAndDirOrFile(altFile, "alternate", shouldBeAFile);
+    return false;
+  }
+
+  private void checkZip(String stat, String path, String name, ResultsRow parentAttsRow) {
+    try {
+      final String zipFilePath = path + Config.get(Config.GENERAL_OS_SLASH) + name;
+      final List<ResultsRow> zipAtts = new ArrayList<>();
+      final ZipFile zipFile = new ZipFile(zipFilePath);
+      // Unzipped files are stored in a directory named [zip-name].
+      // The zip attachment name's format is _zips/[zip-name].zip
+      final String unzippedLocation =
+              (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
+      logger.info(
+          "Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
+      // Treat each zip entry as a file attachment
+      // Build a new results row for each zip entry
+      zipFile
+          .stream()
+          .forEach(
+              ze -> {
+                ResultsRow rr = ResultsRow.buildItemFrame(parentAttsRow);
+                rr.setAttType(Config.ATT_TYPE_ZIP_ENTRY);
+                rr.setAttFilePath(
+                    unzippedLocation + Config.get(Config.GENERAL_OS_SLASH) + ze.getName());
+                rr.setAttUuid(parentAttsRow.getAttUuid());
+                rr.setAttStatus(ze.isDirectory() ? "IN_PROGRESS_ZIP_DIR" : "IN_PROGESS_ZIP_FILE");
+                logger.info("Found zip entry: [{}]", rr.toString());
+                zipAtts.add(rr);
+              });
+      for (int i = 0; i < zipAtts.size(); i++) {
+        checkAttachment(
+            stat + String.format(" - sub att [%s]/[%s]", i + 1, zipAtts.size()), zipAtts.get(i));
+      }
+    } catch (IOException ioe) {
+      String msg =
+          String.format(
+              "Something bad happened when checking the zipfile:  [%s]", ioe.getMessage());
+      logger.fatal(msg);
+      ReportManager.getInstance().addFatalError(msg);
     }
   }
 
@@ -571,21 +665,28 @@ public class CheckFilesDbHandler {
     attRow.setAttUrl(attUrl);
     attRow.setAttType(attType);
 
-    // Determine the filestore
-    if (attRow.getAttType().equals("file")) {
+    if (attRow.getAttType().equals(Config.ATT_TYPE_FILE)) {
       attRow.setAttFilePath(attRow.getAttUrl());
-    } else if (attRow.getAttType().equals("zip")) {
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_ZIP)) {
       attRow.setAttFilePath(attRow.getAttUrl());
-    } else if (attRow.getAttType().equals("html")) {
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_HTML)) {
       attRow.setAttFilePath(String.format("_mypages/%s/page.html", attRow.getAttUuid()));
-    } else if (attRow.getAttType().equals("custom") && value1.equals("scorm")) {
-      attRow.setAttType("scorm");
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_IMS)) {
+      // TODO
+      attRow.setAttStatus(ResultsRow.IGNORED);
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_IMSRES)) {
+      // TODO
+      attRow.setAttStatus(ResultsRow.IGNORED);
+    } else if (attRow.getAttType().equals(Config.ATT_TYPE_CUSTOM)
+        && value1.equals(Config.ATT_TYPE_CUSTOM_SCORM)) {
+      attRow.setAttType(Config.ATT_TYPE_CUSTOM_SCORM);
       // Unsupported for now.
       // filepath = String.format("_IMS/%s", attRow.getAttUrl());
+      // TODO
       attRow.setAttStatus(ResultsRow.IGNORED);
     } else {
-      // Ignore all other attachments (URLs, Flickr, Equella resources,
-      // etc)
+      // Ignore all other attachments
+      // 'attachment', 'custom' > !'scorm', etc
       attRow.setAttStatus(ResultsRow.IGNORED);
     }
 

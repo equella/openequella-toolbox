@@ -46,8 +46,10 @@ public class CheckFilesDbTests {
   private static final int INST_XC_COLL_FS2_NUM_ERR_RESULTS = 20;
   private static final int INST_XD_COLL_LR_NUM_ALL_RESULTS = 30;
   private static final int INST_XD_COLL_LR_NUM_ERR_RESULTS = 20;
-  private static final int INST_ALL_NUM_OF_ALL_RESULTS = 54;
-  private static final int INST_ALL_NUM_OF_ERR_RESULTS = 25;
+  private static final int INST_XF_NUM_OF_ALL_RESULTS = 146;
+  private static final int INST_XF_NUM_OF_ERR_RESULTS = 41;
+  private static final int INST_ALL_NUM_OF_ALL_RESULTS = 180;
+  private static final int INST_ALL_NUM_OF_ERR_RESULTS = 46;
   private static final int OFFSET_FOR_QUERY_STATEMENT = 3;
 
   @Test
@@ -257,7 +259,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,30");
+        "# Of queries ran,48");
   }
 
   @Test
@@ -281,7 +283,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance().getAllStatsWriterList(),
         ReportManager.getInstance().getErrorStatsWriterList());
     assertEquals(
-        "# Of queries ran,32",
+        "# Of queries ran,51",
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
@@ -309,7 +311,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance().getAllStatsWriterList(),
         ReportManager.getInstance().getErrorStatsWriterList());
     assertEquals(
-        "# Of queries ran,56",
+        "# Of queries ran,92",
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
@@ -339,7 +341,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,56");
+        "# Of queries ran,92");
   }
 
   @Test
@@ -366,7 +368,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,33");
+        "# Of queries ran,53");
   }
 
   @Test
@@ -386,6 +388,30 @@ public class CheckFilesDbTests {
         "The institution shortname to filter by [swirl] is not in the institution cache.");
   }
 
+  @Test
+  public void testZipFilesAndMyPages() {
+    Config.reset();
+    TestUtils.buildCheckFilesGeneralDbProps();
+    Config.getInstance().setConfig(Config.CF_EMAIL_MODE, Config.CheckFilesEmailMode.NONE.name());
+    Config.getInstance().setConfig(Config.CF_FILTER_BY_INSTITUTION, "instXf");
+    Config.getInstance().checkConfigsCheckFiles();
+
+    assertTrue(CheckFilesDriver.setup(true));
+    assertTrue(CheckFilesDriver.run());
+    assertTrue(CheckFilesDriver.finalizeRun());
+
+    TestUtils.debugDumpList(ReportManager.getInstance().getAllStatsWriterList());
+    TestUtils.debugDumpList(ReportManager.getInstance().getErrorStatsWriterList());
+    confirmResultsInstitutionXf(
+        ReportManager.getInstance().getAllStatsWriterList(),
+        ReportManager.getInstance().getErrorStatsWriterList());
+    assertEquals(
+        "# Of queries ran,22",
+        ReportManager.getInstance()
+            .getAllStatsWriterList()
+            .get(INST_XF_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
+  }
+
   private void confirmResultsAllInstitutions(List<String> allOriginal, List<String> errOriginal) {
     assertEquals(INST_ALL_NUM_OF_ALL_RESULTS, allOriginal.size());
     // This is the primary flow that will change when new items / institutions are added to the test
@@ -398,11 +424,11 @@ public class CheckFilesDbTests {
     err.addAll(errOriginal);
     Collections.sort(err.subList(7, err.size()));
     int idx = 7;
-    assertEquals(all.get(idx++), "# Of ALL Attachments,34");
+    assertEquals(all.get(idx++), "# Of ALL Attachments,160");
     assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
-    assertEquals(all.get(idx++), "# Of Items affected,5");
-    assertEquals(all.get(idx++), "# Of Items,26");
-    assertEquals(all.get(idx++), "# Of MISSING Attachments,5");
+    assertEquals(all.get(idx++), "# Of Items affected,15");
+    assertEquals(all.get(idx++), "# Of Items,44");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,26");
     idx += 8; // Skip the non-critical rows
     assertEquals(
         all.get(idx++),
@@ -504,17 +530,395 @@ public class CheckFilesDbTests {
         all.get(idx++),
         "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,bfc4e251-f9ba-4c0a-8fea-b37634c5997c,1,LIVE,file,14ec0166-7331-4fdf-8e94-4358aa78728c,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.js\",");
     assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-children.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-root-renamed.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
+        all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-root-renamed.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-children.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,06a07494-0af5-437f-8085-cc300fb682d2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,3e7f74cf-08eb-4782-a7e7-ce9ec22cffb6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,43e6095d-f504-4c6a-baac-47b08bfb49c6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,c47e39df-09de-4349-85cf-7a004f6c164f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,c7739abe-5afa-4664-8a17-113fe679b6f8,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,06a07494-0af5-437f-8085-cc300fb682d2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,3e7f74cf-08eb-4782-a7e7-ce9ec22cffb6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,43e6095d-f504-4c6a-baac-47b08bfb49c6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,c47e39df-09de-4349-85cf-7a004f6c164f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
         all.get(idx++),
         "oeqgeneral,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,79b7fa12-7e96-46b1-a8dc-57eeb4dc799a,1,LIVE,file,a8b37c17-a30e-4fc9-9b41-f4fafa8f96c2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"test.rtf\",");
 
     assertEquals(INST_ALL_NUM_OF_ERR_RESULTS, err.size());
 
     idx = 7;
-    assertEquals(all.get(idx++), "# Of ALL Attachments,34");
+    assertEquals(all.get(idx++), "# Of ALL Attachments,160");
     assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
-    assertEquals(all.get(idx++), "# Of Items affected,5");
-    assertEquals(all.get(idx++), "# Of Items,26");
-    assertEquals(all.get(idx++), "# Of MISSING Attachments,5");
+    assertEquals(all.get(idx++), "# Of Items affected,15");
+    assertEquals(all.get(idx++), "# Of Items,44");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,26");
     idx += 8; // Skip the non-critical rows
     assertEquals(
         err.get(idx++),
@@ -531,6 +935,540 @@ public class CheckFilesDbTests {
     assertEquals(
         err.get(idx++),
         "instXe,e03ff4c0-1d4f-4087-bf87-de4b59c6a243,12f54be4-e536-482d-a7fe-f262ac086b28,1,LIVE,file,66c08dc8-d86f-49eb-84df-20e17e3483d2,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"keyword.txt\",");
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,c7739abe-5afa-4664-8a17-113fe679b6f8,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+  }
+
+  private void confirmResultsInstitutionXf(List<String> allOriginal, List<String> errOriginal) {
+    assertEquals(INST_XF_NUM_OF_ALL_RESULTS, allOriginal.size());
+    // This is the primary flow that will change when new items / institutions are added to the test
+    // institution.
+    // Sort the results in a sandbox to make checking results a bit simplier
+    List<String> all = new ArrayList<>();
+    all.addAll(allOriginal);
+    Collections.sort(all.subList(7, all.size()));
+    List<String> err = new ArrayList<>();
+    err.addAll(errOriginal);
+    Collections.sort(err.subList(7, err.size()));
+    int idx = 7;
+    assertEquals("# Of ALL Attachments,126", all.get(idx++));
+    assertEquals("# Of IGNORED Attachments,0", all.get(idx++));
+    assertEquals("# Of Items affected,10", all.get(idx++));
+    assertEquals("# Of Items,18", all.get(idx++));
+    assertEquals("# Of MISSING Attachments,21", all.get(idx++));
+    idx += 8; // Skip the non-critical rows
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,be21f4ab-defb-44be-92a1-b99c11e866b5,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/be21f4ab-defb-44be-92a1-b99c11e866b5/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,84023569-bcb5-404b-af20-480e28f7fc94,1,PERSONAL,html,56e85b46-4767-4c14-9645-7fbe6d4e6f3d,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/56e85b46-4767-4c14-9645-7fbe6d4e6f3d/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-children.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,216a958a-c444-4fff-be65-b9f9a8e8f801,1,LIVE,zip_entry,1a8380e2-4a53-4752-b8d2-5d3179b2c51f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-root-renamed.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,231004ad-cfb3-4e30-bfac-3795161dbc2f,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,3f7d9194-12f4-4387-b76c-d004c90b7dc6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/3f7d9194-12f4-4387-b76c-d004c90b7dc6/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
+        all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,4cf1e4b4-8e12-4d34-bec7-956bb2dc03fa,1,LIVE,zip_entry,5480c552-16a4-49a0-9e15-9cef70998591,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-root-renamed.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8abf0c54-3912-4004-90d7-5e1fc825e80a,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,file,9f6e3230-55b2-4413-a6da-073e80aede98,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA-children.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,8adc967a-086b-40d9-a37c-cfb58a889dc4,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,06a07494-0af5-437f-8085-cc300fb682d2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,3e7f74cf-08eb-4782-a7e7-ce9ec22cffb6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,43e6095d-f504-4c6a-baac-47b08bfb49c6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,file,c47e39df-09de-4349-85cf-7a004f6c164f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,a34b1964-2e48-4a6a-b780-4488775d5984,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,c7739abe-5afa-4664-8a17-113fe679b6f8,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,06a07494-0af5-437f-8085-cc300fb682d2,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,3e7f74cf-08eb-4782-a7e7-ce9ec22cffb6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,43e6095d-f504-4c6a-baac-47b08bfb49c6,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,c47e39df-09de-4349-85cf-7a004f6c164f,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipA.zip\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/file2.txt\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        all.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        all.get(idx++));
+
+    assertEquals(INST_XF_NUM_OF_ERR_RESULTS, err.size());
+
+    idx = 7;
+    assertEquals("# Of ALL Attachments,126", err.get(idx++));
+    assertEquals("# Of IGNORED Attachments,0", err.get(idx++));
+    assertEquals("# Of Items affected,10", err.get(idx++));
+    assertEquals("# Of Items,18", err.get(idx++));
+    assertEquals("# Of MISSING Attachments,21", err.get(idx++));
+    idx += 8; // Skip the non-critical rows
+    assertEquals(
+        "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,1d04fb6a-eecb-4fef-858e-87aa3553eb66,1,LIVE,zip_entry,00207a00-5e75-4e78-ba04-8e6d5fc3b875,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-children.zip/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
+        err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file7\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,file,b1e6c205-952c-4734-8c7b-928cecf4e9a6,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/file3.rtf\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file7\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,b94fa56c-dbdd-45a5-9a66-3e485b2eaaa3,1,LIVE,zip_entry,3c525335-80ab-415f-816a-4a46353ff6e1,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder5/file6.csv\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,c7739abe-5afa-4664-8a17-113fe679b6f8,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,file,294a036f-0736-43f1-9489-8eaf99928c8e,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
+    assertEquals(
+        "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,fac2ee35-293a-4b73-8560-65935632386b,1,LIVE,zip_entry,e2a2aecf-eaa7-4e81-96b3-e973b3be0565,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip/zipA/folder1/folder4/file8\",",
+        err.get(idx++));
   }
 
   private void confirmResultsInstitutionXaAllCollections(List<String> all, List<String> err) {

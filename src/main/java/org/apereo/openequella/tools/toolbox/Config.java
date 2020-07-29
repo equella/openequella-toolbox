@@ -133,6 +133,16 @@ public class Config {
   public static final String CF_COMPARE_MISSING_ATTS_AFTER_RUN =
       "cf.compare.missing.atts.after.run";
 
+  // Attachment types
+  public static final String ATT_TYPE_HTML = "html";
+  public static final String ATT_TYPE_FILE = "file";
+  public static final String ATT_TYPE_CUSTOM = "custom";
+  public static final String ATT_TYPE_CUSTOM_SCORM = "scorm";
+  public static final String ATT_TYPE_ZIP = "zip";
+  public static final String ATT_TYPE_ZIP_ENTRY = "zip_entry";
+  public static final String ATT_TYPE_IMSRES = "imsres";
+  public static final String ATT_TYPE_IMS = "ims";
+
   // CSV
   public static final String CF_FILENAME_ENCODING_LIST = "cf.filename.encodingList";
 

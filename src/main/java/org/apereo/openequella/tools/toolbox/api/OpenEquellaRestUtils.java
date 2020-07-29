@@ -325,7 +325,6 @@ public class OpenEquellaRestUtils {
 
           LOGGER.info("CACHED {}", ei.getSignature());
           LOGGER.debug("CACHED JSON {}", ei.getJson());
-
           cachedItems.add(ei);
         }
       }
