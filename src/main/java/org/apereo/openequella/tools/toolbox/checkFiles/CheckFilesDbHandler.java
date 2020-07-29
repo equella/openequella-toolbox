@@ -360,7 +360,7 @@ public class CheckFilesDbHandler {
       // Unzipped files are stored in a directory named [zip-name].
       // The zip attachment name's format is _zips/[zip-name].zip
       final String unzippedLocation =
-              (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
+          (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
       logger.info(
           "Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
       // Treat each zip entry as a file attachment
@@ -434,15 +434,11 @@ public class CheckFilesDbHandler {
     String[] uuidAndVersion = itemUuidAndVersion.split("/");
 
     whereClauseExpressions.add(
-            new WhereClauseExpression<String>(
-                    "uuid = ?",
-                    uuidAndVersion[0],
-                    whereClauseExpressions.size() + 1));
+        new WhereClauseExpression<String>(
+            "uuid = ?", uuidAndVersion[0], whereClauseExpressions.size() + 1));
     whereClauseExpressions.add(
-            new WhereClauseExpression<Integer>(
-                    "version = ?",
-                    Integer.parseInt(uuidAndVersion[1]),
-                    whereClauseExpressions.size() + 1));
+        new WhereClauseExpression<Integer>(
+            "version = ?", Integer.parseInt(uuidAndVersion[1]), whereClauseExpressions.size() + 1));
   }
 
   /**
@@ -803,7 +799,8 @@ public class CheckFilesDbHandler {
     }
 
     whereClauseExpressions.add(
-        new WhereClauseExpression<Integer>("item_definition_id = ?", id, whereClauseExpressions.size() + 1));
+        new WhereClauseExpression<Integer>(
+            "item_definition_id = ?", id, whereClauseExpressions.size() + 1));
   }
 
   private boolean cacheItemsAll() {

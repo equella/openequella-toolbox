@@ -42,7 +42,7 @@ public class WhereClauseExpression<T> {
   }
 
   public void setParm(PreparedStatement stmt) throws SQLException {
-    if(parm instanceof Integer) {
+    if (parm instanceof Integer) {
       stmt.setInt(index, (Integer) parm);
     } else {
       stmt.setString(index, parm.toString());

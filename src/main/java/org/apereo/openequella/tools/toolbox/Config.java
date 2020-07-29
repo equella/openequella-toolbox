@@ -392,18 +392,20 @@ public class Config {
             checkConfig(CF_FILTER_BY_ITEM, true, false);
             if (validConfig && hasConfig(CF_FILTER_BY_ITEM)) {
               String[] uuidAndVersion = getConfig(CF_FILTER_BY_ITEM).split("/");
-              if(uuidAndVersion.length != 2) {
-                LOGGER.warn("Filter by Item not configured correctly - [{}] should only have 1 slash.",
-                        getConfig(CF_FILTER_BY_ITEM));
+              if (uuidAndVersion.length != 2) {
+                LOGGER.warn(
+                    "Filter by Item not configured correctly - [{}] should only have 1 slash.",
+                    getConfig(CF_FILTER_BY_ITEM));
                 validConfig = false;
               }
 
-              if(validConfig) {
+              if (validConfig) {
                 try {
                   Integer.parseInt(uuidAndVersion[1]);
                 } catch (NumberFormatException nfe) {
-                  LOGGER.warn("Filter by Item not configured correctly - [{}] should be a number after the slash.",
-                          getConfig(CF_FILTER_BY_ITEM));
+                  LOGGER.warn(
+                      "Filter by Item not configured correctly - [{}] should be a number after the slash.",
+                      getConfig(CF_FILTER_BY_ITEM));
                   validConfig = false;
                 }
               }
@@ -467,13 +469,13 @@ public class Config {
     checkConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS, true, false);
     if (validConfig && hasConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
       String[] itemExclusions = getConfigAsStringArray(EXPORT_ITEMS_ITEM_EXCLUSIONS);
-      for(String item : itemExclusions) {
+      for (String item : itemExclusions) {
         final String[] key = item.split("/");
         if ((key.length != 2)) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't match [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
@@ -481,8 +483,8 @@ public class Config {
         if (key[0].length() != 36) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have the right length of UUID [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
@@ -492,8 +494,8 @@ public class Config {
         } catch (NumberFormatException e) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have a numeric version [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
