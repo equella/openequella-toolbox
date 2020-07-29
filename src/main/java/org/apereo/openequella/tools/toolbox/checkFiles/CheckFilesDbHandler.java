@@ -103,6 +103,12 @@ public class CheckFilesDbHandler {
       return false;
     }
 
+    confirmFilterByItem();
+    if (ReportManager.getInstance().hasFatalErrors()) {
+      closeConnection();
+      return false;
+    }
+
     if (!ReportManager.getInstance().setupReportDetails()) {
       closeConnection();
       return false;
@@ -411,10 +417,32 @@ public class CheckFilesDbHandler {
     }
 
     whereClauseExpressions.add(
-        new WhereClauseExpression(
+        new WhereClauseExpression<Integer>(
             "institution_id = ?",
             institutionsByShortname.get(shortname).getId(),
             whereClauseExpressions.size() + 1));
+  }
+
+  private void confirmFilterByItem() {
+    String itemUuidAndVersion = Config.get(Config.CF_FILTER_BY_ITEM);
+    if (Check.isEmpty(itemUuidAndVersion)) {
+      // non-existent / empty means check all items.
+      return;
+    }
+
+    // Already has been checked for 2 elements and for the version to be an Integer
+    String[] uuidAndVersion = itemUuidAndVersion.split("/");
+
+    whereClauseExpressions.add(
+            new WhereClauseExpression<String>(
+                    "uuid = ?",
+                    uuidAndVersion[0],
+                    whereClauseExpressions.size() + 1));
+    whereClauseExpressions.add(
+            new WhereClauseExpression<Integer>(
+                    "version = ?",
+                    Integer.parseInt(uuidAndVersion[1]),
+                    whereClauseExpressions.size() + 1));
   }
 
   /**
@@ -775,7 +803,7 @@ public class CheckFilesDbHandler {
     }
 
     whereClauseExpressions.add(
-        new WhereClauseExpression("item_definition_id = ?", id, whereClauseExpressions.size() + 1));
+        new WhereClauseExpression<Integer>("item_definition_id = ?", id, whereClauseExpressions.size() + 1));
   }
 
   private boolean cacheItemsAll() {

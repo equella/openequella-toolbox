@@ -130,6 +130,8 @@ public class Config {
   public static final String CF_FILESTORE_DIR_ADV = "cf.filestore.advanced.";
   public static final String CF_FILTER_BY_COLLECTION = "cf.filter.by.collection";
   public static final String CF_FILTER_BY_INSTITUTION = "cf.filter.by.institution";
+  // Expects a single uuid/version pair
+  public static final String CF_FILTER_BY_ITEM = "cf.filter.by.item";
   public static final String CF_COMPARE_MISSING_ATTS_AFTER_RUN =
       "cf.compare.missing.atts.after.run";
 
@@ -387,6 +389,25 @@ public class Config {
             checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
             checkConfig(CF_FILTER_BY_COLLECTION, true, false);
             checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
+            checkConfig(CF_FILTER_BY_ITEM, true, false);
+            if (validConfig && hasConfig(CF_FILTER_BY_ITEM)) {
+              String[] uuidAndVersion = getConfig(CF_FILTER_BY_ITEM).split("/");
+              if(uuidAndVersion.length != 2) {
+                LOGGER.warn("Filter by Item not configured correctly - [{}] should only have 1 slash.",
+                        getConfig(CF_FILTER_BY_ITEM));
+                validConfig = false;
+              }
+
+              if(validConfig) {
+                try {
+                  Integer.parseInt(uuidAndVersion[1]);
+                } catch (NumberFormatException nfe) {
+                  LOGGER.warn("Filter by Item not configured correctly - [{}] should be a number after the slash.",
+                          getConfig(CF_FILTER_BY_ITEM));
+                  validConfig = false;
+                }
+              }
+            }
             checkConfig(CF_FILENAME_ENCODING_LIST, true, false);
             if (validConfig && hasConfig(CF_FILENAME_ENCODING_LIST)) {
               for (String key : getConfigAsStringArray(CF_FILENAME_ENCODING_LIST)) {
