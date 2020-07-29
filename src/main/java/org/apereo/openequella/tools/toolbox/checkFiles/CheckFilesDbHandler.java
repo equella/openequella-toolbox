@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,6 +60,7 @@ public class CheckFilesDbHandler {
 
   private List<WhereClauseExpression> whereClauseExpressions =
       new ArrayList<WhereClauseExpression>();
+  private boolean currentItemAttsAllGood = false;
 
   public boolean execute() {
     // Setup database connection
@@ -141,7 +143,8 @@ public class CheckFilesDbHandler {
 
       // Check attachments one item at a time
       int counter = 0;
-      for (Integer itemId : attachmentsCache.keySet()) {
+      final Set<Integer> ids = attachmentsCache.keySet();
+      for (Integer itemId : ids) {
         counter++;
         if (!processItem(itemId, counter)) {
           closeConnection();
@@ -186,7 +189,7 @@ public class CheckFilesDbHandler {
         attachments.get(0).setAttStatus(ResultsRow.NOATT);
         ReportManager.getInstance().stdOutWriteln(attachments.get(0).toString());
       } else {
-        boolean allGood = true;
+        currentItemAttsAllGood = true;
         final int rawTotal = attachments.size();
         final int attTotal = rawTotal - 1; // See reason below.
         // Start attCounter at 1 since the first element is always the
@@ -194,9 +197,9 @@ public class CheckFilesDbHandler {
         for (int attCounter = 1; attCounter < rawTotal; attCounter++) {
           final String stat =
               String.format("item [%s] - att [%s]/[%s]", itemCounter, attCounter, attTotal);
-          allGood &= checkAttachment(stat, attachments.get(attCounter));
+          checkAttachment(stat, attachments.get(attCounter));
         }
-        if (!allGood) {
+        if (!currentItemAttsAllGood) {
           ReportManager.getInstance().getStats().incNumTotalItemsAffected();
         }
       }
@@ -208,7 +211,7 @@ public class CheckFilesDbHandler {
     return true;
   }
 
-  private boolean checkAttachment(String stat, ResultsRow attRow) throws IOException {
+  private void checkAttachment(String stat, ResultsRow attRow) throws IOException {
     ReportManager.getInstance().getStats().incNumTotalAttachments();
     logger.info("Processing item attachment {}", stat);
 
@@ -225,12 +228,12 @@ public class CheckFilesDbHandler {
       ReportManager.getInstance().getStats().incNumTotalAttachmentsMissing();
       attRow.setAttStatus(ResultsRow.MISSING);
       ReportManager.getInstance().dualWriteLn(attRow.toString());
-      return false;
+      currentItemAttsAllGood = false;
+      return;
     }
     // Always send the attachment report to the standard file
     // writer.
     ReportManager.getInstance().stdOutWriteln(attRow.toString());
-    return true;
   }
 
   private boolean doesAttachmentExist(String stat, ResultsRow attRow) {
@@ -345,46 +348,33 @@ public class CheckFilesDbHandler {
 
   private void checkZip(String stat, String path, String name, ResultsRow parentAttsRow) {
     try {
-      List<ResultsRow> zipAtts = new ArrayList<>();
-      ZipFile zipFile = new ZipFile(path + Config.get(Config.GENERAL_OS_SLASH) + name);
+      final String zipFilePath = path + Config.get(Config.GENERAL_OS_SLASH) + name;
+      final List<ResultsRow> zipAtts = new ArrayList<>();
+      final ZipFile zipFile = new ZipFile(zipFilePath);
       // Unzipped files are stored in a directory named [zip-name].
       // The zip attachment name's format is _zips/[zip-name].zip
       final String unzippedLocation =
-          (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
-      File zipDir = new File(path + Config.get(Config.GENERAL_OS_SLASH) + unzippedLocation);
-      // There is a risk here that the zip file was expanded and the unzipped location
-      // doesn't exist (instead of the user choosing to not expand the zip file)
+              (path.length() > 7) ? name.substring(6) : "UNKNOWN_ZIP_LOCATION";
       logger.info(
-          "Reviewing the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
-
-      if (zipDir.exists() && zipDir.isDirectory()) {
-        logger.info(
-            "Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
-        // Treat each zip entry as a file attachment
-        // Build a new results row for each zip entry
-        zipFile
-            .stream()
-            .forEach(
-                ze -> {
-                  ResultsRow rr = ResultsRow.buildItemFrame(parentAttsRow);
-                  rr.setAttType(Config.ATT_TYPE_ZIP_ENTRY);
-                  rr.setAttFilePath(
-                      unzippedLocation + Config.get(Config.GENERAL_OS_SLASH) + ze.getName());
-                  rr.setAttUuid(parentAttsRow.getAttUuid());
-                  rr.setAttStatus(ze.isDirectory() ? "IN_PROGRESS_ZIP_DIR" : "IN_PROGESS_ZIP_FILE");
-                  logger.info("Found zip entry: [{}]", rr.toString());
-                  zipAtts.add(rr);
-                });
-        for (int i = 0; i < zipAtts.size(); i++) {
-          checkAttachment(
-              stat + String.format(" - sub att [%s]/[%s]", i + 1, zipAtts.size()), zipAtts.get(i));
-        }
-      } else {
-        logger.info(
-            "NOT checking the contents of the zip since the unzipped directory does not exist [{}]/[{}]/[{}]",
-            path,
-            name,
-            unzippedLocation);
+          "Checking the contents of the zip at [{}]/[{}]/[{}]", path, name, unzippedLocation);
+      // Treat each zip entry as a file attachment
+      // Build a new results row for each zip entry
+      zipFile
+          .stream()
+          .forEach(
+              ze -> {
+                ResultsRow rr = ResultsRow.buildItemFrame(parentAttsRow);
+                rr.setAttType(Config.ATT_TYPE_ZIP_ENTRY);
+                rr.setAttFilePath(
+                    unzippedLocation + Config.get(Config.GENERAL_OS_SLASH) + ze.getName());
+                rr.setAttUuid(parentAttsRow.getAttUuid());
+                rr.setAttStatus(ze.isDirectory() ? "IN_PROGRESS_ZIP_DIR" : "IN_PROGESS_ZIP_FILE");
+                logger.info("Found zip entry: [{}]", rr.toString());
+                zipAtts.add(rr);
+              });
+      for (int i = 0; i < zipAtts.size(); i++) {
+        checkAttachment(
+            stat + String.format(" - sub att [%s]/[%s]", i + 1, zipAtts.size()), zipAtts.get(i));
       }
     } catch (IOException ioe) {
       String msg =

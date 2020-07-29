@@ -46,10 +46,10 @@ public class CheckFilesDbTests {
   private static final int INST_XC_COLL_FS2_NUM_ERR_RESULTS = 20;
   private static final int INST_XD_COLL_LR_NUM_ALL_RESULTS = 30;
   private static final int INST_XD_COLL_LR_NUM_ERR_RESULTS = 20;
-  private static final int INST_XF_NUM_OF_ALL_RESULTS = 143;
-  private static final int INST_XF_NUM_OF_ERR_RESULTS = 39;
-  private static final int INST_ALL_NUM_OF_ALL_RESULTS = 177; // 54
-  private static final int INST_ALL_NUM_OF_ERR_RESULTS = 44;
+  private static final int INST_XF_NUM_OF_ALL_RESULTS = 146;
+  private static final int INST_XF_NUM_OF_ERR_RESULTS = 41;
+  private static final int INST_ALL_NUM_OF_ALL_RESULTS = 180;
+  private static final int INST_ALL_NUM_OF_ERR_RESULTS = 46;
   private static final int OFFSET_FOR_QUERY_STATEMENT = 3;
 
   @Test
@@ -259,7 +259,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,46");
+        "# Of queries ran,48");
   }
 
   @Test
@@ -283,7 +283,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance().getAllStatsWriterList(),
         ReportManager.getInstance().getErrorStatsWriterList());
     assertEquals(
-        "# Of queries ran,49",
+        "# Of queries ran,51",
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
@@ -311,7 +311,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance().getAllStatsWriterList(),
         ReportManager.getInstance().getErrorStatsWriterList());
     assertEquals(
-        "# Of queries ran,88",
+        "# Of queries ran,92",
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
@@ -341,7 +341,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,88");
+        "# Of queries ran,92");
   }
 
   @Test
@@ -368,7 +368,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_ALL_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT),
-        "# Of queries ran,51");
+        "# Of queries ran,53");
   }
 
   @Test
@@ -406,7 +406,7 @@ public class CheckFilesDbTests {
         ReportManager.getInstance().getAllStatsWriterList(),
         ReportManager.getInstance().getErrorStatsWriterList());
     assertEquals(
-        "# Of queries ran,20",
+        "# Of queries ran,22",
         ReportManager.getInstance()
             .getAllStatsWriterList()
             .get(INST_XF_NUM_OF_ALL_RESULTS - OFFSET_FOR_QUERY_STATEMENT));
@@ -424,11 +424,11 @@ public class CheckFilesDbTests {
     err.addAll(errOriginal);
     Collections.sort(err.subList(7, err.size()));
     int idx = 7;
-    assertEquals(all.get(idx++), "# Of ALL Attachments,157");
+    assertEquals(all.get(idx++), "# Of ALL Attachments,160");
     assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
-    assertEquals(all.get(idx++), "# Of Items affected,12");
-    assertEquals(all.get(idx++), "# Of Items,42");
-    assertEquals(all.get(idx++), "# Of MISSING Attachments,24");
+    assertEquals(all.get(idx++), "# Of Items affected,15");
+    assertEquals(all.get(idx++), "# Of Items,44");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,26");
     idx += 8; // Skip the non-critical rows
     assertEquals(
         all.get(idx++),
@@ -641,6 +641,9 @@ public class CheckFilesDbTests {
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
         all.get(idx++));
     assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
     assertEquals(
@@ -706,6 +709,12 @@ public class CheckFilesDbTests {
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
         all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
@@ -905,11 +914,11 @@ public class CheckFilesDbTests {
     assertEquals(INST_ALL_NUM_OF_ERR_RESULTS, err.size());
 
     idx = 7;
-    assertEquals(all.get(idx++), "# Of ALL Attachments,157");
+    assertEquals(all.get(idx++), "# Of ALL Attachments,160");
     assertEquals(all.get(idx++), "# Of IGNORED Attachments,0");
-    assertEquals(all.get(idx++), "# Of Items affected,12");
-    assertEquals(all.get(idx++), "# Of Items,42");
-    assertEquals(all.get(idx++), "# Of MISSING Attachments,24");
+    assertEquals(all.get(idx++), "# Of Items affected,15");
+    assertEquals(all.get(idx++), "# Of Items,44");
+    assertEquals(all.get(idx++), "# Of MISSING Attachments,26");
     idx += 8; // Skip the non-critical rows
     assertEquals(
         err.get(idx++),
@@ -936,6 +945,9 @@ public class CheckFilesDbTests {
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
         err.get(idx++));
     assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            err.get(idx++));
+    assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
     assertEquals(
@@ -947,6 +959,9 @@ public class CheckFilesDbTests {
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         err.get(idx++));
@@ -997,11 +1012,11 @@ public class CheckFilesDbTests {
     err.addAll(errOriginal);
     Collections.sort(err.subList(7, err.size()));
     int idx = 7;
-    assertEquals("# Of ALL Attachments,123", all.get(idx++));
+    assertEquals("# Of ALL Attachments,126", all.get(idx++));
     assertEquals("# Of IGNORED Attachments,0", all.get(idx++));
-    assertEquals("# Of Items affected,7", all.get(idx++));
-    assertEquals("# Of Items,16", all.get(idx++));
-    assertEquals("# Of MISSING Attachments,19", all.get(idx++));
+    assertEquals("# Of Items affected,10", all.get(idx++));
+    assertEquals("# Of Items,18", all.get(idx++));
+    assertEquals("# Of MISSING Attachments,21", all.get(idx++));
     idx += 8; // Skip the non-critical rows
     assertEquals(
         "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
@@ -1115,6 +1130,9 @@ public class CheckFilesDbTests {
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,d0a6025e-8620-4864-b8c1-3cfa87dbdb56,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/d0a6025e-8620-4864-b8c1-3cfa87dbdb56/page.html\",",
         all.get(idx++));
     assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,34725983-4459-498e-9651-a54ade0509ad,1,LIVE,file,1ed0c642-048e-43e8-9ef0-4760d670b550,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
     assertEquals(
@@ -1180,6 +1198,12 @@ public class CheckFilesDbTests {
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder5/file6.csv\",",
         all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Present,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            all.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            all.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         all.get(idx++));
@@ -1376,11 +1400,11 @@ public class CheckFilesDbTests {
     assertEquals(INST_XF_NUM_OF_ERR_RESULTS, err.size());
 
     idx = 7;
-    assertEquals("# Of ALL Attachments,123", err.get(idx++));
+    assertEquals("# Of ALL Attachments,126", err.get(idx++));
     assertEquals("# Of IGNORED Attachments,0", err.get(idx++));
-    assertEquals("# Of Items affected,7", err.get(idx++));
-    assertEquals("# Of Items,16", err.get(idx++));
-    assertEquals("# Of MISSING Attachments,19", err.get(idx++));
+    assertEquals("# Of Items affected,10", err.get(idx++));
+    assertEquals("# Of Items,18", err.get(idx++));
+    assertEquals("# Of MISSING Attachments,21", err.get(idx++));
     idx += 8; // Skip the non-critical rows
     assertEquals(
         "instXf,6b356e2e-e6a0-235a-5730-15ad1d8ad630,6fb62537-8414-41ba-a98f-7b6910658978,1,PERSONAL,html,68152185-1b29-4227-bbf7-17a3e402b546,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/68152185-1b29-4227-bbf7-17a3e402b546/page.html\",",
@@ -1391,6 +1415,9 @@ public class CheckFilesDbTests {
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,3076b0c1-d4c2-4e6a-bd38-4e7aede75280,1,LIVE,html,b80b9cb7-0eea-44c8-879b-2f739bd86045,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_mypages/b80b9cb7-0eea-44c8-879b-2f739bd86045/page.html\",",
         err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,33de26ed-60d7-44f7-b792-457940f76ccc,1,LIVE,zip,f0e21db6-d8af-40e1-897e-6142b9ad8072,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"_zips/zipB.zip\",",
+            err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,file,944206da-c635-4aab-aa0f-d6e8e516d66f,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
@@ -1403,6 +1430,9 @@ public class CheckFilesDbTests {
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,56783aec-123e-4bad-878b-2aa99dfcd17d,1,LIVE,zip_entry,b156d930-fd85-4bf0-9eba-1b74ab903cd4,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA-root-renamed.zip/zipA/folder1/folder4/file8\",",
         err.get(idx++));
+    assertEquals(
+            "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5bdefd03-b9e4-4e2c-aea1-8e917f9afaf1,1,LIVE,zip_entry,54d24f5a-5c88-4f7f-bb41-3386721a4a80,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipB.zip/file.txt\",",
+            err.get(idx++));
     assertEquals(
         "instXf,6e85ce64-9a11-c5e7-69a4-bd30ec61007f,5ef2b291-f6ec-4cee-a444-66fbefed0dfe,1,LIVE,file,372dd2f4-7f21-41f0-b421-94348493fc24,Missing,[[Attachment resp code not set]],\"[[Item name not set]]\",\"zipA.zip\",",
         err.get(idx++));
