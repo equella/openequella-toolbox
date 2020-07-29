@@ -302,7 +302,7 @@ public class CheckFilesDbHandler {
         }
         return failAndRunChecks(stdFile, altFile, false);
       }
-      // Otherwise, its supposed to be a file
+      // Otherwise, it's supposed to be a file
       if ((stdFile.exists() && stdFile.isFile()) || (altFile.exists() && altFile.isFile())) {
         return true;
       }
