@@ -82,6 +82,8 @@ public class Config {
   public static final String EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE =
       "export.items.attachment.path.template";
   public static final String EXPORT_ITEMS_ONE_ATT_PER_LINE = "export.items.oneAttachmentPerLine";
+  // Should be a CSV of uuid/version
+  public static final String EXPORT_ITEMS_ITEM_EXCLUSIONS = "export.items.item.exclusions";
 
   // Email
   public static final String EMAIL_SERVER = "email.server";
@@ -440,6 +442,42 @@ public class Config {
     }
 
     checkConfig(EXPORT_ITEMS_ATTACHMENT_PATH_TEMPLATE, true, true);
+
+    checkConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS, true, false);
+    if (validConfig && hasConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
+      String[] itemExclusions = getConfigAsStringArray(EXPORT_ITEMS_ITEM_EXCLUSIONS);
+      for(String item : itemExclusions) {
+        final String[] key = item.split("/");
+        if ((key.length != 2)) {
+          LOGGER.warn(
+              "Property {} must be a CSV of item uuid/versions. Found a pair that didn't match [{}].",
+                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
+                  item);
+          validConfig = false;
+          return;
+        }
+
+        if (key[0].length() != 36) {
+          LOGGER.warn(
+              "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have the right length of UUID [{}].",
+                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
+                  item);
+          validConfig = false;
+          return;
+        }
+
+        try {
+          Integer.valueOf(key[1]);
+        } catch (NumberFormatException e) {
+          LOGGER.warn(
+              "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have a numeric version [{}].",
+                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
+                  item);
+          validConfig = false;
+          return;
+        }
+      }
+    }
   }
 
   private void checkConfigsFileLister() {
