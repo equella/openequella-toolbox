@@ -6,7 +6,7 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 
 group = 'org.apereo.openequella'
-version = '1.4.1-SNAPSHOT-G'
+version = '1.5.0'
 sourceCompatibility = 1.8
 
 repositories {
