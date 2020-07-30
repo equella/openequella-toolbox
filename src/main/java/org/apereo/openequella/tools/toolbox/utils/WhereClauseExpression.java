@@ -24,16 +24,16 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class WhereClauseExpression {
+public class WhereClauseExpression<T> {
   private static final Logger logger = LogManager.getLogger(WhereClauseExpression.class);
 
   private String expression;
-  private int intParm = Integer.MIN_VALUE;
+  private T parm;
   private int index;
 
-  public WhereClauseExpression(String expression, int value, int index) {
+  public WhereClauseExpression(String expression, T value, int index) {
     this.expression = expression;
-    this.intParm = value;
+    this.parm = value;
     this.index = index;
   }
 
@@ -42,8 +42,12 @@ public class WhereClauseExpression {
   }
 
   public void setParm(PreparedStatement stmt) throws SQLException {
-    stmt.setInt(index, intParm);
-    logger.info("Setting parameter.  Index=[{}], value=[{}].", index, intParm);
+    if (parm instanceof Integer) {
+      stmt.setInt(index, (Integer) parm);
+    } else {
+      stmt.setString(index, parm.toString());
+    }
+    logger.info("Setting parameter.  Index=[{}], value=[{}].", index, parm);
   }
 
   public static String makeWhereClause(List<WhereClauseExpression> exprs) {

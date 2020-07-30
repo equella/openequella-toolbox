@@ -130,6 +130,8 @@ public class Config {
   public static final String CF_FILESTORE_DIR_ADV = "cf.filestore.advanced.";
   public static final String CF_FILTER_BY_COLLECTION = "cf.filter.by.collection";
   public static final String CF_FILTER_BY_INSTITUTION = "cf.filter.by.institution";
+  // Expects a single uuid/version pair
+  public static final String CF_FILTER_BY_ITEM = "cf.filter.by.item";
   public static final String CF_COMPARE_MISSING_ATTS_AFTER_RUN =
       "cf.compare.missing.atts.after.run";
 
@@ -387,6 +389,27 @@ public class Config {
             checkConfig(CF_NUM_OF_ITEMS_PER_QUERY, true, true);
             checkConfig(CF_FILTER_BY_COLLECTION, true, false);
             checkConfig(CF_FILTER_BY_INSTITUTION, true, false);
+            checkConfig(CF_FILTER_BY_ITEM, true, false);
+            if (validConfig && hasConfig(CF_FILTER_BY_ITEM)) {
+              String[] uuidAndVersion = getConfig(CF_FILTER_BY_ITEM).split("/");
+              if (uuidAndVersion.length != 2) {
+                LOGGER.warn(
+                    "Filter by Item not configured correctly - [{}] should only have 1 slash.",
+                    getConfig(CF_FILTER_BY_ITEM));
+                validConfig = false;
+              }
+
+              if (validConfig) {
+                try {
+                  Integer.parseInt(uuidAndVersion[1]);
+                } catch (NumberFormatException nfe) {
+                  LOGGER.warn(
+                      "Filter by Item not configured correctly - [{}] should be a number after the slash.",
+                      getConfig(CF_FILTER_BY_ITEM));
+                  validConfig = false;
+                }
+              }
+            }
             checkConfig(CF_FILENAME_ENCODING_LIST, true, false);
             if (validConfig && hasConfig(CF_FILENAME_ENCODING_LIST)) {
               for (String key : getConfigAsStringArray(CF_FILENAME_ENCODING_LIST)) {
@@ -446,13 +469,13 @@ public class Config {
     checkConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS, true, false);
     if (validConfig && hasConfig(EXPORT_ITEMS_ITEM_EXCLUSIONS)) {
       String[] itemExclusions = getConfigAsStringArray(EXPORT_ITEMS_ITEM_EXCLUSIONS);
-      for(String item : itemExclusions) {
+      for (String item : itemExclusions) {
         final String[] key = item.split("/");
         if ((key.length != 2)) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't match [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
@@ -460,8 +483,8 @@ public class Config {
         if (key[0].length() != 36) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have the right length of UUID [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
@@ -471,8 +494,8 @@ public class Config {
         } catch (NumberFormatException e) {
           LOGGER.warn(
               "Property {} must be a CSV of item uuid/versions. Found a pair that didn't have a numeric version [{}].",
-                  EXPORT_ITEMS_ITEM_EXCLUSIONS,
-                  item);
+              EXPORT_ITEMS_ITEM_EXCLUSIONS,
+              item);
           validConfig = false;
           return;
         }
