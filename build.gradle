@@ -1,5 +1,6 @@
 plugins {
 	id 'com.github.sherter.google-java-format' version '0.8'
+	id 'com.gtramontina.ghooks.gradle' version '1.1.0'
 }
 
 apply plugin: 'eclipse'
