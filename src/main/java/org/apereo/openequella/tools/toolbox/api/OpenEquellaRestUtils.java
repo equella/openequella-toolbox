@@ -287,7 +287,7 @@ public class OpenEquellaRestUtils {
     cacheStatAvailable = confirmAndGatherInt(searchResults, "available");
     cacheStatLength = confirmAndGatherInt(searchResults, "length");
     JSONArray itemsArr = confirmAndGatherJsonArray(searchResults, "results");
-    int resultsLength = itemsArr.length();
+    final int resultsLength = itemsArr.length();
     LOGGER.info(
         "Requested batch of resources.  API stats: start=[{}] returned length=[{}], available=[{}], # of results=[{}]",
         cacheStatStart,
@@ -305,7 +305,7 @@ public class OpenEquellaRestUtils {
 
     if (resultsLength > 0) {
       cacheStatStart += resultsLength;
-      for (int i = 0; i < itemsArr.length(); i++) {
+      for (int i = 0; i < resultsLength; i++) {
         JSONObject resourceObj = itemsArr.getJSONObject(i);
 
         ParsedItem ei = new ParsedItem();
