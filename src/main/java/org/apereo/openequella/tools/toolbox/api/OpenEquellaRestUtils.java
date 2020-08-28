@@ -35,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.Config;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedCollection;
 import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
 import org.apereo.openequella.tools.toolbox.utils.FileUtils;
 import org.apereo.openequella.tools.toolbox.utils.MigrationUtils;
@@ -286,7 +287,7 @@ public class OpenEquellaRestUtils {
     cacheStatAvailable = confirmAndGatherInt(searchResults, "available");
     cacheStatLength = confirmAndGatherInt(searchResults, "length");
     JSONArray itemsArr = confirmAndGatherJsonArray(searchResults, "results");
-    int resultsLength = itemsArr.length();
+    final int resultsLength = itemsArr.length();
     LOGGER.info(
         "Requested batch of resources.  API stats: start=[{}] returned length=[{}], available=[{}], # of results=[{}]",
         cacheStatStart,
@@ -304,7 +305,7 @@ public class OpenEquellaRestUtils {
 
     if (resultsLength > 0) {
       cacheStatStart += resultsLength;
-      for (int i = 0; i < itemsArr.length(); i++) {
+      for (int i = 0; i < resultsLength; i++) {
         JSONObject resourceObj = itemsArr.getJSONObject(i);
 
         ParsedItem ei = new ParsedItem();
@@ -321,6 +322,8 @@ public class OpenEquellaRestUtils {
               Config.DATE_FORMAT_OEQ_API.parse(confirmAndGatherString(resourceObj, "createdDate")));
           ei.setCreatedDateStr(confirmAndGatherString(resourceObj, "createdDate"));
           ei.setModifiedDateStr(confirmAndGatherString(resourceObj, "modifiedDate"));
+          ei.setCollectionUuid(
+              confirmAndGatherString(confirmAndGatherJsonObj(resourceObj, "collection"), "uuid"));
           ei.setJson(resourceObj);
 
           LOGGER.info("CACHED {}", ei.getSignature());
@@ -333,6 +336,67 @@ public class OpenEquellaRestUtils {
     }
 
     return cachedItems;
+  }
+
+  public List<ParsedCollection> gatherCollections() throws Exception {
+    CloseableHttpClient httpclient = HttpClients.createDefault();
+    String url = Config.get(Config.OEQ_URL) + "/api/collection";
+    HttpGet http = new HttpGet(url);
+
+    http.addHeader("X-Authorization", "access_token=" + accessToken);
+    LOGGER.debug("Making the API call: {}", url);
+    HttpResponse response = httpclient.execute(http);
+    HttpEntity entity = response.getEntity();
+
+    int statusCode = response.getStatusLine().getStatusCode();
+
+    String respStr = EntityUtils.toString(entity);
+    LOGGER.trace(statusCode);
+    LOGGER.trace(respStr);
+    if (statusCode != 200) {
+      String msg =
+          String.format(
+              "FAILURE accessing openEQUELLA list collection api [%s]:  %s - %s",
+              url, statusCode, respStr);
+      LOGGER.error(msg);
+      throw new Exception(msg);
+    }
+
+    List<ParsedCollection> cache = new ArrayList<>();
+
+    JSONObject searchResults = new JSONObject(respStr);
+    final int available = confirmAndGatherInt(searchResults, "available");
+    final int length = confirmAndGatherInt(searchResults, "length");
+    if (available != length) {
+      String msg =
+          String.format(
+              "FAILURE to retrieve all collections.  Likely need to implement pagination.  Available = [{}], Length = [{}]",
+              available,
+              length);
+      LOGGER.error(msg);
+      throw new Exception(msg);
+    }
+    JSONArray arr = confirmAndGatherJsonArray(searchResults, "results");
+    int resultsLength = arr.length();
+    LOGGER.info(
+        "Requested collections.  API stats: start=[{}] returned length=[{}], available=[{}], # of results=[{}]",
+        cacheStatStart,
+        cacheStatLength,
+        cacheStatAvailable,
+        resultsLength);
+
+    for (int i = 0; i < arr.length(); i++) {
+      JSONObject resourceObj = arr.getJSONObject(i);
+
+      ParsedCollection pc = new ParsedCollection();
+      pc.setUuid(confirmAndGatherString(resourceObj, "uuid"));
+      pc.setName(confirmAndGatherString(resourceObj, "name"));
+
+      LOGGER.info("CACHED {}", pc.getSignature());
+      cache.add(pc);
+    }
+
+    return cache;
   }
 
   private boolean isItemExcluded(String[] exclusions, ParsedItem parsedItem) {

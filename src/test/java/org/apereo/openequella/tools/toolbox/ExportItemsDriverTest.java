@@ -105,7 +105,9 @@ public class ExportItemsDriverTest {
     assertEquals("name1", results.get(3).get(0));
     assertEquals("1-2-3-4", results.get(3).get(1));
     assertEquals("1", results.get(3).get(2));
-    assertEquals("file-att-2 with spaces and quotes \" and pipes |.pdf", results.get(3).get(3));
+    assertEquals(
+        "/Attachments/99/1-2-3-4/1/file-att-2 with spaces and quotes \" and pipes |.pdf",
+        results.get(3).get(3));
     assertEquals("nif,ty|This is \" some data!", results.get(3).get(4));
     assertEquals("k1|k2|k3", results.get(3).get(5));
     assertEquals("85645", results.get(3).get(6));
@@ -131,7 +133,7 @@ public class ExportItemsDriverTest {
     assertEquals("name1", results.get(5).get(0));
     assertEquals("1-2-3-4", results.get(5).get(1));
     assertEquals("1", results.get(5).get(2));
-    assertEquals("file-att-1.pdf", results.get(5).get(3));
+    assertEquals("/Attachments/99/1-2-3-4/1/file-att-1.pdf", results.get(5).get(3));
     assertEquals("nif,ty|This is \" some data!", results.get(5).get(4));
     assertEquals("k1|k2|k3", results.get(5).get(5));
     assertEquals("43432", results.get(5).get(6));
