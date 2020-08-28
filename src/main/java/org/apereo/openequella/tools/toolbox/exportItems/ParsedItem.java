@@ -41,6 +41,7 @@ public class ParsedItem {
   private String modifiedDateStr;
   private String createdDateStr;
   private String primaryFileType;
+  private String collectionUuid;
 
   public String getKalturaMediaId() {
     return kalturaMediaId;
@@ -152,6 +153,14 @@ public class ParsedItem {
 
   public String getPrimaryFileType() {
     return primaryFileType;
+  }
+
+  public String getCollectionUuid() {
+    return collectionUuid;
+  }
+
+  public void setCollectionUuid(String collectionUuid) {
+    this.collectionUuid = collectionUuid;
   }
 
   public Map<String, List<String>> getParsedMetadata() {

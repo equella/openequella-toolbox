@@ -41,6 +41,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apereo.openequella.tools.toolbox.api.OpenEquellaRestUtils;
 import org.apereo.openequella.tools.toolbox.exportItems.ParsedAttachment;
+import org.apereo.openequella.tools.toolbox.exportItems.ParsedCollection;
 import org.apereo.openequella.tools.toolbox.exportItems.ParsedItem;
 import org.apereo.openequella.tools.toolbox.utils.GeneralUtils;
 import org.json.JSONArray;
@@ -53,6 +54,8 @@ public class ExportItemsDriver {
   private static Logger LOGGER = LogManager.getLogger(ExportItemsDriver.class);
 
   int globalExportedItemCounter = 0;
+
+  Map<String, ParsedCollection> cachedCollections;
 
   public void execute() {
     globalExportedItemCounter = 0;
@@ -73,9 +76,18 @@ public class ExportItemsDriver {
           "Ending openEQUELLA run - output file already exists: {}", output.getAbsolutePath());
       return;
     }
+
     CSVPrinter csvPrinter = null;
     try (BufferedWriter writer =
         Files.newBufferedWriter(Paths.get(Config.get(Config.EXPORT_ITEMS_OUTPUT_FILE)))) {
+
+      if (Config.get(Config.EXPORT_ITEMS_COLUMN_FORMAT).contains("collection_")) {
+        cachedCollections = new HashMap<>();
+        for (ParsedCollection pc : oeru.gatherCollections()) {
+          cachedCollections.put(pc.getUuid(), pc);
+        }
+      }
+
       LOGGER.info("Using output file {} for export", output.getAbsolutePath());
 
       // Setup CSV writer and 'heading'
@@ -274,7 +286,7 @@ public class ExportItemsDriver {
         if (pAtt == null) {
           result.add("");
         } else if (pAtt.get("type").equals("file")) {
-          result.add(pAtt.get("filename"));
+          result.add(constructAttachmentPath(pi, pAtt.get("filename")));
         } else if (pAtt.get("type").equals("url")) {
           result.add(pAtt.get("url"));
         } else {
@@ -306,6 +318,16 @@ public class ExportItemsDriver {
         result.add(pi.getCreatedDateStr());
       } else if (header.equalsIgnoreCase("item_datemodified")) {
         result.add(pi.getModifiedDateStr());
+      } else if (header.equalsIgnoreCase("collection_name")) {
+        if (cachedCollections.containsKey(pi.getCollectionUuid())) {
+          result.add(cachedCollections.get(pi.getCollectionUuid()).getName());
+        } else {
+          LOGGER.warn(
+              "Unable to find collection uuid [{}] from item [{}] in cache.  Using UUID.",
+              pi.getCollectionUuid(),
+              pi.getSignature());
+          result.add(pi.getCollectionUuid());
+        }
       } else if (header.equalsIgnoreCase("name")) {
         result.add(pi.getName());
       } else if (header.equalsIgnoreCase("description")) {
