@@ -138,4 +138,17 @@ Uncomment everything to do with Kaltura (this needs to be fixed).
 java -Dlog4j.configurationFile=log4j2.xml -jar openequella-toolbox-<<version>>.jar <<properties file>> <<invocation specific arguments>>
 ```
 
+# Releasing
 
+Currently, it's a somewhat manual process:
+
+1. Checkout `master`
+2. Run the tests (see `Building` section above)
+3. Update Config.VERSION to the release version of the Toolbox
+4. git tag the code with the release version
+5. Build the code with `./gradlew clean build`
+6. Push the changes and tag to master
+6. Manually create a release in github with the following:
+  1. blank.properties
+  2. log4j2.xml
+  3. openequella-toolbox-<version>.jar ( from `build/libs` )
