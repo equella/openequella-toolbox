@@ -144,7 +144,7 @@ Currently, it's a somewhat manual process:
 
 1. Checkout `master`
 2. Run the tests (see `Building` section above)
-3. Update Config.VERSION to the release version of the Toolbox
+3. Update `Config.VERSION` and `build.gradle` > `version` to the release version of the Toolbox
 4. git tag the code with the release version
 5. Build the code with `./gradlew clean build`
 6. Push the changes and tag to master
