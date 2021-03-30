@@ -148,7 +148,7 @@ Currently, it's a somewhat manual process:
 4. git tag the code with the release version
 5. Build the code with `./gradlew clean build`
 6. Push the changes and tag to master
-6. Manually create a release in github with the following:
-  1. blank.properties
-  2. log4j2.xml
-  3. openequella-toolbox-<version>.jar ( from `build/libs` )
+6. Manually create a release in github and add the following to the release:
+  1. conf/blank.properties
+  2. conf/log4j2.xml
+  3. build/libs/openequella-toolbox-<version>.jar
