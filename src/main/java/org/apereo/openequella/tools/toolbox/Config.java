@@ -344,6 +344,7 @@ public class Config {
     checkConfig(CF_ADOPTER_NAME, true, true);
     checkConfig(CF_MODE, true, true);
     checkConfig(CF_EMAIL_MODE, true, true);
+    checkConfig(GENERAL_OS_SLASH, true, true);
     checkConfig(CF_COMPARE_MISSING_ATTS_AFTER_RUN, true, false);
 
     if (validConfig) {
